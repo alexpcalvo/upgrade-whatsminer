@@ -1,0 +1,10 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+    dev="/dev/ttyS2"
+else
+    dev=$1
+fi
+
+/bin/bitmicro-test $dev 1000000 1 1 read_chip_model 66 4500
+

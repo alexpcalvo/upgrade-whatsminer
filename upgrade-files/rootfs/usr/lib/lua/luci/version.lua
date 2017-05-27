@@ -94,10 +94,18 @@ else
 
 	if name0 == sensor_tmp423 or name1 == sensor_tmp423 or name2 == sensor_tmp423 then
 		hashboardtype = "HB10"
-	end
+    else
+	    name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
+	    name1 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
+	    name2 = fs.readfile("/sys/class/hwmon/hwmon4/name") or ""
 
-	if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
-		hashboardtype = "HB-LVB1"
+	    name0 = string.match(name0, sensor_lm75)
+	    name1 = string.match(name1, sensor_lm75)
+	    name2 = string.match(name2, sensor_lm75)
+
+	    if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
+		   hashboardtype = "LVB1"
+	    end
 	end
 end
 

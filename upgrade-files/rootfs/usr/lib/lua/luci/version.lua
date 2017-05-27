@@ -71,6 +71,7 @@ hashboardtype = "HB-unknown"
 
 local sensor_tmp421 = "tmp421"
 local sensor_tmp423 = "tmp423"
+local sensor_lm75 = "lm75"
 
 local name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
 local name1 = fs.readfile("/sys/class/hwmon/hwmon1/name") or ""
@@ -93,6 +94,10 @@ else
 
 	if name0 == sensor_tmp423 or name1 == sensor_tmp423 or name2 == sensor_tmp423 then
 		hashboardtype = "HB10"
+	end
+
+	if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
+		hashboardtype = "HB-LVB1"
 	end
 end
 

@@ -38,13 +38,13 @@ fi
 
 #echo "Detecting machine type: host_type=$host_type, device_type=$device_type"
 
-if [ "$host_type" != "CB12" -o "$device_type" != "HB12" ]; then
-    echo "********************************************************"
-    echo "** Machine type mismatched, quit the upgrade process  **"
-    echo "** Detected CB=$host_type, HB=$device_type            **"
-    echo "********************************************************"
-    exit 0
-fi
+#if [ "$host_type" != "CB12" -o "$device_type" != "HB12" ]; then
+#    echo "********************************************************"
+#    echo "** Machine type mismatched, quit the upgrade process  **"
+#    echo "** Detected CB=$host_type, HB=$device_type            **"
+#    echo "********************************************************"
+#    exit 0
+#fi
 
 #
 # Kill services

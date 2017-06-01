@@ -39,10 +39,10 @@ fi
 #echo "Detecting machine type: host_type=$host_type, device_type=$device_type"
 
 #if [ "$host_type" != "CB12" -o "$device_type" != "HB12" ]; then
-#    echo "********************************************************"
-#    echo "** Machine type mismatched, quit the upgrade process  **"
-#    echo "** Detected CB=$host_type, HB=$device_type            **"
-#    echo "********************************************************"
+#    echo "*********************************************************************"
+#    echo "Detected: control_board=$host_type, hash_board=$device_type."
+#    echo "Machine type mismatched, quit the upgrade process."
+#    echo "*********************************************************************"
 #    exit 0
 #fi
 
@@ -321,6 +321,25 @@ if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
     chmod 755 /bin/test-hashboard
 fi
 
+# sensors and relative libs
+if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then
+    echo "Installing libsysfs"
+    opkg install /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk
+fi
+if [ -f /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk ]; then
+    echo "Installing sysfsutils"
+    opkg install /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk
+fi
+if [ -f /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk ]; then
+    echo "Installing libsensors"
+    opkg install /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk
+fi
+if [ -f /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk ]; then
+    echo "Installing lm-sensors"
+    opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
+fi
+
+echo ""
 echo "Done, reboot system ..."
 sync
 reboot

@@ -104,7 +104,7 @@ else
 	    name2 = string.match(name2, sensor_lm75)
 
 	    if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
-		   hashboardtype = "LVB1"
+		   hashboardtype = "AIB1"
 	    end
 	end
 end

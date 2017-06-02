@@ -31,6 +31,8 @@ else
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
         device_type="HB10"
+    elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
+        device_type="AIB1"
     else
         device_type="unknown"
     fi
@@ -38,13 +40,15 @@ fi
 
 #echo "Detecting machine type: host_type=$host_type, device_type=$device_type"
 
-#if [ "$host_type" != "CB12" -o "$device_type" != "HB12" ]; then
-#    echo "*********************************************************************"
-#    echo "Detected: control_board=$host_type, hash_board=$device_type."
-#    echo "Machine type mismatched, quit the upgrade process."
-#    echo "*********************************************************************"
-#    exit 0
-#fi
+device_type="AIB1"
+
+if [ "$host_type" != "CB12" -o "$device_type" != "AIB1" ]; then
+    echo "*********************************************************************"
+    echo "Detected: control_board=$host_type, hash_board=$device_type."
+    echo "Machine type mismatched, quit the upgrade process."
+    echo "*********************************************************************"
+    exit 0
+fi
 
 #
 # Kill services
@@ -123,12 +127,14 @@ echo "Upgrading rootfs"
 
 # /etc/microbt_release
 if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
+    echo "Upgrading /etc/microbt_release"
     chmod 644 /etc/microbt_release
     cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
     chmod 444 /etc/microbt_release # readonly
 fi
 # /etc/cgminer_version
 if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
+    echo "Upgrading /etc/cgminer_version"
     chmod 644 /etc/cgminer_version
     cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
     chmod 444 /etc/cgminer_version # readonly
@@ -136,6 +142,7 @@ fi
 
 # /etc/config/network.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/network.default ]; then
+    echo "Upgrading /etc/config/network.default"
     chmod 644 /etc/config/network.default
     cp -f /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default
     chmod 444 /etc/config/network.default # readonly
@@ -143,6 +150,7 @@ fi
 
 # /etc/config/cgminer.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default ]; then
+    echo "Upgrading /etc/config/cgminer.default"
     chmod 644 /etc/config/cgminer.default
     cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default /etc/config/cgminer.default
     chmod 444 /etc/config/cgminer.default # readonly
@@ -150,6 +158,7 @@ fi
 
 # /etc/config/pools.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/pools.default ]; then
+    echo "Upgrading /etc/config/pools.default"
     chmod 644 /etc/config/pools.default >/dev/null 2>&1
     cp -f /tmp/upgrade-files/rootfs/etc/config/pools.default /etc/config/pools.default
     chmod 444 /etc/config/pools.default # readonly
@@ -157,6 +166,8 @@ fi
 
 # /etc/config/pools
 if [ ! -f /etc/config/pools ]; then
+    echo "Upgrading /etc/config/pools"
+
     # Special handling. Reserve user pools configuration
     # /etc/config/cgminer -> /etc/config/pools
     fromfile="/etc/config/cgminer"
@@ -196,6 +207,7 @@ fi
 # Upgrade /etc/config/cgminer after updating pools
 # /etc/config/cgminer
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer ]; then
+    echo "Upgrading /etc/config/cgminer"
     chmod 644 /etc/config/cgminer
     cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer /etc/config/cgminer
     chmod 444 /etc/config/cgminer # readonly
@@ -203,23 +215,27 @@ fi
 
 # /etc/crontabs/root
 if [ -f /tmp/upgrade-files/rootfs/etc/crontabs/root ]; then
+    echo "Upgrading /etc/crontabs/root"
     cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/
 fi
 
 # /etc/init.d/boot
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
+    echo "Upgrading /etc/init.d/boot"
     cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
     chmod 755 /etc/init.d/boot
 fi
 
 # /etc/init.d/cgminer
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer ]; then
+    echo "Upgrading /etc/init.d/cgminer"
     cp -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer
     chmod 755 /etc/init.d/cgminer
 fi
 
 # /etc/init.d/temp-monitor
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor ]; then
+    echo "Upgrading /etc/init.d/temp-monitor"
     cp -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor
     chmod 755 /etc/init.d/temp-monitor
     cd /etc/rc.d/
@@ -229,6 +245,7 @@ fi
 
 # /etc/init.d/sdcard-upgrade
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade ]; then
+    echo "Upgrading /etc/init.d/sdcard-upgrade"
     cp -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade
     chmod 755 /etc/init.d/sdcard-upgrade
     cd /etc/rc.d/

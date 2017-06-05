@@ -32,7 +32,7 @@ else
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
         device_type="HB10"
     elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-        device_type="AIB1"
+        device_type="ALB10"
     else
         device_type="unknown"
     fi
@@ -40,9 +40,9 @@ fi
 
 #echo "Detecting machine type: host_type=$host_type, device_type=$device_type"
 
-device_type="AIB1"
+device_type="ALB10"
 
-if [ "$host_type" != "CB12" -o "$device_type" != "AIB1" ]; then
+if [ "$host_type" != "CB12" -o "$device_type" != "ALB10" ]; then
     echo "*********************************************************************"
     echo "Detected: control_board=$host_type, hash_board=$device_type."
     echo "Machine type mismatched, quit the upgrade process."

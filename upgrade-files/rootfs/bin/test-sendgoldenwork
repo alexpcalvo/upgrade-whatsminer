@@ -6,5 +6,4 @@ else
     dev=$1
 fi
 
-/bin/bitmicro-test $dev 1000000 1 1 send_golden_work 66 0 100 192 186 198 4500 
-
+/bin/bitmicro-test $dev 1000000 1 1 send_golden_work 38 0 100 192 4500 1 30

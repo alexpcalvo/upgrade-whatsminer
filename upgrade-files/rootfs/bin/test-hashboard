@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if [ "$1" = "" ]; then
+    dev="/dev/ttyS2"
+else
+    dev=$1
+fi
+
+/bin/bitmicro-test $dev 1000000 1 1 send_golden_work_to_all 38 100 38 90 192 450 1000000 1 1 38 6000 70 1 50

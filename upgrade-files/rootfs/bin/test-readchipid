@@ -6,5 +6,4 @@ else
     dev=$1
 fi
 
-/bin/bitmicro-test $dev 1000000 1 1 read_chip_model 66 4500
-
+/bin/bitmicro-test $dev 1000000 1 1 read_chip_model 38 100 4500 1 20

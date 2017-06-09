@@ -15,6 +15,10 @@ set_tty_directions() {
     echo out > /sys/class/gpio/gpio962/direction
     echo 964 > /sys/class/gpio/export
     echo out > /sys/class/gpio/gpio964/direction
+    echo 943 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio943/direction
+    echo 944 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio944/direction
 }
 
 set_plug_directions() {

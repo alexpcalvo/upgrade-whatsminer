@@ -19,10 +19,14 @@ if [ ! -f /tmp/cgminer-ntpd-done ]; then
 fi
 
 #
-# Skip the first time
+# Skip cgminer init state
 #
-if [ ! -f /tmp/cgminer-monitor-firsttime-skipped ]; then
-    touch /tmp/cgminer-monitor-firsttime-skipped
+if [ ! -f /tmp/cgminer-monitor-skipped1 ]; then
+    touch /tmp/cgminer-monitor-skipped1
+    exit 0;
+fi
+if [ ! -f /tmp/cgminer-monitor-skipped2 ]; then
+    touch /tmp/cgminer-monitor-skipped2
     exit 0;
 fi
 

@@ -1,9 +1,40 @@
 #!/bin/sh
+#
+# Usages:
+#
+# 1. test-sendgoldenwork             (Default device: /dev/ttyS2)
+# 2. test-sendgoldenwork /dev/ttyS3
+#
 
 if [ "$1" = "" ]; then
-    dev="/dev/ttyS2"
+    DEV="/dev/ttyS2"
 else
-    dev=$1
+    DEV=$1
 fi
 
-/bin/bitmicro-test $dev 1000000 1 1 send_golden_work 38 0 100 192 4500 1 30
+#
+# Detect chip number according to hash board type
+#
+if [ -f /sys/class/hwmon/hwmon0/name ]; then
+    name0=`cat /sys/class/hwmon/hwmon0/name`
+fi
+if [ -f /sys/class/hwmon/hwmon2/name ]; then
+    name2=`cat /sys/class/hwmon/hwmon2/name`
+fi
+if [ -f /sys/class/hwmon/hwmon4/name ]; then
+    name4=`cat /sys/class/hwmon/hwmon4/name`
+fi
+
+if [ "$name0" = "lm75" -o "$name2" = "lm75" -o "$name4" = "lm75" ]; then
+    CHIP_NUM=38
+else
+    CHIP_NUM=66
+fi
+
+#
+# Command usage:
+#
+# bitmicro-test <device> <baud> <times> <progress> <command>
+#               <chip_num> <start_addr> <core_num> <freq> <fan_speed> <need_preheat> <temp_preheat>
+
+/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work $CHIP_NUM 0 100 192 4500 1 30

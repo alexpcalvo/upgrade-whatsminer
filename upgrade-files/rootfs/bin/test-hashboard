@@ -1,9 +1,41 @@
 #!/bin/sh
+#
+# Usages:
+#
+# 1. test-hashboard             (Default device: /dev/ttyS2)
+# 2. test-hashboard /dev/ttyS3
+#
 
 if [ "$1" = "" ]; then
-    dev="/dev/ttyS2"
+    DEV="/dev/ttyS2"
 else
-    dev=$1
+    DEV=$1
 fi
 
-/bin/bitmicro-test $dev 1000000 1 1 send_golden_work_to_all 38 100 38 90 192 450 1000000 1 1 38 6000 70 1 50
+#
+# Detect chip number according to hash board type
+#
+if [ -f /sys/class/hwmon/hwmon0/name ]; then
+    name0=`cat /sys/class/hwmon/hwmon0/name`
+fi
+if [ -f /sys/class/hwmon/hwmon2/name ]; then
+    name2=`cat /sys/class/hwmon/hwmon2/name`
+fi
+if [ -f /sys/class/hwmon/hwmon4/name ]; then
+    name4=`cat /sys/class/hwmon/hwmon4/name`
+fi
+
+if [ "$name0" = "lm75" -o "$name2" = "lm75" -o "$name4" = "lm75" ]; then
+    CHIP_NUM=38
+else
+    CHIP_NUM=66
+fi
+
+#
+# Command usage:
+#
+# bitmicro-test <device> <baud> <times> <progress> <command>
+#               <chip_num> <core_num> <pass_chips> <pass_cores> <start_freq> <target_freq> <upfreq_interval>
+#               <broadcast> <start_chipid> <end_chipid> <fan_speed> <temp_limit> <need_cool> <temp_cool>
+
+/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work_to_all $CHIP_NUM 100 $CHIP_NUM 90 192 192 1000000 1 1 $CHIP_NUM 6000 50 1 50

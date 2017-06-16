@@ -18,18 +18,6 @@ if [ ! -f /tmp/cgminer-ntpd-done ]; then
     exit 0;
 fi
 
-#
-# Skip cgminer init state
-#
-if [ ! -f /tmp/cgminer-monitor-skipped1 ]; then
-    touch /tmp/cgminer-monitor-skipped1
-    exit 0;
-fi
-if [ ! -f /tmp/cgminer-monitor-skipped2 ]; then
-    touch /tmp/cgminer-monitor-skipped2
-    exit 0;
-fi
-
 # For events logging
 mkdir -p /root/.events
 
@@ -52,35 +40,6 @@ if [ $cpu_ratio -eq 0 ]; then
         exit 0;
     fi
 fi
-
-#
-# cgminer active, check MHS
-#
-if [ -f /etc/cgminer_monitor_threshold_high ]; then
-    MHS_T_H=`cat /etc/cgminer_monitor_threshold_high`
-else
-    MHS_T_H=2400000
-fi
-if [ -f /etc/cgminer_monitor_threshold_low ]; then
-    MHS_T_L=`cat /etc/cgminer_monitor_threshold_low`
-else
-    MHS_T_L=1500000
-fi
-
-find_field() {
-    OLD_IFS="$IFS" 
-    IFS="," 
-    for s in $1
-    do 
-        v=`echo "$s" | grep "$2"`
-        if [ "$v" != "" ]; then
-            IFS="$OLD_IFS"
-            echo "$v"
-        fi
-    done
-    IFS="$OLD_IFS"
-    echo ""
-}
 
 reset_board0() {
     echo 960 > /sys/class/gpio/export
@@ -124,6 +83,79 @@ reset_board_by_slot_id() {
         touch /tmp/cgminer-reset-board2
     fi
 }
+
+find_field() {
+    OLD_IFS="$IFS" 
+    IFS="," 
+    for s in $1
+    do 
+        v=`echo "$s" | grep "$2"`
+        if [ "$v" != "" ]; then
+            IFS="$OLD_IFS"
+            echo "$v"
+            break
+        fi
+    done
+    IFS="$OLD_IFS"
+    echo ""
+}
+
+#
+# Make sure cgminer upfreq completed
+#
+cgminer_api_estats=`/usr/bin/cgminer-api -o estats`
+if [ "$?" != "0" ]; then
+    exit 0;
+fi
+STATUS=`echo $cgminer_api_estats | cut -d "|" -f1`
+SM0=`echo $cgminer_api_estats | cut -d "|" -f2`
+SM1=`echo $cgminer_api_estats | cut -d "|" -f3`
+SM2=`echo $cgminer_api_estats | cut -d "|" -f4`
+
+sm0_upfreq_complete=`find_field "$SM0" "upfreq_complete"`
+sm1_upfreq_complete=`find_field "$SM1" "upfreq_complete"`
+sm2_upfreq_complete=`find_field "$SM2" "upfreq_complete"`
+
+upfreq_complete_0=`echo $sm0_upfreq_complete | cut -d "=" -f2`
+upfreq_complete_1=`echo $sm1_upfreq_complete | cut -d "=" -f2`
+upfreq_complete_2=`echo $sm2_upfreq_complete | cut -d "=" -f2`
+
+# Skip checking empty slot
+if [ "$upfreq_complete_0" = "" ]; then
+    upfreq_complete_0=1
+fi
+if [ "$upfreq_complete_1" = "" ]; then
+    upfreq_complete_1=1
+fi
+if [ "$upfreq_complete_2" = "" ]; then
+    upfreq_complete_2=1
+fi
+
+if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
+    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
+    exit 0;
+else
+    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
+        # To make sure MHS stable, skip one time after upfreq completed
+        logger "cgminer-monitor: cgminer upfreq completed"
+        touch /tmp/cgminer-upfreq-completed
+        exit 0;
+    fi
+fi
+
+#
+# cgminer active, check MHS
+#
+if [ -f /etc/cgminer_monitor_threshold_high ]; then
+    MHS_T_H=`cat /etc/cgminer_monitor_threshold_high`
+else
+    MHS_T_H=2400000
+fi
+if [ -f /etc/cgminer_monitor_threshold_low ]; then
+    MHS_T_L=`cat /etc/cgminer_monitor_threshold_low`
+else
+    MHS_T_L=1500000
+fi
 
 # API edevs
 cgminer_api_edevs=`/usr/bin/cgminer-api -o edevs`

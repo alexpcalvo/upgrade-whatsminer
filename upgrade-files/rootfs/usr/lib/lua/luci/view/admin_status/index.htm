@@ -652,7 +652,7 @@
 
 	<table width="100%" cellspacing="10">
 		<tr><td width="33%"><%:Model%></td><td><%=pcdata(ver.minermodel)%></td></tr>
-        <tr><td width="33%"><%:Hostname%></td><td><%=luci.sys.hostname()%><%="  "%><%=pcdata(ver.hardwareversion)%></td></tr>
+        <tr><td width="33%"><%:Hostname%></td><td><%=pcdata(ver.hardwareversion)%></td></tr>
 		<tr><td width="33%"><%:Firmware Version%></td><td><%=pcdata(ver.firmwareversion)%></td></tr>
 		<tr><td width="33%"><%:Kernel Version%></td><td><%=unameinfo.version or "?"%></td></tr>
 		<tr><td width="33%"><%:CGMiner Version%></td><td><%=pcdata(ver.cgminerversion)%></td></tr>

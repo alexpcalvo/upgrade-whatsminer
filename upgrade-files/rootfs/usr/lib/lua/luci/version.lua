@@ -22,10 +22,10 @@ else
 end
 
 if pcall(dofile, "/etc/microbt_release") then
-	if _G.MINER_NAME and _G.MODEL_NAME then
-		minermodel = _G.MINER_NAME .. " " .. _G.MODEL_NAME
+	if _G.MINER_NAME then
+		minername = _G.MINER_NAME
 	else
-		minermodel = "unknown"
+		minername = "unknown"
 	end
 	if _G.FIRMWARE_VERSION then
 		firmwareversion = _G.FIRMWARE_VERSION
@@ -33,7 +33,7 @@ if pcall(dofile, "/etc/microbt_release") then
 		firmwareversion = "unknown"
 	end
 else
-	minermodel    = "unknown"
+	minername = "unknown"
 	firmwareversion = "unknown"
 end
 
@@ -67,6 +67,7 @@ end
 
 -- Detect hash board type
 
+modelname = "unknown"
 hashboardtype = "HB-unknown"
 
 local sensor_tmp421 = "tmp421"
@@ -83,6 +84,7 @@ name2 = string.match(name2, sensor_tmp421)
 
 if name0 == sensor_tmp421 or name1 == sensor_tmp421 or name2 == sensor_tmp421 then
 	hashboardtype = "HB12"
+    modelname = "M100"
 else
 	name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
 	name1 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
@@ -94,6 +96,7 @@ else
 
 	if name0 == sensor_tmp423 or name1 == sensor_tmp423 or name2 == sensor_tmp423 then
 		hashboardtype = "HB10"
+        modelname = "M100"
     else
 	    name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
 	    name1 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
@@ -105,11 +108,13 @@ else
 
 	    if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
 		   hashboardtype = "ALB10"
+           modelname = "M110"
 	    end
 	end
 end
 
-hardwareversion = _G.MODEL_NAME .. "." .. hashboardtype .. "." .. controlboardtype
+minermodel = minername .. " " .. modelname
+hardwareversion = modelname .. "." .. hashboardtype .. "." .. controlboardtype
 
 luciname    = "LuCI Master"
 luciversion = "git-16.336.70424-1fd43b4"

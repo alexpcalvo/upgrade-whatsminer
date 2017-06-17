@@ -8,12 +8,12 @@ if [ "$cpuinfo" != "" ]; then
 	memsize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
 
     if [ $memsize -le 262144 ]; then
-        host_type="CB12"
+        control_board="CB12"
     else
-        host_type="CB10"
+        control_board="CB10"
     fi
 else
-    host_type="unknown"
+    control_board="unknown"
 fi
 
 # Detect device (hash board) type
@@ -23,32 +23,38 @@ name1=`cat /sys/class/hwmon/hwmon1/name`
 name2=`cat /sys/class/hwmon/hwmon2/name`
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
-    device_type="HB12"
+    hash_board="HB12"
 else
     name0=`cat /sys/class/hwmon/hwmon0/name`
     name1=`cat /sys/class/hwmon/hwmon2/name`
     name2=`cat /sys/class/hwmon/hwmon4/name`
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
-        device_type="HB10"
+        hash_board="HB10"
     elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-        device_type="ALB10"
+        hash_board="ALB10"
     else
-        device_type="unknown"
+        hash_board="unknown"
     fi
 fi
 
-#echo "Detecting machine type: host_type=$host_type, device_type=$device_type"
+#echo "Detecting machine type: control_board=$control_board, hash_board=$hash_board"
 
-device_type="ALB10"
-
-if [ "$host_type" != "CB12" -o "$device_type" != "ALB10" ]; then
+if [ "$control_board" = "unknown" -o "$hash_board" = "unknown" ]; then
     echo "*********************************************************************"
-    echo "Detected: control_board=$host_type, hash_board=$device_type."
-    echo "Machine type mismatched, quit the upgrade process."
+    echo "Detected: control_board=$control_board, hash_board=$hash_board."
+    echo "Unknown type, quit the upgrade process."
     echo "*********************************************************************"
     exit 0
 fi
+
+#if [ "$control_board" != "CB12" -o "$hash_board" != "ALB10" ]; then
+#    echo "*********************************************************************"
+#    echo "Detected: control_board=$control_board, hash_board=$hash_board."
+#    echo "Machine type mismatched, quit the upgrade process."
+#    echo "*********************************************************************"
+#    exit 0
+#fi
 
 #
 # Kill services
@@ -62,59 +68,82 @@ killall -9 cgminer >/dev/null 2>&1
 # Verify and upgrade /tmp/upgrade-files/bin/*
 #
 
-# boot.bin (mtd1)
-if [ -f /tmp/upgrade-files/bin/boot.bin ]; then
+# Detected files
+if [ "$control_board" = "CB12" ]; then
+    BOOTFILE="BOOT-ZYNQ12"
+else
+    BOOTFILE="BOOT-ZYNQ10"
+fi
+
+if [ "$hash_board" = "ALB10" ]; then
+    CGMINERFILE="cgminer.alb10"
+    CGMINERDEFAULTFILE="cgminer.default.alb10"
+    ETCBOOTFILE="boot.alb"
+fi
+if [ "$hash_board" = "HB12" ]; then
+    CGMINERFILE="cgminer.hash12"
+    CGMINERDEFAULTFILE="cgminer.default.hash12"
+    ETCBOOTFILE="boot.fr4"
+fi
+if [ "$hash_board" = "HB10" ]; then
+    CGMINERFILE="cgminer.hash10"
+    CGMINERDEFAULTFILE="cgminer.default.hash10"
+    ETCBOOTFILE="boot.fr4"
+fi
+
+# boot (mtd1)
+if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
     # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/boot.bin /dev/mtd1 2>/tmp/.mtd-verify-stderr.txt
+    mtd verify /tmp/upgrade-files/bin/$BOOTFILE.bin /dev/mtd1 2>/tmp/.mtd-verify-stderr.txt
     result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
     if [ "$result_success" != "Success" ]; then
         # Require to upgrade.
         # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/boot.bin | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/boot.md5 | awk '{print $1}'`
+        md5v1=`md5sum /tmp/upgrade-files/bin/$BOOTFILE.bin | awk '{print $1}'`
+        md5v2=`cat /tmp/upgrade-files/bin/$BOOTFILE.bin | awk '{print $1}'`
         if [ "$md5v1" = "$md5v2" ]; then
             # upgrade to mtd
             echo "Upgrading boot.bin to /dev/mtd1"
             mtd erase /dev/mtd1
-            mtd write /tmp/upgrade-files/bin/boot.bin /dev/mtd1
+            dd if=/tmp/upgrade-files/bin/$BOOTFILE.bin of=/dev/mtdblock1
         fi
     fi
 fi
 
-# kernel.bin (mtd4)
-if [ -f /tmp/upgrade-files/bin/kernel.bin ]; then
+# kernel (mtd4)
+if [ -f /tmp/upgrade-files/bin/uImage ]; then
     # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/kernel.bin /dev/mtd4 2>/tmp/.mtd-verify-stderr.txt
+    mtd verify /tmp/upgrade-files/bin/uImage /dev/mtd4 2>/tmp/.mtd-verify-stderr.txt
     result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
     if [ "$result_success" != "Success" ]; then
         # Require to upgrade.
         # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/kernel.bin | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/kernel.md5 | awk '{print $1}'`
+        md5v1=`md5sum /tmp/upgrade-files/bin/uImage | awk '{print $1}'`
+        md5v2=`cat /tmp/upgrade-files/bin/uImage.md5 | awk '{print $1}'`
         if [ "$md5v1" = "$md5v2" ]; then
             # upgrade to mtd
             echo "Upgrading kernel.bin to /dev/mtd4"
             mtd erase /dev/mtd4
-            mtd write /tmp/upgrade-files/bin/kernel.bin /dev/mtd4
+            dd if=/tmp/upgrade-files/bin/uImage of=/dev/mtdblock4
         fi
     fi
 fi
 
-# devicetree.bin (mtd5)
-if [ -f /tmp/upgrade-files/bin/devicetree.bin ]; then
+# devicetree (mtd5)
+if [ -f /tmp/upgrade-files/bin/devicetree.dtb ]; then
     # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/devicetree.bin /dev/mtd5 2>/tmp/.mtd-verify-stderr.txt
+    mtd verify /tmp/upgrade-files/bin/devicetree.dtb /dev/mtd5 2>/tmp/.mtd-verify-stderr.txt
     result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
     if [ "$result_success" != "Success" ]; then
         # Require to upgrade.
         # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/devicetree.bin | awk '{print $1}'`
+        md5v1=`md5sum /tmp/upgrade-files/bin/devicetree.dtb | awk '{print $1}'`
         md5v2=`cat /tmp/upgrade-files/bin/devicetree.md5 | awk '{print $1}'`
         if [ "$md5v1" = "$md5v2" ]; then
             # upgrade to mtd
             echo "Upgrading devicetree.bin to /dev/mtd5"
             mtd erase /dev/mtd5
-            mtd write /tmp/upgrade-files/bin/devicetree.bin /dev/mtd5
+            dd if=/tmp/upgrade-files/bin/devicetree.dtb of=/dev/mtdblock5
         fi
     fi
 fi
@@ -146,14 +175,6 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/network.default ]; then
     chmod 644 /etc/config/network.default
     cp -f /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default
     chmod 444 /etc/config/network.default # readonly
-fi
-
-# /etc/config/cgminer.default
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default ]; then
-    echo "Upgrading /etc/config/cgminer.default"
-    chmod 644 /etc/config/cgminer.default
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default /etc/config/cgminer.default
-    chmod 444 /etc/config/cgminer.default # readonly
 fi
 
 # /etc/config/pools.default
@@ -205,25 +226,33 @@ if [ ! -f /etc/config/pools ]; then
 fi
 
 # Upgrade /etc/config/cgminer after updating pools
+
 # /etc/config/cgminer
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer ]; then
-    echo "Upgrading /etc/config/cgminer"
+if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
+    echo "Upgrading from $CGMINERFILE to /etc/config/cgminer"
     chmod 644 /etc/config/cgminer
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer /etc/config/cgminer
+    cp -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE /etc/config/cgminer
     chmod 444 /etc/config/cgminer # readonly
+fi
+# /etc/config/cgminer.default
+if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
+    echo "Upgrading from $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
+    chmod 644 /etc/config/cgminer.default
+    cp -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE /etc/config/cgminer.default
+    chmod 444 /etc/config/cgminer.default # readonly
+fi
+
+# /etc/init.d/boot
+if [ -f /tmp/upgrade-files/rootfs/etc/init.d/$ETCBOOTFILE ]; then
+    echo "Upgrading from $ETCBOOTFILE /etc/init.d/boot"
+    cp -f /tmp/upgrade-files/rootfs/etc/init.d/$ETCBOOTFILE /etc/init.d/boot
+    chmod 755 /etc/init.d/boot
 fi
 
 # /etc/crontabs/root
 if [ -f /tmp/upgrade-files/rootfs/etc/crontabs/root ]; then
     echo "Upgrading /etc/crontabs/root"
     cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/
-fi
-
-# /etc/init.d/boot
-if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
-    echo "Upgrading /etc/init.d/boot"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
-    chmod 755 /etc/init.d/boot
 fi
 
 # /etc/init.d/cgminer

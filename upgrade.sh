@@ -38,17 +38,16 @@ else
     fi
 fi
 
-#echo "Detecting machine type: control_board=$control_board, hash_board=$hash_board"
+echo "Detected machine type: control_board=$control_board, hash_board=$hash_board"
 
 if [ "$control_board" = "unknown" -o "$hash_board" = "unknown" ]; then
     echo "*********************************************************************"
-    echo "Detected: control_board=$control_board, hash_board=$hash_board."
-    echo "Unknown type, quit the upgrade process."
+    echo "Unknown machine type, quit the upgrade process."
     echo "*********************************************************************"
     exit 0
 fi
 
-#if [ "$control_board" != "CB12" -o "$hash_board" != "ALB10" ]; then
+#if [ "$control_board" != "CB12" -o "$hash_board" != "HB12" ]; then
 #    echo "*********************************************************************"
 #    echo "Detected: control_board=$control_board, hash_board=$hash_board."
 #    echo "Machine type mismatched, quit the upgrade process."
@@ -78,17 +77,14 @@ fi
 if [ "$hash_board" = "ALB10" ]; then
     CGMINERFILE="cgminer.alb10"
     CGMINERDEFAULTFILE="cgminer.default.alb10"
-    ETCBOOTFILE="boot.alb"
 fi
 if [ "$hash_board" = "HB12" ]; then
     CGMINERFILE="cgminer.hash12"
     CGMINERDEFAULTFILE="cgminer.default.hash12"
-    ETCBOOTFILE="boot.fr4"
 fi
 if [ "$hash_board" = "HB10" ]; then
     CGMINERFILE="cgminer.hash10"
     CGMINERDEFAULTFILE="cgminer.default.hash10"
-    ETCBOOTFILE="boot.fr4"
 fi
 
 # boot (mtd1)
@@ -243,9 +239,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
 fi
 
 # /etc/init.d/boot
-if [ -f /tmp/upgrade-files/rootfs/etc/init.d/$ETCBOOTFILE ]; then
-    echo "Upgrading from $ETCBOOTFILE /etc/init.d/boot"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/$ETCBOOTFILE /etc/init.d/boot
+if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
+    echo "Upgrading /etc/init.d/boot"
+    cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
     chmod 755 /etc/init.d/boot
 fi
 

@@ -45,9 +45,10 @@ start() {
 	config_load cgminer
 	config_get _temperature_limit default temperature_limit
 	config_get _fan_speed_limit default fan_speed_limit
-	config_get _voltage_limit default voltage_limit
-	config_get _rated_power_limit default rated_power_limit
-	config_get _chip_freq_init default chip_freq_init
+	config_get _voltage_limit_low default voltage_limit_low
+	config_get _voltage_limit_high default voltage_limit_high
+	config_get _chip_freq_limit_low default chip_freq_limit_low
+	config_get _chip_freq_limit_high default chip_freq_limit_high
 	config_get _work_interval default work_interval
 	config_get _temp_chips default temp_chips
 	config_get _temp_sensors_per_chip default temp_sensors_per_chip
@@ -91,8 +92,8 @@ start() {
             API_NETWORK=""
 	fi 
 
-	CHIP_OPTIONS="$_bitmicro_options:$_chip_freq_init:$_work_interval"
-	LIMIT_OPTIONS="$_temperature_limit:$_fan_speed_limit:$_voltage_limit:$_rated_power_limit"
+	CHIP_OPTIONS="$_bitmicro_options:$_chip_freq_limit_low:$_chip_freq_limit_high:$_work_interval"
+	LIMIT_OPTIONS="$_temperature_limit:$_fan_speed_limit:$_voltage_limit_low:$_voltage_limit_high"
 	TEMP_SENSOR_OPTIONS="$_temp_chips:$_temp_sensors_per_chip"
 	UPFREQ_OPTIONS="$_upfreq_pass_cores_percent:$_upfreq_pass_chips_percent"
 	PRE_HEAT_OPTIONS="$_pre_heat_temp:$_pre_heat_end_freq:$_pre_heat_timeout"

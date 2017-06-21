@@ -96,10 +96,10 @@ if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
         # Require to upgrade.
         # First check the md5.
         md5v1=`md5sum /tmp/upgrade-files/bin/$BOOTFILE.bin | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/$BOOTFILE.bin | awk '{print $1}'`
+        md5v2=`cat /tmp/upgrade-files/bin/$BOOTFILE.md5 | awk '{print $1}'`
         if [ "$md5v1" = "$md5v2" ]; then
             # upgrade to mtd
-            echo "Upgrading boot.bin to /dev/mtd1"
+            echo "Upgrading $BOOTFILE.bin to /dev/mtd1"
             mtd erase /dev/mtd1
             dd if=/tmp/upgrade-files/bin/$BOOTFILE.bin of=/dev/mtdblock1
         fi

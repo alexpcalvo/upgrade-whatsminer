@@ -47,6 +47,7 @@ start() {
 	config_get _fan_speed_limit default fan_speed_limit
 	config_get _voltage_limit_low default voltage_limit_low
 	config_get _voltage_limit_high default voltage_limit_high
+	config_get _chip_test_start_freq default chip_test_start_freq
 	config_get _chip_freq_limit_low default chip_freq_limit_low
 	config_get _chip_freq_limit_high default chip_freq_limit_high
 	config_get _work_interval default work_interval
@@ -92,7 +93,7 @@ start() {
             API_NETWORK=""
 	fi 
 
-	CHIP_OPTIONS="$_bitmicro_options:$_chip_freq_limit_low:$_chip_freq_limit_high:$_work_interval"
+	CHIP_OPTIONS="$_bitmicro_options:$_chip_test_start_freq:$_chip_freq_limit_low:$_chip_freq_limit_high:$_work_interval"
 	LIMIT_OPTIONS="$_temperature_limit:$_fan_speed_limit:$_voltage_limit_low:$_voltage_limit_high"
 	TEMP_SENSOR_OPTIONS="$_temp_chips:$_temp_sensors_per_chip"
 	UPFREQ_OPTIONS="$_upfreq_pass_cores_percent:$_upfreq_pass_chips_percent"

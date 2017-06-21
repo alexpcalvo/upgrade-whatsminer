@@ -4,6 +4,15 @@
 START=10
 STOP=98
 
+init_led() {
+    echo 943 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio943/direction
+    echo 944 > /sys/class/gpio/export
+    echo out > /sys/class/gpio/gpio944/direction
+    echo 0 > /sys/class/gpio/gpio943/value
+    echo 1 > /sys/class/gpio/gpio944/value
+}
+
 set_tty_directions() {
     echo 960 > /sys/class/gpio/export
     echo out > /sys/class/gpio/gpio960/direction
@@ -11,10 +20,6 @@ set_tty_directions() {
     echo out > /sys/class/gpio/gpio962/direction
     echo 964 > /sys/class/gpio/export
     echo out > /sys/class/gpio/gpio964/direction
-    echo 943 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio943/direction
-    echo 944 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio944/direction
 }
 
 set_plug_directions() {
@@ -73,6 +78,7 @@ boot() {
 	uci_apply_defaults
 	set_tty_directions
 	set_plug_directions
+    init_led
 
 	# temporary hack until configd exists
 	/sbin/reload_config

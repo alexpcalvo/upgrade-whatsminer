@@ -38,4 +38,4 @@ fi
 #               <chip_num> <core_num> <pass_chips> <pass_cores> <start_freq> <target_freq> <upfreq_interval>
 #               <broadcast> <start_chipid> <end_chipid> <fan_speed> <temp_limit> <need_cool> <temp_cool>
 
-/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work_to_all $CHIP_NUM 100 $CHIP_NUM 90 192 192 1000000 1 1 $CHIP_NUM 6000 50 1 50
+/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work_to_all $CHIP_NUM 100 $CHIP_NUM 90 192 450 1000000 1 1 $CHIP_NUM 4500 70 1 50

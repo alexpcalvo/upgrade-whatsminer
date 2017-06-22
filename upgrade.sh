@@ -101,7 +101,7 @@ if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
             # upgrade to mtd
             echo "Upgrading $BOOTFILE.bin to /dev/mtd1"
             mtd erase /dev/mtd1
-            dd if=/tmp/upgrade-files/bin/$BOOTFILE.bin of=/dev/mtdblock1
+            mtd write /tmp/upgrade-files/bin/$BOOTFILE.bin /dev/mtd1
         fi
     fi
 fi
@@ -120,7 +120,7 @@ if [ -f /tmp/upgrade-files/bin/uImage ]; then
             # upgrade to mtd
             echo "Upgrading kernel.bin to /dev/mtd4"
             mtd erase /dev/mtd4
-            dd if=/tmp/upgrade-files/bin/uImage of=/dev/mtdblock4
+            mtd write /tmp/upgrade-files/bin/uImage /dev/mtd4
         fi
     fi
 fi
@@ -139,7 +139,7 @@ if [ -f /tmp/upgrade-files/bin/devicetree.dtb ]; then
             # upgrade to mtd
             echo "Upgrading devicetree.bin to /dev/mtd5"
             mtd erase /dev/mtd5
-            dd if=/tmp/upgrade-files/bin/devicetree.dtb of=/dev/mtdblock5
+            mtd write /tmp/upgrade-files/bin/devicetree.dtb /dev/mtd5
         fi
     fi
 fi

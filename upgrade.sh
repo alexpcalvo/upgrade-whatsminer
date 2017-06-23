@@ -223,19 +223,70 @@ fi
 
 # Upgrade /etc/config/cgminer after updating pools
 
-# /etc/config/cgminer
-if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
-    echo "Upgrading from $CGMINERFILE to /etc/config/cgminer"
-    chmod 644 /etc/config/cgminer
-    cp -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE /etc/config/cgminer
-    chmod 444 /etc/config/cgminer # readonly
+# /etc/config/cgminer.alb10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 ]; then
+    echo "Upgrading cgminer.alb10 to /etc/config/cgminer.alb10"
+    chmod 644 /etc/config/cgminer.alb10
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10
+    chmod 444 /etc/config/cgminer.alb10 # readonly
 fi
-# /etc/config/cgminer.default
+# /etc/config/cgminer.default.alb10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 ]; then
+    echo "Upgrading cgminer.default.alb10 to /etc/config/cgminer.default.alb10"
+    chmod 644 /etc/config/cgminer.default.alb10
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10
+    chmod 444 /etc/config/cgminer.default.alb10 # readonly
+fi
+
+# /etc/config/cgminer.hash12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 ]; then
+    echo "Upgrading cgminer.hash12 to /etc/config/cgminer.hash12"
+    chmod 644 /etc/config/cgminer.hash12
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12
+    chmod 444 /etc/config/cgminer.hash12 # readonly
+fi
+# /etc/config/cgminer.default.hash12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 ]; then
+    echo "Upgrading cgminer.default.hash12 to /etc/config/cgminer.default.hash12"
+    chmod 644 /etc/config/cgminer.default.hash12
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12
+    chmod 444 /etc/config/cgminer.default.hash12 # readonly
+fi
+
+# /etc/config/cgminer.hash10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 ]; then
+    echo "Upgrading cgminer.hash10 to /etc/config/cgminer.hash10"
+    chmod 644 /etc/config/cgminer.hash10
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10
+    chmod 444 /etc/config/cgminer.hash10 # readonly
+fi
+# /etc/config/cgminer.default.hash10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 ]; then
+    echo "Upgrading cgminer.default.hash10 to /etc/config/cgminer.default.hash10"
+    chmod 644 /etc/config/cgminer.default.hash10
+    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10
+    chmod 444 /etc/config/cgminer.default.hash10 # readonly
+fi
+
+# Link /etc/config/cgminer
+if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
+    echo "Link $CGMINERFILE to /etc/config/cgminer"
+    cd /etc/config/
+    chmod 644 cgminer
+    rm -f cgminer
+    ln -s $CGMINERFILE cgminer
+    chmod 444 cgminer # readonly
+    cd -
+fi
+# Link /etc/config/cgminer.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
-    echo "Upgrading from $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
-    chmod 644 /etc/config/cgminer.default
-    cp -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE /etc/config/cgminer.default
-    chmod 444 /etc/config/cgminer.default # readonly
+    echo "Link $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
+    cd /etc/config/
+    chmod 644 cgminer.default
+    rm -f cgminer.default
+    ln -s $CGMINERDEFAULTFILE cgminer.default
+    chmod 444 cgminer.default # readonly
+    cd -
 fi
 
 # /etc/init.d/boot

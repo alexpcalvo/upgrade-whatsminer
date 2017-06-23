@@ -1,0 +1,84 @@
+#!/bin/sh /etc/rc.common
+
+START=80
+STOP=20
+
+start() {
+    # Detect hash board type
+    if [ -f /sys/class/hwmon/hwmon0/name ]; then
+        name0=`cat /sys/class/hwmon/hwmon0/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon1/name ]; then
+        name1=`cat /sys/class/hwmon/hwmon1/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon2/name ]; then
+        name2=`cat /sys/class/hwmon/hwmon2/name`
+    fi
+
+    if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
+        hash_board="HB12"
+    else
+        if [ -f /sys/class/hwmon/hwmon0/name ]; then
+            name0=`cat /sys/class/hwmon/hwmon0/name`
+        fi
+        if [ -f /sys/class/hwmon/hwmon2/name ]; then
+            name1=`cat /sys/class/hwmon/hwmon2/name`
+        fi
+        if [ -f /sys/class/hwmon/hwmon4/name ]; then
+            name2=`cat /sys/class/hwmon/hwmon4/name`
+        fi
+
+        if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
+            hash_board="HB10"
+        elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
+            hash_board="ALB10"
+        else
+            hash_board="unknown"
+        fi
+    fi
+
+    logger "detect-cgminer-config: hash_board=$hash_board"
+
+    if [ "$hash_board" = "unknown" ]; then
+        exit 1;
+    fi
+
+    # Start linking files ...
+    if [ "$hash_board" = "ALB10" ]; then
+        CGMINERFILE="cgminer.alb10"
+        CGMINERDEFAULTFILE="cgminer.default.alb10"
+    fi
+    if [ "$hash_board" = "HB12" ]; then
+        CGMINERFILE="cgminer.hash12"
+        CGMINERDEFAULTFILE="cgminer.default.hash12"
+    fi
+    if [ "$hash_board" = "HB10" ]; then
+        CGMINERFILE="cgminer.hash10"
+        CGMINERDEFAULTFILE="cgminer.default.hash10"
+    fi
+
+    if [ -f /etc/config/$CGMINERFILE ]; then
+        DIFF=`cmp /etc/config/$CGMINERFILE /etc/config/cgminer`
+        if [ ! -f /etc/config/cgminer -o "$DIFF" != "" ]; then
+            cd /etc/config/
+            rm -f cgminer
+            ln -s $CGMINERFILE cgminer
+            cd -
+            logger "detect-cgminer-config: linking /etc/config/cgminer to /etc/config/$CGMINERFILE"
+        else
+            logger "detect-cgminer-config: /etc/config/cgminer remains unchanged"
+        fi
+    fi
+    if [ -f /etc/config/$CGMINERDEFAULTFILE ]; then
+        DIFF=`cmp /etc/config/$CGMINERDEFAULTFILE /etc/config/cgminer.default`
+        if [ ! -f /etc/config/cgminer.default -o "$DIFF" != "" ]; then
+            cd /etc/config/
+            rm -f cgminer.default
+            ln -s $CGMINERDEFAULTFILE cgminer.default
+            cd -
+            logger "detect-cgminer-config: linking /etc/config/cgminer.default to /etc/config/$CGMINERDEFAULTFILE"
+        else
+            logger "detect-cgminer-config: /etc/config/cgminer.default remains unchanged"
+        fi
+    fi
+}

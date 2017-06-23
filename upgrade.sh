@@ -18,16 +18,28 @@ fi
 
 # Detect device (hash board) type
 
-name0=`cat /sys/class/hwmon/hwmon0/name`
-name1=`cat /sys/class/hwmon/hwmon1/name`
-name2=`cat /sys/class/hwmon/hwmon2/name`
+if [ -f /sys/class/hwmon/hwmon0/name ]; then
+    name0=`cat /sys/class/hwmon/hwmon0/name`
+fi
+if [ -f /sys/class/hwmon/hwmon1/name ]; then
+    name1=`cat /sys/class/hwmon/hwmon1/name`
+fi
+if [ -f /sys/class/hwmon/hwmon2/name ]; then
+    name2=`cat /sys/class/hwmon/hwmon2/name`
+fi
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
     hash_board="HB12"
 else
-    name0=`cat /sys/class/hwmon/hwmon0/name`
-    name1=`cat /sys/class/hwmon/hwmon2/name`
-    name2=`cat /sys/class/hwmon/hwmon4/name`
+    if [ -f /sys/class/hwmon/hwmon0/name ]; then
+        name0=`cat /sys/class/hwmon/hwmon0/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon2/name ]; then
+        name1=`cat /sys/class/hwmon/hwmon2/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon4/name ]; then
+        name2=`cat /sys/class/hwmon/hwmon4/name`
+    fi
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
         hash_board="HB10"
@@ -294,6 +306,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
     echo "Upgrading /etc/init.d/boot"
     cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
     chmod 755 /etc/init.d/boot
+fi
+
+# /etc/init.d/detect-cgminer-config
+if [ -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config ]; then
+    echo "Upgrading /etc/init.d/detect-cgminer-config"
+    cp -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config
+    chmod 755 /etc/init.d/detect-cgminer-config
+    cd /etc/rc.d/
+    ln -s ../init.d/detect-cgminer-config S80detect-cgminer-config >/dev/null 2>&1
+    cd -
 fi
 
 # /etc/crontabs/root

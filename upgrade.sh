@@ -1,9 +1,10 @@
 #!/bin/sh
+#
+# Upgrade script.
+#
 
-# Detect host (control board) type                                  
-                                                                    
+# Detect control board type
 cpuinfo=`cat /proc/cpuinfo | grep "Xilinx Zynq Platform"`
-
 if [ "$cpuinfo" != "" ]; then
 	memsize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
 
@@ -16,8 +17,7 @@ else
     control_board="unknown"
 fi
 
-# Detect device (hash board) type
-
+# Detect hash board type
 if [ -f /sys/class/hwmon/hwmon0/name ]; then
     name0=`cat /sys/class/hwmon/hwmon0/name`
 fi
@@ -52,20 +52,33 @@ fi
 
 echo "Detected machine type: control_board=$control_board, hash_board=$hash_board"
 
-if [ "$control_board" = "unknown" -o "$hash_board" = "unknown" ]; then
+if [ "$control_board" = "unknown" ]; then
     echo "*********************************************************************"
-    echo "Unknown machine type, quit the upgrade process."
+    echo "Unknown control board, quit the upgrade process."
     echo "*********************************************************************"
     exit 0
 fi
 
-#if [ "$control_board" != "CB12" -o "$hash_board" != "HB12" ]; then
-#    echo "*********************************************************************"
-#    echo "Detected: control_board=$control_board, hash_board=$hash_board."
-#    echo "Machine type mismatched, quit the upgrade process."
-#    echo "*********************************************************************"
-#    exit 0
-#fi
+if [ "$hash_board" = "unknown" ]; then
+    echo "Unknown hash board, assume hash_board=ALB10."
+    hash_board="ALB10"
+fi
+
+# Compare two files.
+# Return 'no' if these two files are the same,
+# else return 'yes'.
+diff_files() {
+    if [ ! -f $1 -o ! -f $2 ]; then
+        echo "yes"
+    else
+        DIFF=`cmp $1 $2`
+        if [ "$DIFF" = "" ]; then
+            echo "no"
+        else
+            echo "yes"
+        fi
+    fi
+}
 
 #
 # Kill services
@@ -159,38 +172,48 @@ fi
 #
 # Verify and upgrade /tmp/upgrade-files/rootfs/*
 #
-echo ""
-echo "Upgrading rootfs"
 
 # /etc/microbt_release
 if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
-    echo "Upgrading /etc/microbt_release"
-    chmod 644 /etc/microbt_release
-    cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
-    chmod 444 /etc/microbt_release # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/microbt_release"
+        chmod 644 /etc/microbt_release
+        cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
+        chmod 444 /etc/microbt_release # readonly
+    fi
 fi
 # /etc/cgminer_version
 if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
-    echo "Upgrading /etc/cgminer_version"
-    chmod 644 /etc/cgminer_version
-    cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
-    chmod 444 /etc/cgminer_version # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/cgminer_version`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/cgminer_version"
+        chmod 644 /etc/cgminer_version
+        cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
+        chmod 444 /etc/cgminer_version # readonly
+    fi
 fi
 
 # /etc/config/network.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/network.default ]; then
-    echo "Upgrading /etc/config/network.default"
-    chmod 644 /etc/config/network.default
-    cp -f /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default
-    chmod 444 /etc/config/network.default # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/network.default"
+        chmod 644 /etc/config/network.default
+        cp -f /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default
+        chmod 444 /etc/config/network.default # readonly
+    fi
 fi
 
 # /etc/config/pools.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/pools.default ]; then
-    echo "Upgrading /etc/config/pools.default"
-    chmod 644 /etc/config/pools.default >/dev/null 2>&1
-    cp -f /tmp/upgrade-files/rootfs/etc/config/pools.default /etc/config/pools.default
-    chmod 444 /etc/config/pools.default # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/pools.default /etc/config/pools.default`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/pools.default"
+        chmod 644 /etc/config/pools.default >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/pools.default /etc/config/pools.default
+        chmod 444 /etc/config/pools.default # readonly
+    fi
 fi
 
 # /etc/config/pools
@@ -237,224 +260,318 @@ fi
 
 # /etc/config/cgminer.alb10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 ]; then
-    echo "Upgrading cgminer.alb10 to /etc/config/cgminer.alb10"
-    chmod 644 /etc/config/cgminer.alb10
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10
-    chmod 444 /etc/config/cgminer.alb10 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.alb10 to /etc/config/cgminer.alb10"
+        chmod 644 /etc/config/cgminer.alb10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10
+        chmod 444 /etc/config/cgminer.alb10 # readonly
+    fi
 fi
 # /etc/config/cgminer.default.alb10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 ]; then
-    echo "Upgrading cgminer.default.alb10 to /etc/config/cgminer.default.alb10"
-    chmod 644 /etc/config/cgminer.default.alb10
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10
-    chmod 444 /etc/config/cgminer.default.alb10 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.alb10 to /etc/config/cgminer.default.alb10"
+        chmod 644 /etc/config/cgminer.default.alb10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10
+        chmod 444 /etc/config/cgminer.default.alb10 # readonly
+    fi
 fi
 
 # /etc/config/cgminer.hash12
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 ]; then
-    echo "Upgrading cgminer.hash12 to /etc/config/cgminer.hash12"
-    chmod 644 /etc/config/cgminer.hash12
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12
-    chmod 444 /etc/config/cgminer.hash12 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.hash12 to /etc/config/cgminer.hash12"
+        chmod 644 /etc/config/cgminer.hash12
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12
+        chmod 444 /etc/config/cgminer.hash12 # readonly
+    fi
 fi
 # /etc/config/cgminer.default.hash12
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 ]; then
-    echo "Upgrading cgminer.default.hash12 to /etc/config/cgminer.default.hash12"
-    chmod 644 /etc/config/cgminer.default.hash12
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12
-    chmod 444 /etc/config/cgminer.default.hash12 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.hash12 to /etc/config/cgminer.default.hash12"
+        chmod 644 /etc/config/cgminer.default.hash12
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12
+        chmod 444 /etc/config/cgminer.default.hash12 # readonly
+    fi
 fi
 
 # /etc/config/cgminer.hash10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 ]; then
-    echo "Upgrading cgminer.hash10 to /etc/config/cgminer.hash10"
-    chmod 644 /etc/config/cgminer.hash10
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10
-    chmod 444 /etc/config/cgminer.hash10 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.hash10 to /etc/config/cgminer.hash10"
+        chmod 644 /etc/config/cgminer.hash10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10
+        chmod 444 /etc/config/cgminer.hash10 # readonly
+    fi
 fi
 # /etc/config/cgminer.default.hash10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 ]; then
-    echo "Upgrading cgminer.default.hash10 to /etc/config/cgminer.default.hash10"
-    chmod 644 /etc/config/cgminer.default.hash10
-    cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10
-    chmod 444 /etc/config/cgminer.default.hash10 # readonly
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.hash10 to /etc/config/cgminer.default.hash10"
+        chmod 644 /etc/config/cgminer.default.hash10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10
+        chmod 444 /etc/config/cgminer.default.hash10 # readonly
+    fi
 fi
 
 # Link /etc/config/cgminer
 if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
-    echo "Link $CGMINERFILE to /etc/config/cgminer"
-    cd /etc/config/
-    chmod 644 cgminer
-    rm -f cgminer
-    ln -s $CGMINERFILE cgminer
-    chmod 444 cgminer # readonly
-    cd -
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE /etc/config/cgminer`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Link $CGMINERFILE to /etc/config/cgminer"
+        cd /etc/config/
+        chmod 644 cgminer
+        rm -f cgminer
+        ln -s $CGMINERFILE cgminer
+        chmod 444 cgminer # readonly
+        cd -
+    fi
 fi
 # Link /etc/config/cgminer.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
-    echo "Link $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
-    cd /etc/config/
-    chmod 644 cgminer.default
-    rm -f cgminer.default
-    ln -s $CGMINERDEFAULTFILE cgminer.default
-    chmod 444 cgminer.default # readonly
-    cd -
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE /etc/config/cgminer.default`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Link $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
+        cd /etc/config/
+        chmod 644 cgminer.default
+        rm -f cgminer.default
+        ln -s $CGMINERDEFAULTFILE cgminer.default
+        chmod 444 cgminer.default # readonly
+        cd -
+    fi
 fi
 
 # /etc/init.d/boot
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
-    echo "Upgrading /etc/init.d/boot"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
-    chmod 755 /etc/init.d/boot
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/boot"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
+        chmod 755 /etc/init.d/boot
+    fi
 fi
 
 # /etc/init.d/detect-cgminer-config
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config ]; then
-    echo "Upgrading /etc/init.d/detect-cgminer-config"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config
-    chmod 755 /etc/init.d/detect-cgminer-config
-    cd /etc/rc.d/
-    ln -s ../init.d/detect-cgminer-config S80detect-cgminer-config >/dev/null 2>&1
-    cd -
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/detect-cgminer-config"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config
+        chmod 755 /etc/init.d/detect-cgminer-config
+        cd /etc/rc.d/
+        ln -s ../init.d/detect-cgminer-config S80detect-cgminer-config >/dev/null 2>&1
+        cd -
+    fi
 fi
 
 # /etc/crontabs/root
 if [ -f /tmp/upgrade-files/rootfs/etc/crontabs/root ]; then
-    echo "Upgrading /etc/crontabs/root"
-    cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/root`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/crontabs/root"
+        cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/
+    fi
 fi
 
 # /etc/init.d/cgminer
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer ]; then
-    echo "Upgrading /etc/init.d/cgminer"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer
-    chmod 755 /etc/init.d/cgminer
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/cgminer"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer
+        chmod 755 /etc/init.d/cgminer
+    fi
 fi
 
 # /etc/init.d/temp-monitor
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor ]; then
-    echo "Upgrading /etc/init.d/temp-monitor"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor
-    chmod 755 /etc/init.d/temp-monitor
-    cd /etc/rc.d/
-    ln -s ../init.d/temp-monitor S90temp-monitor >/dev/null 2>&1
-    cd -
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/temp-monitor"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor
+        chmod 755 /etc/init.d/temp-monitor
+        cd /etc/rc.d/
+        ln -s ../init.d/temp-monitor S90temp-monitor >/dev/null 2>&1
+        cd -
+    fi
 fi
 
 # /etc/init.d/sdcard-upgrade
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade ]; then
-    echo "Upgrading /etc/init.d/sdcard-upgrade"
-    cp -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade
-    chmod 755 /etc/init.d/sdcard-upgrade
-    cd /etc/rc.d/
-    ln -s ../init.d/sdcard-upgrade S97sdcard-upgrade >/dev/null 2>&1
-    cd -
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/sdcard-upgrade"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade
+        chmod 755 /etc/init.d/sdcard-upgrade
+        cd /etc/rc.d/
+        ln -s ../init.d/sdcard-upgrade S97sdcard-upgrade >/dev/null 2>&1
+        cd -
+    fi
 fi
 
 # Remove unused files under /etc
-rm -f /etc/config/firewall
-rm -f /etc/init.d/om-watchdog
-rm -f /etc/rc.d/S11om-watchdog
-rm -f /etc/rc.d/K11om-watchdog
+if [ -f /etc/config/firewall ]; then
+    rm -f /etc/config/firewall
+fi
+if [ -f /etc/init.d/om-watchdog ]; then
+    rm -f /etc/init.d/om-watchdog
+fi
+if [ -f /etc/rc.d/S11om-watchdog ]; then
+    rm -f /etc/rc.d/S11om-watchdog
+fi
+if [ -f /etc/rc.d/K11om-watchdog ]; then
+    rm -f /etc/rc.d/K11om-watchdog
+fi
 
 # /usr/bin/cgminer
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer ]; then
-    echo "Upgrading /usr/bin/cgminer"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/
-    chmod 755 /usr/bin/cgminer
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/cgminer`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/cgminer"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/cgminer
+        chmod 755 /usr/bin/cgminer
+    fi
 fi
 
 # /usr/bin/cgminer-api
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api ]; then
-    echo "Upgrading /usr/bin/cgminer-api"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/
-    chmod 755 /usr/bin/cgminer-api
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/cgminer-api`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/cgminer-api"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/cgminer-api
+        chmod 755 /usr/bin/cgminer-api
+    fi
 fi
 
 # /usr/bin/cgminer-monitor
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor ]; then
-    echo "Upgrading /usr/bin/cgminer-monitor"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/
-    chmod 755 /usr/bin/cgminer-monitor
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/cgminer-monitor`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/cgminer-monitor"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/cgminer-monitor
+        chmod 755 /usr/bin/cgminer-monitor
+    fi
 fi
 
 # /usr/bin/temp-monitor
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/temp-monitor ]; then
-    echo "Upgrading /usr/bin/temp-monitor"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/temp-monitor /usr/bin/
-    chmod 755 /usr/bin/temp-monitor
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/temp-monitor /usr/bin/temp-monitor`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/temp-monitor"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/temp-monitor /usr/bin/temp-monitor
+        chmod 755 /usr/bin/temp-monitor
+    fi
 fi
 
 # /usr/bin/setpower
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/setpower ]; then
-    echo "Upgrading /usr/bin/setpower"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/
-    chmod 755 /usr/bin/setpower
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/setpower`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/setpower"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/setpower
+        chmod 755 /usr/bin/setpower
+    fi
 fi
 
 # /usr/bin/readpower
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/readpower ]; then
-    echo "Upgrading /usr/bin/readpower"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/
-    chmod 755 /usr/bin/readpower
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/readpower`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/readpower"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/readpower
+        chmod 755 /usr/bin/readpower
+    fi
 fi
 
 # /usr/bin/keyd
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/keyd ]; then
-    echo "Upgrading /usr/bin/keyd"
-    cp -f /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/
-    chmod 755 /usr/bin/keyd
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/keyd"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd
+        chmod 755 /usr/bin/keyd
+    fi
 fi
 
 # /usr/lib/lua
 if [ -d /tmp/upgrade-files/rootfs/usr/lib/lua ]; then
-    echo "Upgrading /usr/lib/lua"
-    rm -fr /usr/lib/lua
-    cp -afr /tmp/upgrade-files/rootfs/usr/lib/lua /usr/lib/
+    cd /tmp/upgrade-files/rootfs/usr/lib/lua
+    find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-new.txt
+    cd /usr/lib/lua
+    find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-cur.txt
+    DIFF=`cmp /tmp/lua-md5sum-new.txt /tmp/lua-md5sum-cur.txt`
+    if [ "$DIFF" != "" ]; then
+        echo "Upgrading /usr/lib/lua"
+        rm -fr /usr/lib/lua
+        cp -afr /tmp/upgrade-files/rootfs/usr/lib/lua /usr/lib/
+    fi
 fi
 
 # /bin/bitmicro-test, test-readchipid, test-sendgoldenwork, test-hashboard
 if [ -f /tmp/upgrade-files/rootfs/bin/bitmicro-test ]; then
-    echo "Upgrading /bin/bitmicro-test"
-    rm -f /bin/bitmicrotest
-    cp -f /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/
-    chmod 755 /bin/bitmicro-test
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/bitmicro-test`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/bitmicro-test"
+        rm -f /bin/bitmicrotest
+        cp -f /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/bitmicro-test
+        chmod 755 /bin/bitmicro-test
+    fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-readchipid ]; then
-    echo "Upgrading /bin/test-readchipid"
-    cp -f /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/
-    chmod 755 /bin/test-readchipid
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/test-readchipid`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/test-readchipid"
+        cp -f /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/test-readchipid
+        chmod 755 /bin/test-readchipid
+    fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork ]; then
-    echo "Upgrading /bin/test-sendgoldenwork"
-    cp -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/
-    chmod 755 /bin/test-sendgoldenwork
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/test-sendgoldenwork`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/test-sendgoldenwork"
+        cp -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/test-sendgoldenwork
+        chmod 755 /bin/test-sendgoldenwork
+    fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
-    echo "Upgrading /bin/test-hashboard"
-    cp -f /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/
-    chmod 755 /bin/test-hashboard
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/test-hashboard`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/test-hashboard"
+        cp -f /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/test-hashboard
+        chmod 755 /bin/test-hashboard
+    fi
 fi
 
 # sensors and relative libs
-if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then
-    echo "Installing libsysfs"
-    opkg install /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk
-fi
-if [ -f /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk ]; then
-    echo "Installing sysfsutils"
-    opkg install /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk
-fi
-if [ -f /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk ]; then
-    echo "Installing libsensors"
-    opkg install /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk
-fi
-if [ -f /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk ]; then
-    echo "Installing lm-sensors"
-    opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
+if [ ! -f /usr/sbin/sensors ]; then
+    if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then
+        echo "Installing libsysfs"
+        opkg install /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk
+    fi
+    if [ -f /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk ]; then
+        echo "Installing sysfsutils"
+        opkg install /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk
+    fi
+    if [ -f /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk ]; then
+        echo "Installing libsensors"
+        opkg install /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk
+    fi
+    if [ -f /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk ]; then
+        echo "Installing lm-sensors"
+        opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
+    fi
 fi
 
-echo ""
-echo "Done, reboot system ..."
+# Sync to flash
 sync
+
+echo ""
+echo "Done, reboot control board ..."
 reboot

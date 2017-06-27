@@ -65,12 +65,22 @@ start() {
 
     # Start linking files ...
     if [ "$hash_board" = "ALB10" ]; then
-        CGMINERFILE="cgminer.alb10"
-        CGMINERDEFAULTFILE="cgminer.default.alb10"
+        if [ isH3Platform ]; then
+            CGMINERFILE="cgminer.alb10.h3"
+            CGMINERDEFAULTFILE="cgminer.default.alb10.h3"
+        else
+            CGMINERFILE="cgminer.alb10"
+            CGMINERDEFAULTFILE="cgminer.default.alb10"
+        fi
     fi
     if [ "$hash_board" = "HB12" ]; then
-        CGMINERFILE="cgminer.hash12"
-        CGMINERDEFAULTFILE="cgminer.default.hash12"
+        if [ isH3Platform ]; then
+            CGMINERFILE="cgminer.hash12.h3"
+            CGMINERDEFAULTFILE="cgminer.default.hash12.h3"
+        else
+            CGMINERFILE="cgminer.hash12"
+            CGMINERDEFAULTFILE="cgminer.default.hash12"
+        fi
     fi
     if [ "$hash_board" = "HB10" ]; then
         CGMINERFILE="cgminer.hash10"

@@ -1,0 +1,11 @@
+
+config pools 'default'
+	option ntp_enable 'asia'
+	option ntp_pools '-p 3.asia.pool.ntp.org -p 2.cn.pool.ntp.org -p 1.cn.pool.ntp.org -p 0.cn.pool.ntp.org'
+	option pool1url 'stratum+tcp://stratum.haobtc.com:3333'
+	option pool1user 'microbt.init'
+	option pool1pw '1234'
+	option pool2url 'stratum+tcp://stratum.f2pool.com:3333'
+	option pool2user 'microbt.init'
+	option pool2pw '1234'
+

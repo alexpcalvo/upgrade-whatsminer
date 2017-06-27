@@ -17,6 +17,11 @@ tmp_src_dir=$upgrade_dir/upgrade-files/tmp-rootfs
 echo ""
 echo "Upgrading $target_dir by $upgrade_dir"
 
+if [ -d $tmp_src_dir ]; then
+	echo "rm -rf $tmp_src_dir"
+	rm -rf $tmp_src_dir
+fi
+
 cp -af $upgrade_dir/upgrade-files/rootfs $tmp_src_dir
 
 # Remove unused files under $tmp_src_dir

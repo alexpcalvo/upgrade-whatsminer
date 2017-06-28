@@ -18,14 +18,14 @@ fi
 if [ -f /sys/class/hwmon/hwmon0/name ]; then
     name0=`cat /sys/class/hwmon/hwmon0/name`
 fi
+if [ -f /sys/class/hwmon/hwmon1/name ]; then
+    name1=`cat /sys/class/hwmon/hwmon1/name`
+fi
 if [ -f /sys/class/hwmon/hwmon2/name ]; then
     name2=`cat /sys/class/hwmon/hwmon2/name`
 fi
-if [ -f /sys/class/hwmon/hwmon4/name ]; then
-    name4=`cat /sys/class/hwmon/hwmon4/name`
-fi
 
-if [ "$name0" = "lm75" -o "$name2" = "lm75" -o "$name4" = "lm75" ]; then
+if [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
     CHIP_NUM=38
 else
     CHIP_NUM=66
@@ -38,4 +38,10 @@ fi
 #               <chip_num> <core_num> <pass_chips> <pass_cores> <start_freq> <target_freq> <upfreq_interval>
 #               <broadcast> <start_chipid> <end_chipid> <fan_speed> <temp_limit> <need_cool> <temp_cool>
 
-/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work_to_all $CHIP_NUM 100 $CHIP_NUM 90 192 450 1000000 1 1 $CHIP_NUM 4500 70 1 50
+# Reset all slots
+echo 0 > /sys/class/gpio/gpio960/value
+echo 0 > /sys/class/gpio/gpio962/value
+echo 0 > /sys/class/gpio/gpio964/value
+
+# Start to test
+/bin/bitmicro-test $DEV 1000000 1 1 send_golden_work_to_all $CHIP_NUM 100 $CHIP_NUM 90 192 450 1000000 1 1 $CHIP_NUM 6000 70 1 50

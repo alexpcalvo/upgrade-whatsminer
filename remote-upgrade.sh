@@ -34,7 +34,7 @@ fi
 # Usage: sendfile $ip $localfile $remotefile
 sendfile() {
     expect -c "
-        set timeout 30;
+        set timeout 90;
         spawn scp $2 root@$1:$3
         expect {
         \"*yes/no*\" {send \"yes\r\"; exp_continue}
@@ -46,7 +46,7 @@ sendfile() {
 # Usage: execcmd $ip $cmd
 execcmd() {
     expect -c "
-        set timeout 30;
+        set timeout 90;
         spawn ssh root@$1 $2
         expect {
         \"*yes/no*\" {send \"yes\r\"; exp_continue}

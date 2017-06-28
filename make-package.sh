@@ -1,6 +1,5 @@
 #!/bin/bash
 
-#MACHINE_TYPE="m110-alb10-cb12"
 MACHINE_TYPE="m100-m110-common"
 
 VERSION_NUMBER=`cat upgrade-files/rootfs/etc/microbt_release | grep FIRMWARE_VERSION | cut -d"=" -f2 | sed "s/'//g"`

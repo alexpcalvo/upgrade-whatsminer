@@ -43,7 +43,7 @@ rm -f $target_dir/etc/rc.d/K11om-watchdog
 
 cp -af $tmp_src_dir/* $target_dir/
 
-#rm -rf $tmp_src_dir
+rm -rf $tmp_src_dir
 
 echo ""
 echo "Done"

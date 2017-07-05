@@ -30,6 +30,8 @@ fi
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
     hash_board="HB12"
+elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
+    hash_board="ALB10"
 else
     if [ -f /sys/class/hwmon/hwmon0/name ]; then
         name0=`cat /sys/class/hwmon/hwmon0/name`
@@ -43,8 +45,6 @@ else
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
         hash_board="HB10"
-    elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-        hash_board="ALB10"
     else
         hash_board="unknown"
     fi

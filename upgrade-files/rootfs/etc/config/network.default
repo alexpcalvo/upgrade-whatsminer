@@ -10,5 +10,5 @@ config interface 'lan'
 	option _orig_ifname 'eth0'
 	option _orig_bridge 'false'
 	option proto 'dhcp'
-	option hostname 'MicroBT'
+	option hostname 'WhatsMiner'
 

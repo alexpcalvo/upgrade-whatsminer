@@ -71,7 +71,7 @@ diff_files() {
     if [ ! -f $1 -o ! -f $2 ]; then
         echo "yes"
     else
-        DIFF=`cmp $1 $2`
+        DIFF=`cmp $1 $2 2>/dev/null`
         if [ "$DIFF" = "" ]; then
             echo "no"
         else
@@ -191,6 +191,17 @@ if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
         chmod 644 /etc/cgminer_version
         cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
         chmod 444 /etc/cgminer_version # readonly
+    fi
+fi
+
+# /etc/config/system
+if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/system /etc/config/system`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/system"
+        chmod 644 /etc/config/system
+        cp -f /tmp/upgrade-files/rootfs/etc/config/system /etc/config/system
+        chmod 444 /etc/config/system # readonly
     fi
 fi
 
@@ -331,7 +342,7 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
         rm -f cgminer
         ln -s $CGMINERFILE cgminer
         chmod 444 cgminer # readonly
-        cd -
+        cd - >/dev/null
     fi
 fi
 # Link /etc/config/cgminer.default
@@ -344,7 +355,7 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
         rm -f cgminer.default
         ln -s $CGMINERDEFAULTFILE cgminer.default
         chmod 444 cgminer.default # readonly
-        cd -
+        cd - >/dev/null
     fi
 fi
 
@@ -367,7 +378,7 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config ]; then
         chmod 755 /etc/init.d/detect-cgminer-config
         cd /etc/rc.d/
         ln -s ../init.d/detect-cgminer-config S80detect-cgminer-config >/dev/null 2>&1
-        cd -
+        cd - >/dev/null
     fi
 fi
 
@@ -399,7 +410,7 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor ]; then
         chmod 755 /etc/init.d/temp-monitor
         cd /etc/rc.d/
         ln -s ../init.d/temp-monitor S90temp-monitor >/dev/null 2>&1
-        cd -
+        cd - >/dev/null
     fi
 fi
 
@@ -412,7 +423,20 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade ]; then
         chmod 755 /etc/init.d/sdcard-upgrade
         cd /etc/rc.d/
         ln -s ../init.d/sdcard-upgrade S97sdcard-upgrade >/dev/null 2>&1
-        cd -
+        cd - >/dev/null
+    fi
+fi
+
+# /etc/init.d/remote-daemon
+if [ -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon /etc/init.d/remote-daemon`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/init.d/remote-daemon"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon /etc/init.d/remote-daemon
+        chmod 755 /etc/init.d/remote-daemon
+        cd /etc/rc.d/
+        ln -s ../init.d/remote-daemon S90remote-daemon >/dev/null 2>&1
+        cd - >/dev/null
     fi
 fi
 
@@ -497,6 +521,16 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/keyd ]; then
         echo "Upgrading /usr/bin/keyd"
         cp -f /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd
         chmod 755 /usr/bin/keyd
+    fi
+fi
+
+# /usr/bin/remote-daemon
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/remote-daemon"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon
+        chmod 755 /usr/bin/remote-daemon
     fi
 fi
 

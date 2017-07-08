@@ -534,6 +534,16 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon ]; then
     fi
 fi
 
+# /usr/bin/detect-miner-info
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/detect-miner-info"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info
+        chmod 755 /usr/bin/detect-miner-info
+    fi
+fi
+
 # /usr/lib/lua
 if [ -d /tmp/upgrade-files/rootfs/usr/lib/lua ]; then
     cd /tmp/upgrade-files/rootfs/usr/lib/lua

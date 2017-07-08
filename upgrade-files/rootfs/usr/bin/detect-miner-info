@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Script to detect miner info. Info will be output to file /tmp/miner-info. (Used by remote-daemon)
+#
+# Output format:
+#
+# [MINER_NAME]-[MINER_VERSION]-[CONTROL_BOARD_TYPE]-[CONTROL_BOARD_VERSION]-[HASH_BOARD_VERSION]-[FIRMWARE_VERSION]
+#
+# e.g.
+#
+# WhatsMiner-M1-ZYNQ-CB12-ALB10-20170705.10.1
+#
+
+OUTPUT_FILENAME="/tmp/miner-info"
+
+# Detect control board type
+cpuinfo=`cat /proc/cpuinfo | grep "Xilinx Zynq Platform"`
+if [ "$cpuinfo" != "" ]; then
+    control_board_type="ZYNQ"
+
+    memsize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
+
+    if [ $memsize -le 262144 ]; then
+        control_board_version="CB12"
+    else
+        control_board_version="CB10"
+    fi
+else
+    control_board_type="unknown"
+    control_board_version="unknown"
+fi
+
+# Detect hash board type
+if [ -f /sys/class/hwmon/hwmon0/name ]; then
+    name0=`cat /sys/class/hwmon/hwmon0/name`
+fi
+if [ -f /sys/class/hwmon/hwmon1/name ]; then
+    name1=`cat /sys/class/hwmon/hwmon1/name`
+fi
+if [ -f /sys/class/hwmon/hwmon2/name ]; then
+    name2=`cat /sys/class/hwmon/hwmon2/name`
+fi
+
+if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
+    hash_board_version="HB12"
+elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
+    hash_board_version="ALB10"
+else
+    if [ -f /sys/class/hwmon/hwmon0/name ]; then
+        name0=`cat /sys/class/hwmon/hwmon0/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon2/name ]; then
+        name1=`cat /sys/class/hwmon/hwmon2/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon4/name ]; then
+        name2=`cat /sys/class/hwmon/hwmon4/name`
+    fi
+
+    if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
+        hash_board_version="HB10"
+    else
+        hash_board_version="unknown"
+    fi
+fi
+
+# Detect firmware version
+firmware_version=`cat /etc/microbt_release | grep FIRMWARE_VERSION | awk -F '=' '{print $2}'`
+firmware_version=`echo ${firmware_version:1}`
+firmware_version=`echo ${firmware_version%\'*}`
+
+# Output info
+echo -n "WhatsMiner" > $OUTPUT_FILENAME
+if [ "$hash_board_version" = "HB10" -o "$hash_board_version" = "HB12" ]; then
+    echo -n "-M1" >> $OUTPUT_FILENAME
+elif [ "$hash_board_version" = "ALB10" ]; then
+    echo -n "-M2" >> $OUTPUT_FILENAME
+else
+    echo -n "-unknown" >> $OUTPUT_FILENAME
+fi
+echo -n "-$control_board_type" >> $OUTPUT_FILENAME
+echo -n "-$control_board_version" >> $OUTPUT_FILENAME
+echo -n "-$hash_board_version" >> $OUTPUT_FILENAME
+echo -n "-$firmware_version" >> $OUTPUT_FILENAME
+
+echo -n "Detected Miner Info: "
+cat $OUTPUT_FILENAME
+echo ""

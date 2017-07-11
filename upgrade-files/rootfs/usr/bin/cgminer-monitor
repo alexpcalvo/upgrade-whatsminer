@@ -1,46 +1,7 @@
 #!/bin/sh
 # This file is for cron job
 
-# Make sure there is only one cgminer running
-C=`pidof cgminer | wc -w`
-if [ "$C" = "0" ]; then
-    exit 0;
-fi
-if [ "$C" != "1" ]; then
-    killall -s 9 cgminer
-    sleep 1
-    /etc/init.d/cgminer start
-    exit 0;
-fi
-
-# Make sure cgminer started
-if [ ! -f /tmp/cgminer-ntpd-done ]; then
-    exit 0;
-fi
-
-# For events logging
-mkdir -p /root/.events
-
-# Make sure cgminer still active
-cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
-if [ $cpu_ratio -eq 0 ]; then
-    # Check twice
-    sleep 5
-    cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
-    if [ $cpu_ratio -eq 0 ]; then
-        echo "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`" >> /tmp/cgminer-restart.log
-        logger "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`"
-
-        killall -s 9 cgminer
-        sleep 1
-        /etc/init.d/cgminer start
-
-        echo "`date`|E008|Restart cgminer|cgminer-monitor|CPU percent is 0" >> /root/.events/event-restart-cgminer
-
-        exit 0;
-    fi
-fi
-
+# Functions definitions
 reset_board0() {
     echo 960 > /sys/class/gpio/export
     echo out > /sys/class/gpio/gpio960/direction
@@ -100,6 +61,46 @@ find_field() {
     echo ""
 }
 
+# Make sure there is only one cgminer running
+C=`pidof cgminer | wc -w`
+if [ "$C" = "0" ]; then
+    exit 0;
+fi
+if [ "$C" != "1" ]; then
+    killall -s 9 cgminer
+    sleep 1
+    /etc/init.d/cgminer start
+    exit 0;
+fi
+
+# Make sure cgminer started
+if [ ! -f /tmp/cgminer-ntpd-done ]; then
+    exit 0;
+fi
+
+# For events logging
+mkdir -p /root/.events
+
+# Make sure cgminer still active
+cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
+if [ $cpu_ratio -eq 0 ]; then
+    # Check twice
+    sleep 5
+    cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
+    if [ $cpu_ratio -eq 0 ]; then
+        echo "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`" >> /tmp/cgminer-restart.log
+        logger "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`"
+
+        killall -s 9 cgminer
+        sleep 1
+        /etc/init.d/cgminer start
+
+        echo "`date`|E008|Restart cgminer|cgminer-monitor|CPU percent is 0" >> /root/.events/event-restart-cgminer
+
+        exit 0;
+    fi
+fi
+
 #
 # Make sure cgminer upfreq completed
 #
@@ -112,13 +113,68 @@ SM0=`echo $cgminer_api_estats | cut -d "|" -f2`
 SM1=`echo $cgminer_api_estats | cut -d "|" -f3`
 SM2=`echo $cgminer_api_estats | cut -d "|" -f4`
 
-sm0_upfreq_complete=`find_field "$SM0" "upfreq_complete"`
-sm1_upfreq_complete=`find_field "$SM1" "upfreq_complete"`
-sm2_upfreq_complete=`find_field "$SM2" "upfreq_complete"`
+#
+# Check 1: chip_model_effective_count
+#
 
-upfreq_complete_0=`echo $sm0_upfreq_complete | cut -d "=" -f2`
-upfreq_complete_1=`echo $sm1_upfreq_complete | cut -d "=" -f2`
-upfreq_complete_2=`echo $sm2_upfreq_complete | cut -d "=" -f2`
+# Get chip number
+bitmicro_options=`uci get cgminer.default.bitmicro_options`
+chip_num=`echo $bitmicro_options|cut -d ":" -f3`
+
+# Get chip_model_effective_count flag for each hash board
+sm0_field=`find_field "$SM0" "chip_model_effective_count"`
+sm1_field=`find_field "$SM1" "chip_model_effective_count"`
+sm2_field=`find_field "$SM2" "chip_model_effective_count"`
+
+chip_model_effective_count_0=`echo $sm0_field | cut -d "=" -f2`
+chip_model_effective_count_1=`echo $sm1_field | cut -d "=" -f2`
+chip_model_effective_count_2=`echo $sm2_field | cut -d "=" -f2`
+
+# Skip checking empty slot
+if [ "$chip_model_effective_count_0" = "" ]; then
+    chip_model_effective_count_0=$chip_num
+fi
+if [ "$chip_model_effective_count_1" = "" ]; then
+    chip_model_effective_count_1=$chip_num
+fi
+if [ "$chip_model_effective_count_2" = "" ]; then
+    chip_model_effective_count_2=$chip_num
+fi
+
+# Restart cgminer when $chip_model_effective_count_x < $chip_num
+if [ $chip_model_effective_count_0 -lt $chip_num -o $chip_model_effective_count_1 -lt $chip_num -o $chip_model_effective_count_2 -lt $chip_num ]; then
+    logger "cgminer-monitor: cgminer chip_model_effective_count < $chip_num (sm0=$chip_model_effective_count_0, sm1=$chip_model_effective_count_1, sm2=$chip_model_effective_count_2)"
+
+    if [ ! -f /tmp/cgminer-restart-count-for-invalid-chip-num ]; then
+        count=1
+        echo $count > /tmp/cgminer-restart-count-for-invalid-chip-num
+    else
+        count=`cat /tmp/cgminer-restart-count-for-invalid-chip-num`
+        count=`expr $count + 1`
+        echo $count > /tmp/cgminer-restart-count-for-invalid-chip-num
+    fi
+
+    if [ $count -le 10 ]; then
+        logger "cgminer-monitor: restart cgminer (count=$count)"
+        killall -s 9 cgminer
+        sleep 1
+        /etc/init.d/cgminer start
+        exit 0;
+    fi
+fi
+
+#
+# Check 2: upfreq_complete
+#
+
+# Get upfreq_complete flag for each hash board
+sm0_field=`find_field "$SM0" "upfreq_complete"`
+sm1_field=`find_field "$SM1" "upfreq_complete"`
+sm2_field=`find_field "$SM2" "upfreq_complete"`
+
+upfreq_complete_0=`echo $sm0_field | cut -d "=" -f2`
+upfreq_complete_1=`echo $sm1_field | cut -d "=" -f2`
+upfreq_complete_2=`echo $sm2_field | cut -d "=" -f2`
 
 # Skip checking empty slot
 if [ "$upfreq_complete_0" = "" ]; then

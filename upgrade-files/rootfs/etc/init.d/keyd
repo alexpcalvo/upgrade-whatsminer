@@ -2,7 +2,7 @@
 
 START=90
 
-DAEMON=remote-daemon
+DAEMON=keyd
 PIDFILE=/var/run/$DAEMON.pid
 
 start() {
@@ -10,9 +10,9 @@ start() {
 }
 
 stop() {
-    if pidof $DAEMON > /dev/null; then
-        killall -9 $DAEMON > /dev/null
-        rm -rf $PIDFILE
+    if pidof $DAEMON > /dev/null; then  
+        killall -9 $DAEMON > /dev/null  
+        rm -rf $PIDFILE  
     fi
 }
 

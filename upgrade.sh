@@ -17,15 +17,36 @@ else
     control_board="unknown"
 fi
 
+isH3Platform=false
+
+hwmon0_path="/sys/class/hwmon/hwmon0/"
+hwmon1_path="/sys/class/hwmon/hwmon1/"
+hwmon2_path="/sys/class/hwmon/hwmon2/"
+hwmon4_path="/sys/class/hwmon/hwmon4/"
+
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+    isH3Platform=true
+    control_board="H3"
+    echo "It's H3 platform."
+fi
+
+if [ isH3Platform ]; then
+    hwmon0_path="/sys/class/hwmon/hwmon1/device/"
+    hwmon1_path="/sys/class/hwmon/hwmon2/device/"
+    hwmon2_path="/sys/class/hwmon/hwmon3/device/"
+    hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+fi
+
 # Detect hash board type
-if [ -f /sys/class/hwmon/hwmon0/name ]; then
-    name0=`cat /sys/class/hwmon/hwmon0/name`
+if [ -f $hwmon0_path/name ]; then
+    name0=`cat $hwmon0_path/name`
 fi
-if [ -f /sys/class/hwmon/hwmon1/name ]; then
-    name1=`cat /sys/class/hwmon/hwmon1/name`
+if [ -f $hwmon1_path/name ]; then
+    name1=`cat $hwmon1_path/name`
 fi
-if [ -f /sys/class/hwmon/hwmon2/name ]; then
-    name2=`cat /sys/class/hwmon/hwmon2/name`
+if [ -f $hwmon2_path/name ]; then
+    name2=`cat $hwmon2_path/name`
 fi
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
@@ -33,14 +54,14 @@ if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
 elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
     hash_board="ALB10"
 else
-    if [ -f /sys/class/hwmon/hwmon0/name ]; then
-        name0=`cat /sys/class/hwmon/hwmon0/name`
+    if [ -f $hwmon0_path/name ]; then
+        name0=`cat $hwmon0_path/name`
     fi
-    if [ -f /sys/class/hwmon/hwmon2/name ]; then
-        name1=`cat /sys/class/hwmon/hwmon2/name`
+    if [ -f $hwmon2_path/name ]; then
+        name1=`cat $hwmon2_path/name`
     fi
-    if [ -f /sys/class/hwmon/hwmon4/name ]; then
-        name2=`cat /sys/class/hwmon/hwmon4/name`
+    if [ -f $hwmon4_path/name ]; then
+        name2=`cat $hwmon4_path/name`
     fi
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then

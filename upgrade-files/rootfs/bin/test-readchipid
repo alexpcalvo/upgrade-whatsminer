@@ -6,17 +6,37 @@
 # 2. test-readchipid /dev/ttyS3 [chip_num]
 #
 
+isH3Platform=false  
+
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+    isH3Platform=true
+    echo "It's H3 platform."
+fi
+
 #
 # Detect chip number according to hash board type
 #
-if [ -f /sys/class/hwmon/hwmon0/name ]; then
-    name0=`cat /sys/class/hwmon/hwmon0/name`
-fi
-if [ -f /sys/class/hwmon/hwmon1/name ]; then
-    name1=`cat /sys/class/hwmon/hwmon1/name`
-fi
-if [ -f /sys/class/hwmon/hwmon2/name ]; then
-    name2=`cat /sys/class/hwmon/hwmon2/name`
+if [ isH3Platform ]; then
+    if [ -f /sys/class/hwmon/hwmon1/device/name ]; then
+        name0=`cat /sys/class/hwmon/hwmon1/device/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon2/device/name ]; then
+        name1=`cat /sys/class/hwmon/hwmon2/device/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon3/device/name ]; then
+        name2=`cat /sys/class/hwmon/hwmon3/device/name`
+    fi
+else
+    if [ -f /sys/class/hwmon/hwmon0/name ]; then
+        name0=`cat /sys/class/hwmon/hwmon0/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon1/name ]; then
+        name1=`cat /sys/class/hwmon/hwmon1/name`
+    fi
+    if [ -f /sys/class/hwmon/hwmon2/name ]; then
+        name2=`cat /sys/class/hwmon/hwmon2/name`
+    fi
 fi
 
 if [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
@@ -47,9 +67,15 @@ fi
 #               <chip_num> <core_num> <fan_speed> <need_retry> <retry_times>
 
 # Reset all slots
-echo 0 > /sys/class/gpio/gpio960/value
-echo 0 > /sys/class/gpio/gpio962/value
-echo 0 > /sys/class/gpio/gpio964/value
+if [ isH3Platform ]; then
+    echo 0 > /sys/class/gpio/gpio99/value
+    echo 0 > /sys/class/gpio/gpio100/value
+    echo 0 > /sys/class/gpio/gpio101/value
+else
+    echo 0 > /sys/class/gpio/gpio960/value
+    echo 0 > /sys/class/gpio/gpio962/value
+    echo 0 > /sys/class/gpio/gpio964/value
+fi
 
 # Start to test
 /bin/bitmicro-test $DEV 1000000 1 1 read_chip_model $CHIP_NUM 100 6000 1 10

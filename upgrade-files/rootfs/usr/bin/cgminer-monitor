@@ -84,7 +84,6 @@ find_field() {
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
 if [ "$cpuinfo" != "" ]; then
     isH3Platform=true
-    echo "It's H3 platform."
 fi
 
 # Make sure there is only one cgminer running

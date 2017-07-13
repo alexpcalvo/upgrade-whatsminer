@@ -14,7 +14,6 @@ start() {
     cpuinfo=`cat /proc/cpuinfo | grep sun8i`
     if [ "$cpuinfo" != "" ]; then
         isH3Platform=true
-        echo "It's H3 platform."
     fi
 
     if [ isH3Platform ]; then

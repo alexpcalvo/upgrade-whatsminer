@@ -16,7 +16,7 @@ UPGRADE_PACKAGE=upgrade-whatsminer-$MACHINE_TYPE-$VERSION_NUMBER.tgz
 
 rm -f whatsminer-*.zip upgrade-*.tgz
 
-if [ is_h3 ]; then
+if [ "$is_h3" = true ]; then
 	if [ -d tmp_package ];then
 		rm -rf tmp_package
 	fi

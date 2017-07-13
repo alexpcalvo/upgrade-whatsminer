@@ -5,7 +5,7 @@ isH3Platform=false
 
 # Functions definitions
 reset_board0() {
-    if [ isH3Platform ]; then
+    if [ "$isH3Platform" = true ]; then
         echo 99 > /sys/class/gpio/export
         echo out > /sys/class/gpio/gpio99/direction
         echo 0 > /sys/class/gpio/gpio99/value
@@ -17,7 +17,7 @@ reset_board0() {
 }
 
 reset_board1() {
-    if [ isH3Platform ]; then
+    if [ "$isH3Platform" = true ]; then
         echo 100 > /sys/class/gpio/export
         echo out > /sys/class/gpio/gpio100/direction
         echo 0 > /sys/class/gpio/gpio100/value
@@ -29,7 +29,7 @@ reset_board1() {
 }
 
 reset_board2() {
-    if [ isH3Platform ]; then
+    if [ "$isH3Platform" = true ]; then
         echo 101 > /sys/class/gpio/export
         echo out > /sys/class/gpio/gpio101/direction
         echo 0 > /sys/class/gpio/gpio101/value

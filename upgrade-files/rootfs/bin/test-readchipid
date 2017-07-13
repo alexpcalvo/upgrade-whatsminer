@@ -17,7 +17,7 @@ fi
 #
 # Detect chip number according to hash board type
 #
-if [ isH3Platform ]; then
+if [ "$isH3Platform" = true ]; then
     if [ -f /sys/class/hwmon/hwmon1/device/name ]; then
         name0=`cat /sys/class/hwmon/hwmon1/device/name`
     fi
@@ -67,7 +67,7 @@ fi
 #               <chip_num> <core_num> <fan_speed> <need_retry> <retry_times>
 
 # Reset all slots
-if [ isH3Platform ]; then
+if [ "$isH3Platform" = true ]; then
     echo 0 > /sys/class/gpio/gpio99/value
     echo 0 > /sys/class/gpio/gpio100/value
     echo 0 > /sys/class/gpio/gpio101/value

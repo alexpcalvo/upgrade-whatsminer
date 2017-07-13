@@ -13,7 +13,7 @@ if [ "$cpuinfo" != "" ]; then
 fi
 
 init_led() {
-	if [ isH3Platform ]; then
+	if [ "$isH3Platform" = true ]; then
 		echo 102 > /sys/class/gpio/export
 		echo out > /sys/class/gpio/gpio102/direction
 		echo 103 > /sys/class/gpio/export
@@ -31,7 +31,7 @@ init_led() {
 }
 
 set_reset_directions() {
-	if [ isH3Platform ]; then
+	if [ "$isH3Platform" = true ]; then
 		echo 99 > /sys/class/gpio/export
 		echo out > /sys/class/gpio/gpio99/direction
 		echo 100 > /sys/class/gpio/export
@@ -49,7 +49,7 @@ set_reset_directions() {
 }
 
 set_plug_directions() {
-	if [ isH3Platform ]; then
+	if [ "$isH3Platform" = true ]; then
 		echo 15 > /sys/class/gpio/export
 		echo in > /sys/class/gpio/gpio15/direction
 		echo 7 > /sys/class/gpio/export

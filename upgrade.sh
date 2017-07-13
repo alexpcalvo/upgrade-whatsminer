@@ -31,7 +31,7 @@ if [ "$cpuinfo" != "" ]; then
     echo "It's H3 platform."
 fi
 
-if [ isH3Platform ]; then
+if [ "$isH3Platform" = true ]; then
     hwmon0_path="/sys/class/hwmon/hwmon1/device/"
     hwmon1_path="/sys/class/hwmon/hwmon2/device/"
     hwmon2_path="/sys/class/hwmon/hwmon3/device/"

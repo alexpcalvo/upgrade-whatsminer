@@ -4,31 +4,66 @@
 START=10
 STOP=98
 
+isH3Platform=false
+
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+	isH3Platform=true
+	logger "It's H3 platform."
+fi
+
 init_led() {
-    echo 943 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio943/direction
-    echo 944 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio944/direction
-    echo 0 > /sys/class/gpio/gpio943/value
-    echo 1 > /sys/class/gpio/gpio944/value
+	if [ isH3Platform ]; then
+		echo 102 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio102/direction
+		echo 103 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio103/direction
+		echo 0 > /sys/class/gpio/gpio102/value
+		echo 1 > /sys/class/gpio/gpio103/value
+	else
+		echo 943 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio943/direction
+		echo 944 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio944/direction
+		echo 0 > /sys/class/gpio/gpio943/value
+		echo 1 > /sys/class/gpio/gpio944/value
+	fi
 }
 
-set_tty_directions() {
-    echo 960 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio960/direction
-    echo 962 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio962/direction
-    echo 964 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio964/direction
+set_reset_directions() {
+	if [ isH3Platform ]; then
+		echo 99 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio99/direction
+		echo 100 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio100/direction
+		echo 101 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio101/direction
+	else
+		echo 960 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio960/direction
+		echo 962 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio962/direction
+		echo 964 > /sys/class/gpio/export
+		echo out > /sys/class/gpio/gpio964/direction
+	fi
 }
 
 set_plug_directions() {
-    echo 961 > /sys/class/gpio/export
-    echo in > /sys/class/gpio/gpio961/direction
-    echo 963 > /sys/class/gpio/export
-    echo in > /sys/class/gpio/gpio963/direction
-    echo 965 > /sys/class/gpio/export
-    echo in > /sys/class/gpio/gpio965/direction
+	if [ isH3Platform ]; then
+		echo 15 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio15/direction
+		echo 7 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio7/direction
+		echo 8 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio8/direction
+	else
+		echo 961 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio961/direction
+		echo 963 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio963/direction
+		echo 965 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio965/direction
+	fi
 }
 
 uci_apply_defaults() {
@@ -76,9 +111,9 @@ boot() {
 
 	/bin/board_detect
 	uci_apply_defaults
-	set_tty_directions
+	set_reset_directions
 	set_plug_directions
-    init_led
+	init_led
 
 	# temporary hack until configd exists
 	/sbin/reload_config

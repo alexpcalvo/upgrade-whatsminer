@@ -1,23 +1,43 @@
 #!/bin/sh
 # This file is for cron job
 
+isH3Platform=false  
+
 # Functions definitions
 reset_board0() {
-    echo 960 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio960/direction
-    echo 0 > /sys/class/gpio/gpio960/value
+    if [ isH3Platform ]; then
+        echo 99 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio99/direction
+        echo 0 > /sys/class/gpio/gpio99/value
+    else
+        echo 960 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio960/direction
+        echo 0 > /sys/class/gpio/gpio960/value
+    fi
 }
 
 reset_board1() {
-    echo 962 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio962/direction
-    echo 0 > /sys/class/gpio/gpio962/value
+    if [ isH3Platform ]; then
+        echo 100 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio100/direction
+        echo 0 > /sys/class/gpio/gpio100/value
+    else
+        echo 962 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio962/direction
+        echo 0 > /sys/class/gpio/gpio962/value
+    fi
 }
 
 reset_board2() {
-    echo 964 > /sys/class/gpio/export
-    echo out > /sys/class/gpio/gpio964/direction
-    echo 0 > /sys/class/gpio/gpio964/value
+    if [ isH3Platform ]; then
+        echo 101 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio101/direction
+        echo 0 > /sys/class/gpio/gpio101/value
+    else
+        echo 964 > /sys/class/gpio/export
+        echo out > /sys/class/gpio/gpio964/direction
+        echo 0 > /sys/class/gpio/gpio964/value
+    fi
 }
 
 reset_board_by_slot_id() {
@@ -60,6 +80,11 @@ find_field() {
     IFS="$OLD_IFS"
     echo ""
 }
+
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+    isH3Platform=true
+fi
 
 # Make sure there is only one cgminer running
 C=`pidof cgminer | wc -w`

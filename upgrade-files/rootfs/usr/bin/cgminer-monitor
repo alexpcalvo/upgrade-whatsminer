@@ -81,6 +81,31 @@ find_field() {
     echo ""
 }
 
+cgminer_cpu_time()
+{
+	local pid=`pidof cgminer`
+	local utime=`cat /proc/$pid/stat | cut -f14 -d " "`
+	local stime=`cat /proc/$pid/stat | cut -f15 -d " "`
+	local cpu_time=`expr $utime + $stime`
+
+	echo "$cpu_time"
+}
+
+is_cgminer_idle()
+{
+	# Check cpu time during a period
+	local cpu_time0=$(cgminer_cpu_time)
+	sleep 5
+	local cpu_time1=$(cgminer_cpu_time)
+	local diff=`expr $cpu_time1 - $cpu_time0`
+
+	if [ $diff -gt 0 ]; then
+		echo false
+	else
+		echo true
+	fi
+}
+
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
 if [ "$cpuinfo" != "" ]; then
     isH3Platform=true
@@ -109,10 +134,7 @@ mkdir -p /root/.events
 # Make sure cgminer still active
 cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
 if [ $cpu_ratio -eq 0 ]; then
-    # Check twice
-    sleep 5
-    cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
-    if [ $cpu_ratio -eq 0 ]; then
+    if [ "$(is_cgminer_idle)" = true ]; then
         echo "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`" >> /tmp/cgminer-restart.log
         logger "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`"
 

@@ -161,7 +161,44 @@ SM1=`echo $cgminer_api_estats | cut -d "|" -f3`
 SM2=`echo $cgminer_api_estats | cut -d "|" -f4`
 
 #
-# Check 1: chip_model_effective_count
+# Check 1: upfreq_complete
+#
+
+# Get upfreq_complete flag for each hash board
+sm0_field=`find_field "$SM0" "upfreq_complete"`
+sm1_field=`find_field "$SM1" "upfreq_complete"`
+sm2_field=`find_field "$SM2" "upfreq_complete"`
+
+upfreq_complete_0=`echo $sm0_field | cut -d "=" -f2`
+upfreq_complete_1=`echo $sm1_field | cut -d "=" -f2`
+upfreq_complete_2=`echo $sm2_field | cut -d "=" -f2`
+
+# Skip checking empty slot
+if [ "$upfreq_complete_0" = "" ]; then
+    upfreq_complete_0=1
+fi
+if [ "$upfreq_complete_1" = "" ]; then
+    upfreq_complete_1=1
+fi
+if [ "$upfreq_complete_2" = "" ]; then
+    upfreq_complete_2=1
+fi
+
+if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
+    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
+    exit 0;
+else
+    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
+        # To make sure MHS stable, skip one time after upfreq completed
+        logger "cgminer-monitor: cgminer upfreq completed"
+        touch /tmp/cgminer-upfreq-completed
+        exit 0;
+    fi
+fi
+
+
+#
+# Check 2: chip_model_effective_count
 #
 
 # Get chip number
@@ -206,42 +243,6 @@ if [ $chip_model_effective_count_0 -lt $chip_num -o $chip_model_effective_count_
         killall -s 9 cgminer
         sleep 1
         /etc/init.d/cgminer start
-        exit 0;
-    fi
-fi
-
-#
-# Check 2: upfreq_complete
-#
-
-# Get upfreq_complete flag for each hash board
-sm0_field=`find_field "$SM0" "upfreq_complete"`
-sm1_field=`find_field "$SM1" "upfreq_complete"`
-sm2_field=`find_field "$SM2" "upfreq_complete"`
-
-upfreq_complete_0=`echo $sm0_field | cut -d "=" -f2`
-upfreq_complete_1=`echo $sm1_field | cut -d "=" -f2`
-upfreq_complete_2=`echo $sm2_field | cut -d "=" -f2`
-
-# Skip checking empty slot
-if [ "$upfreq_complete_0" = "" ]; then
-    upfreq_complete_0=1
-fi
-if [ "$upfreq_complete_1" = "" ]; then
-    upfreq_complete_1=1
-fi
-if [ "$upfreq_complete_2" = "" ]; then
-    upfreq_complete_2=1
-fi
-
-if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
-    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
-    exit 0;
-else
-    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
-        # To make sure MHS stable, skip one time after upfreq completed
-        logger "cgminer-monitor: cgminer upfreq completed"
-        touch /tmp/cgminer-upfreq-completed
         exit 0;
     fi
 fi

@@ -102,6 +102,20 @@ diff_files() {
 }
 
 #
+# Prepare rootfs for h3: 1) remove unused files; 2) replace xxx with xxx.h3
+#
+if [ "$isH3Platform" = true ]; then
+    rm -f /tmp/upgrade-files/bin/*
+    rm -f /tmp/upgrade-files/packages/*
+
+    for file in $(find /tmp/upgrade-files/rootfs -name *.h3)
+    do
+        newfile=`echo $file | sed 's/\.h3$//'`
+        mv $file $newfile
+    done
+fi
+
+#
 # Kill services
 #
 killall -9 crond >/dev/null 2>&1

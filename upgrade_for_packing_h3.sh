@@ -24,7 +24,7 @@ fi
 
 cp -af $upgrade_dir/upgrade-files/rootfs $tmp_src_dir
 
-$upgrade_dir/prepare-rootfs-for-h3.sh $tmp_src_dir
+find $tmp_src_dir/ -name *.h3 | xargs rename -f 's/\.h3$//'
 
 # Remove unused files under $target_dir/etc
 rm -f $target_dir/etc/config/firewall

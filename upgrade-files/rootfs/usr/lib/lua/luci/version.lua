@@ -98,16 +98,16 @@ else
 		hashboardtype = "HB10"
         modelname = "M1"
     else
-	    name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
-	    name1 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
-	    name2 = fs.readfile("/sys/class/hwmon/hwmon4/name") or ""
+        name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
+        name1 = fs.readfile("/sys/class/hwmon/hwmon1/name") or ""
+        name2 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
 
-	    name0 = string.match(name0, sensor_lm75)
-	    name1 = string.match(name1, sensor_lm75)
-	    name2 = string.match(name2, sensor_lm75)
+        name0 = string.match(name0, sensor_lm75)
+        name1 = string.match(name1, sensor_lm75)
+        name2 = string.match(name2, sensor_lm75)
 
 	    if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
-		   hashboardtype = "ALB10"
+           hashboardtype = "ALB10"
            modelname = "M2"
 	    end
 	end

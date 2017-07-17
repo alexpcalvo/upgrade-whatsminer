@@ -148,9 +148,7 @@ if [ $cpu_ratio -eq 0 ]; then
     fi
 fi
 
-#
-# Make sure cgminer upfreq completed
-#
+
 cgminer_api_estats=`/usr/bin/cgminer-api -o estats`
 if [ "$?" != "0" ]; then
     exit 0;
@@ -184,22 +182,13 @@ if [ "$upfreq_complete_2" = "" ]; then
     upfreq_complete_2=1
 fi
 
-if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
-    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
-    exit 0;
-else
-    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
-        # To make sure MHS stable, skip one time after upfreq completed
-        logger "cgminer-monitor: cgminer upfreq completed"
-        touch /tmp/cgminer-upfreq-completed
-        exit 0;
-    fi
-fi
-
-
 #
 # Check 2: chip_model_effective_count
 #
+if [ $upfreq_complete_0 -ne 1 ] && [ $upfreq_complete_1 -ne 1 ] && [ $upfreq_complete_2 -ne 1 ]; then
+    logger "cgminer-monitor: exit as no board upfreq completed"
+    exit 0
+fi
 
 # Get chip number
 bitmicro_options=`uci get cgminer.default.bitmicro_options`
@@ -246,6 +235,22 @@ if [ $chip_model_effective_count_0 -lt $chip_num -o $chip_model_effective_count_
         exit 0;
     fi
 fi
+
+#
+# Make sure cgminer upfreq completed
+#
+if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
+    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
+    exit 0;
+else
+    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
+        # To make sure MHS stable, skip one time after upfreq completed
+        logger "cgminer-monitor: cgminer upfreq completed"
+        touch /tmp/cgminer-upfreq-completed
+        exit 0;
+    fi
+fi
+
 
 #
 # cgminer active, check MHS

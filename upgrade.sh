@@ -6,29 +6,23 @@
 # Detect control board type
 cpuinfo=`cat /proc/cpuinfo | grep "Xilinx Zynq Platform"`
 if [ "$cpuinfo" != "" ]; then
+    isH3Platform=false
+
 	memsize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
 
     if [ $memsize -le 262144 ]; then
-        control_board="CB12"
+        control_board="ZYNQ-CB12"
     else
-        control_board="CB10"
+        control_board="ZYNQ-CB10"
     fi
 else
-    control_board="unknown"
-fi
-
-isH3Platform=false
-
-hwmon0_path="/sys/class/hwmon/hwmon0/"
-hwmon1_path="/sys/class/hwmon/hwmon1/"
-hwmon2_path="/sys/class/hwmon/hwmon2/"
-hwmon4_path="/sys/class/hwmon/hwmon4/"
-
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
-    isH3Platform=true
-    control_board="H3"
-    echo "It's H3 platform."
+    cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+    if [ "$cpuinfo" != "" ]; then
+        isH3Platform=true
+        control_board="H3"
+    else
+        control_board="unknown"
+    fi
 fi
 
 if [ "$isH3Platform" = true ]; then
@@ -36,6 +30,11 @@ if [ "$isH3Platform" = true ]; then
     hwmon1_path="/sys/class/hwmon/hwmon2/device/"
     hwmon2_path="/sys/class/hwmon/hwmon3/device/"
     hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+else
+    hwmon0_path="/sys/class/hwmon/hwmon0/"
+    hwmon1_path="/sys/class/hwmon/hwmon1/"
+    hwmon2_path="/sys/class/hwmon/hwmon2/"
+    hwmon4_path="/sys/class/hwmon/hwmon4/"
 fi
 
 # Detect hash board type
@@ -102,9 +101,10 @@ diff_files() {
 }
 
 #
-# Prepare rootfs for h3: 1) remove unused files; 2) replace xxx with xxx.h3
+# Prepare rootfs
 #
 if [ "$isH3Platform" = true ]; then
+    # H3: 1) remove useless files; 2) replace xxx with xxx.h3
     rm -f /tmp/upgrade-files/bin/*
     rm -f /tmp/upgrade-files/packages/*
 
@@ -113,6 +113,9 @@ if [ "$isH3Platform" = true ]; then
         newfile=`echo $file | sed 's/\.h3$//'`
         mv $file $newfile
     done
+else
+    # ZYNQ: 1) remove useless files xxx.h3
+    find /tmp/upgrade-files/rootfs -name *.h3 | xargs rm -f
 fi
 
 #
@@ -128,7 +131,7 @@ killall -9 cgminer >/dev/null 2>&1
 #
 
 # Detected files
-if [ "$control_board" = "CB12" ]; then
+if [ "$control_board" = "ZYNQ-CB12" ]; then
     BOOTFILE="BOOT-ZYNQ12"
 else
     BOOTFILE="BOOT-ZYNQ10"

@@ -44,6 +44,11 @@ if [ "$isH3Platform" = true ]; then
     hwmon1_path="/sys/class/hwmon/hwmon2/device/"
     hwmon2_path="/sys/class/hwmon/hwmon3/device/"
     hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+else
+    hwmon0_path="/sys/class/hwmon/hwmon1/"
+    hwmon1_path="/sys/class/hwmon/hwmon2/"
+    hwmon2_path="/sys/class/hwmon/hwmon3/"
+    hwmon4_path="/sys/class/hwmon/hwmon5/"
 fi
 
 # Detect hash board type

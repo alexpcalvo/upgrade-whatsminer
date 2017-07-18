@@ -44,10 +44,12 @@ cgminerversion = fs.readfile("/etc/cgminer_version") or "unknown"
 controlboardtype = "CB-unknown"
 
 local host_zynq = "Xilinx Zynq Platform"
+local host_h3 = "sun8i"
 
 local t = io.popen('cat /proc/cpuinfo')
 local a = t:read("*all")
 local h = string.match(a, host_zynq)
+local is_h3 = string.match(a, host_h3) == host_h3
 
 if h == host_zynq then
    	local result = {}
@@ -59,10 +61,14 @@ if h == host_zynq then
    	end
 
 	if tonumber(result[2]) <= 262144 then
-		controlboardtype = "CB12"
+		controlboardtype = "ZYNQ-CB12"
 	else
-		controlboardtype = "CB10"		
+		controlboardtype = "ZYNQ-CB10"		
 	end
+end
+
+if is_h3 then
+    controlboardtype = "H3-CB20"
 end
 
 -- Detect hash board type
@@ -74,9 +80,21 @@ local sensor_tmp421 = "tmp421"
 local sensor_tmp423 = "tmp423"
 local sensor_lm75 = "lm75"
 
-local name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
-local name1 = fs.readfile("/sys/class/hwmon/hwmon1/name") or ""
-local name2 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
+local hwmon0_path = "/sys/class/hwmon/hwmon0/name"
+local hwmon1_path = "/sys/class/hwmon/hwmon1/name"
+local hwmon2_path = "/sys/class/hwmon/hwmon2/name"
+local hwmon4_path = "/sys/class/hwmon/hwmon4/name"
+
+if is_h3 then
+   hwmon0_path = "/sys/class/hwmon/hwmon1/device/name"
+   hwmon1_path = "/sys/class/hwmon/hwmon2/device/name"
+   hwmon2_path = "/sys/class/hwmon/hwmon3/device/name"
+   hwmon4_path = "/sys/class/hwmon/hwmon5/device/name"
+end
+
+local name0 = fs.readfile(hwmon0_path) or ""
+local name1 = fs.readfile(hwmon1_path) or ""
+local name2 = fs.readfile(hwmon2_path) or ""
 
 name0 = string.match(name0, sensor_tmp421)
 name1 = string.match(name1, sensor_tmp421)
@@ -86,9 +104,9 @@ if name0 == sensor_tmp421 or name1 == sensor_tmp421 or name2 == sensor_tmp421 th
 	hashboardtype = "HB12"
     modelname = "M1"
 else
-	name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
-	name1 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
-	name2 = fs.readfile("/sys/class/hwmon/hwmon4/name") or ""
+	name0 = fs.readfile(hwmon0_path) or ""
+	name1 = fs.readfile(hwmon2_path) or ""
+	name2 = fs.readfile(hwmon4_path) or ""
 
 	name0 = string.match(name0, sensor_tmp423)
 	name1 = string.match(name1, sensor_tmp423)
@@ -98,9 +116,9 @@ else
 		hashboardtype = "HB10"
         modelname = "M1"
     else
-        name0 = fs.readfile("/sys/class/hwmon/hwmon0/name") or ""
-        name1 = fs.readfile("/sys/class/hwmon/hwmon1/name") or ""
-        name2 = fs.readfile("/sys/class/hwmon/hwmon2/name") or ""
+        name0 = fs.readfile(hwmon0_path) or ""
+        name1 = fs.readfile(hwmon1_path) or ""
+        name2 = fs.readfile(hwmon2_path) or ""
 
         name0 = string.match(name0, sensor_lm75)
         name1 = string.match(name1, sensor_lm75)

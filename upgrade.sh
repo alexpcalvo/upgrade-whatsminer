@@ -115,7 +115,7 @@ if [ "$isH3Platform" = true ]; then
     done
 else
     # ZYNQ: 1) remove useless files for h3
-    rm /tmp/upgrade-files/bin/boot.fex
+    rm -f /tmp/upgrade-files/bin/boot.fex
     find /tmp/upgrade-files/rootfs -name *.h3 | xargs rm -f
 fi
 

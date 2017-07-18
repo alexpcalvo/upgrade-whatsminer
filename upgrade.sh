@@ -193,7 +193,6 @@ fi
 if [ -f /tmp/upgrade-files/bin/boot.fex ]; then
     echo "Upgrading boot.fex to /dev/nandc"
     cat /tmp/upgrade-files/bin/boot.fex > /dev/nandc
-    sync
 fi
 
 # devicetree (mtd5)

@@ -26,11 +26,12 @@ cp -af $upgrade_dir/upgrade-files/rootfs $tmp_src_dir
 
 find $tmp_src_dir/ -name *.h3 | xargs rename -f 's/\.h3$//'
 
-# Remove unused files under $target_dir/etc
+# Remove unused files under $target_dir
 rm -f $target_dir/etc/config/firewall
 rm -f $target_dir/etc/init.d/om-watchdog
 rm -f $target_dir/etc/rc.d/S11om-watchdog
 rm -f $target_dir/etc/rc.d/K11om-watchdog
+rm -f $target_dir/usr/lib/lua/luci/controller/firewall.lua
 
 cp -af $tmp_src_dir/* $target_dir/
 

@@ -105,7 +105,7 @@ diff_files() {
 #
 if [ "$isH3Platform" = true ]; then
     # H3: 1) remove useless files; 2) replace xxx with xxx.h3
-    rm -f /tmp/upgrade-files/bin/*
+    rm -f `ls /tmp/upgrade-files/bin/* | grep -v boot.fex`
     rm -f /tmp/upgrade-files/packages/*
 
     for file in $(find /tmp/upgrade-files/rootfs -name *.h3)
@@ -114,7 +114,8 @@ if [ "$isH3Platform" = true ]; then
         mv $file $newfile
     done
 else
-    # ZYNQ: 1) remove useless files xxx.h3
+    # ZYNQ: 1) remove useless files for h3
+    rm /tmp/upgrade-files/bin/boot.fex
     find /tmp/upgrade-files/rootfs -name *.h3 | xargs rm -f
 fi
 
@@ -169,7 +170,7 @@ if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
     fi
 fi
 
-# kernel (mtd4)
+# kernel (mtd4 for ZYNQ)
 if [ -f /tmp/upgrade-files/bin/uImage ]; then
     # verify with mtd data
     mtd verify /tmp/upgrade-files/bin/uImage /dev/mtd4 2>/tmp/.mtd-verify-stderr.txt
@@ -186,6 +187,13 @@ if [ -f /tmp/upgrade-files/bin/uImage ]; then
             mtd write /tmp/upgrade-files/bin/uImage /dev/mtd4
         fi
     fi
+fi
+
+# kernel (nandc for H3)
+if [ -f /tmp/upgrade-files/bin/boot.fex ]; then
+    echo "Upgrading boot.fex to /dev/nandc"
+    cat /tmp/upgrade-files/bin/boot.fex > /dev/nandc
+    sync
 fi
 
 # devicetree (mtd5)

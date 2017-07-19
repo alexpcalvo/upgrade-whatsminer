@@ -191,8 +191,12 @@ fi
 
 # kernel (nandc for H3)
 if [ -f /tmp/upgrade-files/bin/boot.fex ]; then
-    echo "Upgrading boot.fex to /dev/nandc"
-    cat /tmp/upgrade-files/bin/boot.fex > /dev/nandc
+    new_md5=`md5sum /tmp/upgrade-files/bin/boot.fex | awk '{print $1}'`
+    if [ "`cat /etc/boot.md5`" != "$new_md5" ]; then
+        echo "Upgrading boot.fex to /dev/nandc"
+        cat /tmp/upgrade-files/bin/boot.fex > /dev/nandc
+        echo $new_md5 > /etc/boot.md5
+    fi
 fi
 
 # devicetree (mtd5)

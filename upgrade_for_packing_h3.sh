@@ -2,7 +2,7 @@
 
 if [ $# -lt 2 ] ;then
     echo "Usage: $0 <upgrade_dir> <target_dir>"
-    echo "Example:$0 upgrade-zynq openwrt/build_dir/target-arm_cortex-a8+vfpv3_musl-1.1.15_eabi/root-sunxi"
+    echo "Example:$0 $UPGRADE_WHATSMINER_PATH $STAGING_DIR/../build_dir/target-arm_cortex-a8+vfpv3_musl-1.1.15_eabi/root-sunxi"
     exit 0;
 fi
 
@@ -34,6 +34,10 @@ rm -f $target_dir/etc/rc.d/K11om-watchdog
 rm -f $target_dir/usr/lib/lua/luci/controller/firewall.lua
 
 cp -af $tmp_src_dir/* $target_dir/
+
+if [ -f $upgrade_dir/upgrade-files/bin/boot.fex ]; then
+	md5sum $upgrade_dir/upgrade-files/bin/boot.fex | awk '{print $1}' > $target_dir/etc/boot.md5
+fi
 
 rm -rf $tmp_src_dir
 

@@ -141,14 +141,17 @@ fi
 if [ "$hash_board" = "ALB10" ]; then
     CGMINERFILE="cgminer.alb10"
     CGMINERDEFAULTFILE="cgminer.default.alb10"
+    POWERSFILE="powers.alb10"
 fi
 if [ "$hash_board" = "HB12" ]; then
     CGMINERFILE="cgminer.hash12"
     CGMINERDEFAULTFILE="cgminer.default.hash12"
+    POWERSFILE="powers.hash12"
 fi
 if [ "$hash_board" = "HB10" ]; then
     CGMINERFILE="cgminer.hash10"
     CGMINERDEFAULTFILE="cgminer.default.hash10"
+    POWERSFILE="powers.hash10"
 fi
 
 # boot (mtd1)
@@ -251,6 +254,53 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
         chmod 644 /etc/config/system
         cp -f /tmp/upgrade-files/rootfs/etc/config/system /etc/config/system
         chmod 444 /etc/config/system # readonly
+    fi
+fi
+
+# /etc/config/powers.alb10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.alb10"
+        chmod 644 /etc/config/powers.alb10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10
+        chmod 444 /etc/config/powers.alb10 # readonly
+    fi
+fi
+
+# /etc/config/powers.hash12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash12 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash12 /etc/config/powers.hash12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.hash12"
+        chmod 644 /etc/config/powers.hash12
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash12 /etc/config/powers.hash12
+        chmod 444 /etc/config/powers.hash12 # readonly
+    fi
+fi
+
+# /etc/config/powers.hash10
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash10 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash10 /etc/config/powers.hash10`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.hash10"
+        chmod 644 /etc/config/powers.hash10
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash10 /etc/config/powers.hash10
+        chmod 444 /etc/config/powers.hash10 # readonly
+    fi
+fi
+
+# Link /etc/config/powers
+if [ -f /tmp/upgrade-files/rootfs/etc/config/$POWERSFILE ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$POWERSFILE /etc/config/powers`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Link $POWERSFILE to /etc/config/powers"
+        cd /etc/config/
+        chmod 644 powers
+        rm -f powers
+        ln -s $POWERSFILE powers
+        chmod 444 powers # readonly
+        cd - >/dev/null
     fi
 fi
 

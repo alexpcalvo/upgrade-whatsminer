@@ -26,6 +26,8 @@ start() {
 	local _ntp_enable
 	local _ntp_pools
 
+	local _powers_limit
+
 	config_load pools
 
 	config_get _pool1url default pool1url
@@ -41,15 +43,10 @@ start() {
 	config_get _ntp_enable default ntp_enable
 	config_get _ntp_pools default ntp_pools
 
-
 	config_load cgminer
 	config_get _temperature_limit default temperature_limit
 	config_get _fan_speed_limit default fan_speed_limit
-	config_get _voltage_limit_low default voltage_limit_low
-	config_get _voltage_limit_high default voltage_limit_high
 	config_get _chip_test_start_freq default chip_test_start_freq
-	config_get _chip_freq_limit_low default chip_freq_limit_low
-	config_get _chip_freq_limit_high default chip_freq_limit_high
 	config_get _work_interval default work_interval
 	config_get _temp_chips default temp_chips
 	config_get _temp_sensors_per_chip default temp_sensors_per_chip
@@ -93,12 +90,15 @@ start() {
             API_NETWORK=""
 	fi 
 
-	CHIP_OPTIONS="$_bitmicro_options:$_chip_test_start_freq:$_chip_freq_limit_low:$_chip_freq_limit_high:$_work_interval"
-	LIMIT_OPTIONS="$_temperature_limit:$_fan_speed_limit:$_voltage_limit_low:$_voltage_limit_high"
+	_powers_limit=`uci -d '-' get powers.default.power_limit`
+
+	CHIP_OPTIONS="$_bitmicro_options:$_chip_test_start_freq:$_work_interval"
+	ENV_LIMIT_OPTIONS="$_temperature_limit:$_fan_speed_limit"
 	TEMP_SENSOR_OPTIONS="$_temp_chips:$_temp_sensors_per_chip"
 	UPFREQ_OPTIONS="$_upfreq_pass_cores_percent:$_upfreq_pass_chips_percent"
 	PRE_HEAT_OPTIONS="$_pre_heat_temp:$_pre_heat_end_freq:$_pre_heat_timeout"
-	BITMICRO_OPTIONS=" --bitmicro-options $CHIP_OPTIONS:$LIMIT_OPTIONS:$TEMP_SENSOR_OPTIONS:$UPFREQ_OPTIONS:$PRE_HEAT_OPTIONS --bitmicro-devs $_bitmicro_devs"
+	POWERS_LIMIT_OPTIONS="$_powers_limit"
+	BITMICRO_OPTIONS=" --bitmicro-options $CHIP_OPTIONS:$ENV_LIMIT_OPTIONS:$TEMP_SENSOR_OPTIONS:$UPFREQ_OPTIONS:$PRE_HEAT_OPTIONS:$POWERS_LIMIT_OPTIONS --bitmicro-devs $_bitmicro_devs"
 	PARAMS="$BITMICRO_OPTIONS $POOL1 $POOL2 $POOL3 $API_LISTEN $API_NETWORK --api-allow $_api_allow --syslog"
 	echo $PARAMS
 

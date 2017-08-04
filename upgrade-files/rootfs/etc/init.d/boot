@@ -9,7 +9,9 @@ isH3Platform=false
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
 if [ "$cpuinfo" != "" ]; then
 	isH3Platform=true
-	logger "It's H3 platform."
+	echo 2 > /proc/irq/33/smp_affinity
+	echo 4 > /proc/irq/34/smp_affinity
+	echo 8 > /proc/irq/35/smp_affinity
 fi
 
 init_led() {

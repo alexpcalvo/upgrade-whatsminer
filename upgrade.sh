@@ -108,7 +108,7 @@ if [ "$isH3Platform" = true ]; then
     rm -f `ls /tmp/upgrade-files/bin/* | grep -v boot.fex`
     rm -f /tmp/upgrade-files/packages/*
 
-    for file in $(find /tmp/upgrade-files/rootfs -name *.h3)
+    for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
     do
         newfile=`echo $file | sed 's/\.h3$//'`
         mv $file $newfile
@@ -116,7 +116,7 @@ if [ "$isH3Platform" = true ]; then
 else
     # ZYNQ: 1) remove useless files for h3
     rm -f /tmp/upgrade-files/bin/boot.fex
-    find /tmp/upgrade-files/rootfs -name *.h3 | xargs rm -f
+    find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
 fi
 
 #

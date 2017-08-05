@@ -713,11 +713,11 @@ if [ -f /etc/rc.d/K11om-watchdog ]; then
     rm -f /etc/rc.d/K11om-watchdog
 fi
 
-if [ -f /etc/init.d/temp-monitor ]; then
-    rm -f /etc/init.d/temp-monitor
-fi
 if [ -f /etc/rc.d/S90temp-monitor ]; then
     rm -f /etc/rc.d/S90temp-monitor
+fi
+if [ -f /etc/init.d/temp-monitor ]; then
+    rm -f /etc/init.d/temp-monitor
 fi
 if [ -f /usr/bin/temp-monitor ]; then
     rm -f /usr/bin/temp-monitor

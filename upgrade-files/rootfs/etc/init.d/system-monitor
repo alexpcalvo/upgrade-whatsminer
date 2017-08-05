@@ -2,7 +2,7 @@
 
 START=90
 
-DAEMON=temp-monitor
+DAEMON=system-monitor
 PIDFILE=/var/run/$DAEMON.pid
 
 start() {

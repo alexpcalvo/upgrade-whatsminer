@@ -123,6 +123,7 @@ fi
 # Kill services
 #
 killall -9 crond >/dev/null 2>&1
+killall -9 system-monitor >/dev/null 2>&1
 killall -9 temp-monitor >/dev/null 2>&1
 killall -9 keyd >/dev/null 2>&1
 killall -9 cgminer >/dev/null 2>&1
@@ -500,15 +501,15 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer ]; then
     fi
 fi
 
-# /etc/init.d/temp-monitor
-if [ -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor`
+# /etc/init.d/system-monitor
+if [ -f /tmp/upgrade-files/rootfs/etc/init.d/system-monitor ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/system-monitor /etc/init.d/system-monitor`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/init.d/temp-monitor"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/temp-monitor /etc/init.d/temp-monitor
-        chmod 755 /etc/init.d/temp-monitor
+        echo "Upgrading /etc/init.d/system-monitor"
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/system-monitor /etc/init.d/system-monitor
+        chmod 755 /etc/init.d/system-monitor
         cd /etc/rc.d/
-        ln -s ../init.d/temp-monitor S90temp-monitor >/dev/null 2>&1
+        ln -s ../init.d/system-monitor S90system-monitor >/dev/null 2>&1
         cd - >/dev/null
     fi
 fi
@@ -537,20 +538,6 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon ]; then
         ln -s ../init.d/remote-daemon S90remote-daemon >/dev/null 2>&1
         cd - >/dev/null
     fi
-fi
-
-# Remove unused files under /etc
-if [ -f /etc/config/firewall ]; then
-    rm -f /etc/config/firewall
-fi
-if [ -f /etc/init.d/om-watchdog ]; then
-    rm -f /etc/init.d/om-watchdog
-fi
-if [ -f /etc/rc.d/S11om-watchdog ]; then
-    rm -f /etc/rc.d/S11om-watchdog
-fi
-if [ -f /etc/rc.d/K11om-watchdog ]; then
-    rm -f /etc/rc.d/K11om-watchdog
 fi
 
 # /usr/bin/cgminer
@@ -583,13 +570,13 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor ]; then
     fi
 fi
 
-# /usr/bin/temp-monitor
-if [ -f /tmp/upgrade-files/rootfs/usr/bin/temp-monitor ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/temp-monitor /usr/bin/temp-monitor`
+# /usr/bin/system-monitor
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/system-monitor ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/system-monitor /usr/bin/system-monitor`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /usr/bin/temp-monitor"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/temp-monitor /usr/bin/temp-monitor
-        chmod 755 /usr/bin/temp-monitor
+        echo "Upgrading /usr/bin/system-monitor"
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/system-monitor /usr/bin/system-monitor
+        chmod 755 /usr/bin/system-monitor
     fi
 fi
 
@@ -710,6 +697,30 @@ if [ ! -f /usr/sbin/sensors ]; then
         echo "Installing lm-sensors"
         opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
     fi
+fi
+
+# Remove unused files
+if [ -f /etc/config/firewall ]; then
+    rm -f /etc/config/firewall
+fi
+if [ -f /etc/init.d/om-watchdog ]; then
+    rm -f /etc/init.d/om-watchdog
+fi
+if [ -f /etc/rc.d/S11om-watchdog ]; then
+    rm -f /etc/rc.d/S11om-watchdog
+fi
+if [ -f /etc/rc.d/K11om-watchdog ]; then
+    rm -f /etc/rc.d/K11om-watchdog
+fi
+
+if [ -f /etc/init.d/temp-monitor ]; then
+    rm -f /etc/init.d/temp-monitor
+fi
+if [ -f /etc/rc.d/S90temp-monitor ]; then
+    rm -f /etc/rc.d/S90temp-monitor
+fi
+if [ -f /usr/bin/temp-monitor ]; then
+    rm -f /usr/bin/temp-monitor
 fi
 
 # Sync to flash

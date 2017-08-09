@@ -68,6 +68,24 @@ set_plug_directions() {
 	fi
 }
 
+set_en_directions() {
+	if [ "$isH3Platform" = true ]; then
+		echo 96 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio96/direction
+		echo 97 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio97/direction
+		echo 98 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio98/direction
+	else
+		echo 934 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio934/direction
+		echo 939 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio939/direction
+		echo 937 > /sys/class/gpio/export
+		echo in > /sys/class/gpio/gpio937/direction
+	fi
+}
+
 uci_apply_defaults() {
 	. /lib/functions/system.sh
 
@@ -115,6 +133,7 @@ boot() {
 	uci_apply_defaults
 	set_reset_directions
 	set_plug_directions
+	set_en_directions
 	init_led
 
 	# temporary hack until configd exists

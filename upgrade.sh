@@ -30,11 +30,19 @@ if [ "$isH3Platform" = true ]; then
     hwmon1_path="/sys/class/hwmon/hwmon2/device/"
     hwmon2_path="/sys/class/hwmon/hwmon3/device/"
     hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+
+    gpio0_path="/sys/class/gpio/gpio96/value"
+    gpio1_path="/sys/class/gpio/gpio97/value"
+    gpio2_path="/sys/class/gpio/gpio98/value"
 else
     hwmon0_path="/sys/class/hwmon/hwmon0/"
     hwmon1_path="/sys/class/hwmon/hwmon1/"
     hwmon2_path="/sys/class/hwmon/hwmon2/"
     hwmon4_path="/sys/class/hwmon/hwmon4/"
+
+    gpio0_path="/sys/class/gpio/gpio934/value"
+    gpio1_path="/sys/class/gpio/gpio939/value"
+    gpio2_path="/sys/class/gpio/gpio937/value"    
 fi
 
 # Detect hash board type
@@ -48,10 +56,22 @@ if [ -f $hwmon2_path/name ]; then
     name2=`cat $hwmon2_path/name`
 fi
 
+gpio0=`cat $gpio0_path`
+gpio1=`cat $gpio1_path`
+gpio2=`cat $gpio2_path`
+
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
-    hash_board="HB12"
+    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
+        hash_board="HB20"
+    else
+        hash_board="HB12"
+    fi
 elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-    hash_board="ALB10"
+    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
+        hash_board="ALB20"
+    else
+        hash_board="ALB10"
+    fi
 else
     if [ -f $hwmon0_path/name ]; then
         name0=`cat $hwmon0_path/name`
@@ -144,15 +164,25 @@ if [ "$hash_board" = "ALB10" ]; then
     CGMINERDEFAULTFILE="cgminer.default.alb10"
     POWERSFILE="powers.alb10"
 fi
-if [ "$hash_board" = "HB12" ]; then
-    CGMINERFILE="cgminer.hash12"
-    CGMINERDEFAULTFILE="cgminer.default.hash12"
-    POWERSFILE="powers.hash12"
+if [ "$hash_board" = "ALB20" ]; then
+    CGMINERFILE="cgminer.alb20"
+    CGMINERDEFAULTFILE="cgminer.default.alb20"
+    POWERSFILE="powers.alb20"
 fi
 if [ "$hash_board" = "HB10" ]; then
     CGMINERFILE="cgminer.hash10"
     CGMINERDEFAULTFILE="cgminer.default.hash10"
     POWERSFILE="powers.hash10"
+fi
+if [ "$hash_board" = "HB12" ]; then
+    CGMINERFILE="cgminer.hash12"
+    CGMINERDEFAULTFILE="cgminer.default.hash12"
+    POWERSFILE="powers.hash12"
+fi
+if [ "$hash_board" = "HB20" ]; then
+    CGMINERFILE="cgminer.hash20"
+    CGMINERDEFAULTFILE="cgminer.default.hash20"
+    POWERSFILE="powers.hash20"
 fi
 
 # boot (mtd1)

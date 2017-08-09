@@ -79,30 +79,52 @@ hashboardtype = "HB-unknown"
 local sensor_tmp421 = "tmp421"
 local sensor_tmp423 = "tmp423"
 local sensor_lm75 = "lm75"
+local gpio_low = "0"
 
 local hwmon0_path = "/sys/class/hwmon/hwmon0/name"
 local hwmon1_path = "/sys/class/hwmon/hwmon1/name"
 local hwmon2_path = "/sys/class/hwmon/hwmon2/name"
 local hwmon4_path = "/sys/class/hwmon/hwmon4/name"
 
+local gpio0_path = "/sys/class/gpio/gpio934/value"
+local gpio1_path = "/sys/class/gpio/gpio939/value"
+local gpio2_path = "/sys/class/gpio/gpio937/value"
+
 if is_h3 then
    hwmon0_path = "/sys/class/hwmon/hwmon1/device/name"
    hwmon1_path = "/sys/class/hwmon/hwmon2/device/name"
    hwmon2_path = "/sys/class/hwmon/hwmon3/device/name"
    hwmon4_path = "/sys/class/hwmon/hwmon5/device/name"
+
+   gpio0_path = "/sys/class/gpio/gpio96/value"
+   gpio1_path = "/sys/class/gpio/gpio97/value"
+   gpio2_path = "/sys/class/gpio/gpio98/value"
 end
 
 local name0 = fs.readfile(hwmon0_path) or ""
 local name1 = fs.readfile(hwmon1_path) or ""
 local name2 = fs.readfile(hwmon2_path) or ""
 
+local gpio0 = fs.readfile(gpio0_path) or ""
+local gpio1 = fs.readfile(gpio1_path) or ""
+local gpio2 = fs.readfile(gpio2_path) or ""
+
 name0 = string.match(name0, sensor_tmp421)
 name1 = string.match(name1, sensor_tmp421)
 name2 = string.match(name2, sensor_tmp421)
 
+gpio0 = string.match(gpio0, gpio_low)
+gpio1 = string.match(gpio1, gpio_low)
+gpio2 = string.match(gpio2, gpio_low)
+
 if name0 == sensor_tmp421 or name1 == sensor_tmp421 or name2 == sensor_tmp421 then
-	hashboardtype = "HB12"
-    modelname = "M1"
+   if gpio0 == gpio_low or gpio1 == gpio_low or gpio2 == gpio_low then
+        hashboardtype = "HB20"
+        modelname = "M1s"
+   else
+        hashboardtype = "HB12"
+        modelname = "M1"
+   end
 else
 	name0 = fs.readfile(hwmon0_path) or ""
 	name1 = fs.readfile(hwmon2_path) or ""
@@ -125,8 +147,13 @@ else
         name2 = string.match(name2, sensor_lm75)
 
 	    if name0 == sensor_lm75 or name1 == sensor_lm75 or name2 == sensor_lm75 then
-           hashboardtype = "ALB10"
-           modelname = "M2"
+           if gpio0 == gpio_low or gpio1 == gpio_low or gpio2 == gpio_low then
+              hashboardtype = "ALB20"
+              modelname = "M3"
+           else
+              hashboardtype = "ALB10"
+              modelname = "M2"
+           end
 	    end
 	end
 end

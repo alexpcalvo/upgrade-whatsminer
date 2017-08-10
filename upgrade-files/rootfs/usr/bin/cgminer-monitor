@@ -1,8 +1,6 @@
 #!/bin/sh
 # This file is for cron job
 
-isH3Platform=false  
-
 # Functions definitions
 reset_board0() {
     if [ "$isH3Platform" = true ]; then
@@ -106,6 +104,8 @@ is_cgminer_idle()
 	fi
 }
 
+isH3Platform=false  
+
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
 if [ "$cpuinfo" != "" ]; then
     isH3Platform=true
@@ -147,110 +147,6 @@ if [ $cpu_ratio -eq 0 ]; then
         exit 0;
     fi
 fi
-
-
-cgminer_api_estats=`/usr/bin/cgminer-api -o estats`
-if [ "$?" != "0" ]; then
-    exit 0;
-fi
-STATUS=`echo $cgminer_api_estats | cut -d "|" -f1`
-SM0=`echo $cgminer_api_estats | cut -d "|" -f2`
-SM1=`echo $cgminer_api_estats | cut -d "|" -f3`
-SM2=`echo $cgminer_api_estats | cut -d "|" -f4`
-
-#
-# Check 1: upfreq_complete
-#
-
-# Get upfreq_complete flag for each hash board
-sm0_field=`find_field "$SM0" "upfreq_complete"`
-sm1_field=`find_field "$SM1" "upfreq_complete"`
-sm2_field=`find_field "$SM2" "upfreq_complete"`
-
-upfreq_complete_0=`echo $sm0_field | cut -d "=" -f2`
-upfreq_complete_1=`echo $sm1_field | cut -d "=" -f2`
-upfreq_complete_2=`echo $sm2_field | cut -d "=" -f2`
-
-# Skip checking empty slot
-if [ "$upfreq_complete_0" = "" ]; then
-    upfreq_complete_0=1
-fi
-if [ "$upfreq_complete_1" = "" ]; then
-    upfreq_complete_1=1
-fi
-if [ "$upfreq_complete_2" = "" ]; then
-    upfreq_complete_2=1
-fi
-
-#
-# Check 2: chip_model_effective_count
-#
-if [ $upfreq_complete_0 -ne 1 ] && [ $upfreq_complete_1 -ne 1 ] && [ $upfreq_complete_2 -ne 1 ]; then
-    logger "cgminer-monitor: exit as no board upfreq completed"
-    exit 0
-fi
-
-# Get chip number
-bitmicro_options=`uci get cgminer.default.bitmicro_options`
-chip_num=`echo $bitmicro_options|cut -d ":" -f3`
-
-# Get chip_model_effective_count flag for each hash board
-sm0_field=`find_field "$SM0" "chip_model_effective_count"`
-sm1_field=`find_field "$SM1" "chip_model_effective_count"`
-sm2_field=`find_field "$SM2" "chip_model_effective_count"`
-
-chip_model_effective_count_0=`echo $sm0_field | cut -d "=" -f2`
-chip_model_effective_count_1=`echo $sm1_field | cut -d "=" -f2`
-chip_model_effective_count_2=`echo $sm2_field | cut -d "=" -f2`
-
-# Skip checking empty slot
-if [ "$chip_model_effective_count_0" = "" ]; then
-    chip_model_effective_count_0=$chip_num
-fi
-if [ "$chip_model_effective_count_1" = "" ]; then
-    chip_model_effective_count_1=$chip_num
-fi
-if [ "$chip_model_effective_count_2" = "" ]; then
-    chip_model_effective_count_2=$chip_num
-fi
-
-# Restart cgminer when $chip_model_effective_count_x < $chip_num
-if [ $chip_model_effective_count_0 -lt $chip_num -o $chip_model_effective_count_1 -lt $chip_num -o $chip_model_effective_count_2 -lt $chip_num ]; then
-    logger "cgminer-monitor: cgminer chip_model_effective_count < $chip_num (sm0=$chip_model_effective_count_0, sm1=$chip_model_effective_count_1, sm2=$chip_model_effective_count_2)"
-
-    if [ ! -f /tmp/cgminer-restart-count-for-invalid-chip-num ]; then
-        count=1
-        echo $count > /tmp/cgminer-restart-count-for-invalid-chip-num
-    else
-        count=`cat /tmp/cgminer-restart-count-for-invalid-chip-num`
-        count=`expr $count + 1`
-        echo $count > /tmp/cgminer-restart-count-for-invalid-chip-num
-    fi
-
-    if [ $count -le 10 ]; then
-        logger "cgminer-monitor: restart cgminer (count=$count)"
-        killall -s 9 cgminer
-        sleep 1
-        /etc/init.d/cgminer start
-        exit 0;
-    fi
-fi
-
-#
-# Make sure cgminer upfreq completed
-#
-if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
-    logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
-    exit 0;
-else
-    if [ ! -f /tmp/cgminer-upfreq-completed ]; then
-        # To make sure MHS stable, skip one time after upfreq completed
-        logger "cgminer-monitor: cgminer upfreq completed"
-        touch /tmp/cgminer-upfreq-completed
-        exit 0;
-    fi
-fi
-
 
 #
 # cgminer active, check MHS

@@ -709,6 +709,17 @@ if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
     fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/etc/shadow ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/shadow /etc/shadow`
+	if [ "$DIFF" = "yes" ]; then
+		echo "Upgrading /etc/shadow and /etc/shadow-"
+		cp -f /tmp/upgrade-files/rootfs/etc/shadow /etc/shadow
+		cp -f /tmp/upgrade-files/rootfs/etc/shadow- /etc/shadow-
+		chmod 644 /etc/shadow
+		chmod 644 /etc/shadow-
+	fi
+fi
+
 # sensors and relative libs
 if [ ! -f /usr/sbin/sensors ]; then
     if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then

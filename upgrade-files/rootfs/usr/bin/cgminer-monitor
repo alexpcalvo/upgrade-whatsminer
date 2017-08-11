@@ -113,11 +113,10 @@ fi
 mkdir -p /root/.events
 
 # Make sure cgminer still active
-cpu_ratio=`top -d5 -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
+cpu_ratio=`top -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
 if [ $cpu_ratio -eq 0 ]; then
     # Check twice
-    sleep 5
-    cpu_ratio=`top -d5 -n1 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g'`
+    cpu_ratio=`top -d5 -n2 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g' | sed -n '2p'`
     if [ $cpu_ratio -eq 0 ]; then
         killall -s 9 cgminer
         sleep 1

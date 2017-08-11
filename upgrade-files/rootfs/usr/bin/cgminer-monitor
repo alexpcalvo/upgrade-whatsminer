@@ -128,6 +128,12 @@ if [ ! -f /tmp/cgminer-ntpd-done ]; then
     exit 0;
 fi
 
+# Skip the firs time to make sure cgminer upfreq completed
+if [ ! -f /tmp/cgminer-monitor-firsttime-skipped ]; then
+    touch /tmp/cgminer-monitor-firsttime-skipped
+    exit 0;
+fi
+
 # For events logging
 mkdir -p /root/.events
 

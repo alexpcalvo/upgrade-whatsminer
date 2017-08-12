@@ -6,13 +6,24 @@ STOP=98
 
 isH3Platform=false
 
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
-	isH3Platform=true
-	echo 2 > /proc/irq/33/smp_affinity
-	echo 4 > /proc/irq/34/smp_affinity
-	echo 8 > /proc/irq/35/smp_affinity
-fi
+detect_cpuinfo() {
+	cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+	if [ "$cpuinfo" != "" ]; then
+		isH3Platform=true
+
+		# echo disabled > /sys/devices/virtual/thermal/thermal_zone0/mode
+
+		# enable pull of hash power enable pins for board type detection
+		echo PD0 1 > /sys/kernel/debug/sunxi_pinctrl/pull
+		echo PD1 1 > /sys/kernel/debug/sunxi_pinctrl/pull
+		echo PD2 1 > /sys/kernel/debug/sunxi_pinctrl/pull
+
+		# bond irqs of uart1~3 to core1~3
+		echo 2 > /proc/irq/33/smp_affinity
+		echo 4 > /proc/irq/34/smp_affinity
+		echo 8 > /proc/irq/35/smp_affinity
+	fi
+}
 
 init_led() {
 	if [ "$isH3Platform" = true ]; then
@@ -131,6 +142,8 @@ boot() {
 
 	/bin/board_detect
 	uci_apply_defaults
+
+	detect_cpuinfo
 	set_reset_directions
 	set_plug_directions
 	set_en_directions

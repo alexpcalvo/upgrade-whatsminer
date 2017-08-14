@@ -6,52 +6,83 @@
 # 2. test-readchipid /dev/ttyS3 [chip_num]
 #
 
-isH3Platform=false  
+#
+# Detect chip number according to hash board type
+#
+isH3Platform=false
 
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
 if [ "$cpuinfo" != "" ]; then
     isH3Platform=true
-    echo "It's H3 platform."
 fi
 
-#
-# Detect chip number according to hash board type
-#
 if [ "$isH3Platform" = true ]; then
-    if [ -f /sys/class/hwmon/hwmon1/device/name ]; then
-        name0=`cat /sys/class/hwmon/hwmon1/device/name`
-    fi
-    if [ -f /sys/class/hwmon/hwmon2/device/name ]; then
-        name1=`cat /sys/class/hwmon/hwmon2/device/name`
-    fi
-    if [ -f /sys/class/hwmon/hwmon3/device/name ]; then
-        name2=`cat /sys/class/hwmon/hwmon3/device/name`
-    fi
+    DEFAULT_DEV="/dev/ttyS1"
+    
+    hwmon0_path="/sys/class/hwmon/hwmon1/device/"
+    hwmon1_path="/sys/class/hwmon/hwmon2/device/"
+    hwmon2_path="/sys/class/hwmon/hwmon3/device/"
+    hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+
+    gpio0_path="/sys/class/gpio/gpio96/value"
+    gpio1_path="/sys/class/gpio/gpio97/value"
+    gpio2_path="/sys/class/gpio/gpio98/value"
+
+    reset0_path="/sys/class/gpio/gpio99/value"
+    reset1_path="/sys/class/gpio/gpio100/value"
+    reset2_path="/sys/class/gpio/gpio101/value"
 else
-    if [ -f /sys/class/hwmon/hwmon0/name ]; then
-        name0=`cat /sys/class/hwmon/hwmon0/name`
-    fi
-    if [ -f /sys/class/hwmon/hwmon1/name ]; then
-        name1=`cat /sys/class/hwmon/hwmon1/name`
-    fi
-    if [ -f /sys/class/hwmon/hwmon2/name ]; then
-        name2=`cat /sys/class/hwmon/hwmon2/name`
-    fi
+    DEFAULT_DEV="/dev/ttyS2"
+    
+    hwmon0_path="/sys/class/hwmon/hwmon0/"
+    hwmon1_path="/sys/class/hwmon/hwmon1/"
+    hwmon2_path="/sys/class/hwmon/hwmon2/"
+    hwmon4_path="/sys/class/hwmon/hwmon4/"
+
+    gpio0_path="/sys/class/gpio/gpio934/value"
+    gpio1_path="/sys/class/gpio/gpio939/value"
+    gpio2_path="/sys/class/gpio/gpio937/value"
+
+    reset0_path="/sys/class/gpio/gpio960/value"
+    reset1_path="/sys/class/gpio/gpio962/value"
+    reset2_path="/sys/class/gpio/gpio964/value"
 fi
+
+if [ -f $hwmon0_path/name ]; then
+    name0=`cat $hwmon0_path/name`
+fi
+if [ -f $hwmon1_path/name ]; then
+    name1=`cat $hwmon1_path/name`
+fi
+if [ -f $hwmon2_path/name ]; then
+    name2=`cat $hwmon2_path/name`
+fi
+
+gpio0=`cat $gpio0_path`
+gpio1=`cat $gpio1_path`
+gpio2=`cat $gpio2_path`
 
 if [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-    CHIP_NUM=38
+    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
+        CHIP_NUM=63
+    else
+        CHIP_NUM=38
+    fi
 else
-    CHIP_NUM=66
+    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
+        CHIP_NUM=60
+    else
+        CHIP_NUM=66
+    fi
 fi
 
 # Check parameters: <command> [device] [chip_num]
 if [ "$1" -gt 0 ] 2>/dev/null; then
-  DEV="/dev/ttyS2"
+  DEV=$DEFAULT_DEV
   CHIP_NUM=$1
 else
     if [ "$1" = "" ]; then
-        DEV="/dev/ttyS2"
+        DEV=$DEFAULT_DEV
     else
         DEV=$1
         if [ "$2" -gt 0 ] 2>/dev/null; then
@@ -60,22 +91,22 @@ else
     fi
 fi
 
+echo "-----------------------------------------------------------------"
+echo "isH3Platform=$isH3Platform"
+echo "hwmon_name0=$name0 hwmon_name1=$name1 hwmon_name2=$name2"
+echo "en_gpio0=$gpio0 en_gpio1=$gpio1 en_gpio2=$gpio2"
+echo "CHIP_NUM=$CHIP_NUM DEV=$DEV"
+echo "-----------------------------------------------------------------"
+
+# Reset all slots
+echo 0 > $reset0_path
+echo 0 > $reset1_path
+echo 0 > $reset2_path
+
 #
-# Command usage:
+# Start to test, command usage:
 #
 # bitmicro-test <device> <baud> <times> <progress> <command>
 #               <chip_num> <core_num> <fan_speed> <need_retry> <retry_times>
-
-# Reset all slots
-if [ "$isH3Platform" = true ]; then
-    echo 0 > /sys/class/gpio/gpio99/value
-    echo 0 > /sys/class/gpio/gpio100/value
-    echo 0 > /sys/class/gpio/gpio101/value
-else
-    echo 0 > /sys/class/gpio/gpio960/value
-    echo 0 > /sys/class/gpio/gpio962/value
-    echo 0 > /sys/class/gpio/gpio964/value
-fi
-
-# Start to test
-/bin/bitmicro-test $DEV 1000000 1 1 read_chip_model $CHIP_NUM 100 6000 1 10
+# 
+/bin/bitmicro-test $DEV 1000000 1 1 read_chip_model $CHIP_NUM 100 4500 1 10

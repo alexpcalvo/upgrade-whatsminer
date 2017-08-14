@@ -288,6 +288,17 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     fi
 fi
 
+# /etc/config/powers.alb20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.alb20 /etc/config/powers.alb20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.alb20"
+        chmod 644 /etc/config/powers.alb20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.alb20 /etc/config/powers.alb20
+        chmod 444 /etc/config/powers.alb20 # readonly
+    fi
+fi
+
 # /etc/config/powers.alb10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10`
@@ -296,6 +307,17 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 ]; then
         chmod 644 /etc/config/powers.alb10
         cp -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10
         chmod 444 /etc/config/powers.alb10 # readonly
+    fi
+fi
+
+# /etc/config/powers.hash20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash20 /etc/config/powers.hash20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.hash20"
+        chmod 644 /etc/config/powers.hash20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash20 /etc/config/powers.hash20
+        chmod 444 /etc/config/powers.hash20 # readonly
     fi
 fi
 
@@ -399,6 +421,27 @@ fi
 
 # Upgrade /etc/config/cgminer after updating pools
 
+# /etc/config/cgminer.alb20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 /etc/config/cgminer.alb20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.alb20 to /etc/config/cgminer.alb20"
+        chmod 644 /etc/config/cgminer.alb20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 /etc/config/cgminer.alb20
+        chmod 444 /etc/config/cgminer.alb20 # readonly
+    fi
+fi
+# /etc/config/cgminer.default.alb20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 /etc/config/cgminer.default.alb20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.alb20 to /etc/config/cgminer.default.alb20"
+        chmod 644 /etc/config/cgminer.default.alb20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 /etc/config/cgminer.default.alb20
+        chmod 444 /etc/config/cgminer.default.alb20 # readonly
+    fi
+fi
+
 # /etc/config/cgminer.alb10
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10`
@@ -417,6 +460,27 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 ]; then
         chmod 644 /etc/config/cgminer.default.alb10
         cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10
         chmod 444 /etc/config/cgminer.default.alb10 # readonly
+    fi
+fi
+
+# /etc/config/cgminer.hash20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 /etc/config/cgminer.hash20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.hash20 to /etc/config/cgminer.hash20"
+        chmod 644 /etc/config/cgminer.hash20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 /etc/config/cgminer.hash20
+        chmod 444 /etc/config/cgminer.hash20 # readonly
+    fi
+fi
+# /etc/config/cgminer.default.hash20
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 /etc/config/cgminer.default.hash20`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.hash20 to /etc/config/cgminer.default.hash20"
+        chmod 644 /etc/config/cgminer.default.hash20
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 /etc/config/cgminer.default.hash20
+        chmod 444 /etc/config/cgminer.default.hash20 # readonly
     fi
 fi
 

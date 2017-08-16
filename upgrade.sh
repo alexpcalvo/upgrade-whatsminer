@@ -31,18 +31,26 @@ if [ "$isH3Platform" = true ]; then
     hwmon2_path="/sys/class/hwmon/hwmon3/device/"
     hwmon4_path="/sys/class/hwmon/hwmon5/device/"
 
-    gpio0_path="/sys/class/gpio/gpio96/value"
-    gpio1_path="/sys/class/gpio/gpio97/value"
-    gpio2_path="/sys/class/gpio/gpio98/value"
+    gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
+    gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
+    gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
+    
+    gpio_en0_path="/sys/class/gpio/gpio96/value"
+    gpio_en1_path="/sys/class/gpio/gpio97/value"
+    gpio_en2_path="/sys/class/gpio/gpio98/value"
 else
     hwmon0_path="/sys/class/hwmon/hwmon0/"
     hwmon1_path="/sys/class/hwmon/hwmon1/"
     hwmon2_path="/sys/class/hwmon/hwmon2/"
     hwmon4_path="/sys/class/hwmon/hwmon4/"
 
-    gpio0_path="/sys/class/gpio/gpio934/value"
-    gpio1_path="/sys/class/gpio/gpio939/value"
-    gpio2_path="/sys/class/gpio/gpio937/value"    
+    gpio_hotplug0_path="/sys/class/gpio/gpio961/value"
+    gpio_hotplug1_path="/sys/class/gpio/gpio963/value"
+    gpio_hotplug2_path="/sys/class/gpio/gpio965/value"
+
+    gpio_en0_path="/sys/class/gpio/gpio934/value"
+    gpio_en1_path="/sys/class/gpio/gpio939/value"
+    gpio_en2_path="/sys/class/gpio/gpio937/value"
 fi
 
 # Detect hash board type
@@ -56,21 +64,41 @@ if [ -f $hwmon2_path/name ]; then
     name2=`cat $hwmon2_path/name`
 fi
 
-gpio0=`cat $gpio0_path`
-gpio1=`cat $gpio1_path`
-gpio2=`cat $gpio2_path`
+gpio_hotplug0=`cat $gpio_hotplug0_path`
+gpio_hotplug1=`cat $gpio_hotplug1_path`
+gpio_hotplug2=`cat $gpio_hotplug2_path`
+
+gpio_en0=`cat $gpio_en0_path`
+gpio_en1=`cat $gpio_en1_path`
+gpio_en2=`cat $gpio_en2_path`
+
+if [ $gpio_hotplug0 = "0" -a $gpio_en0 = "1" ]; then
+    hash_board_type0="1"
+else
+    hash_board_type0="0"
+fi
+if [ $gpio_hotplug1 = "0" -a $gpio_en1 = "1" ]; then
+    hash_board_type1="1"
+else
+    hash_board_type1="0"
+fi
+if [ $gpio_hotplug2 = "0" -a $gpio_en2 = "1" ]; then
+    hash_board_type2="1"
+else
+    hash_board_type2="0"
+fi
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
-    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
-        hash_board="HB20"
-    else
+    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
         hash_board="HB12"
+    else
+        hash_board="HB20"
     fi
 elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-    if [ $gpio0 = "0" -o $gpio1 = "0" -o $gpio2 = "0" ]; then
-        hash_board="ALB20"
-    else
+    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
         hash_board="ALB10"
+    else
+        hash_board="ALB20"
     fi
 else
     if [ -f $hwmon0_path/name ]; then

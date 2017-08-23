@@ -34,10 +34,28 @@ if [ "$isH3Platform" = true ]; then
     gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
     gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
     gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
-    
+
     gpio_en0_path="/sys/class/gpio/gpio96/value"
     gpio_en1_path="/sys/class/gpio/gpio97/value"
     gpio_en2_path="/sys/class/gpio/gpio98/value"
+
+    if [ ! -f /sys/class/gpio/gpio15/direction ]; then
+	    echo 15 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio15/direction
+	    echo 7 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio7/direction
+	    echo 8 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio8/direction
+    fi
+
+    if [ ! -f /sys/class/gpio/gpio96/direction ]; then
+	    echo 96 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio96/direction
+	    echo 97 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio97/direction
+	    echo 98 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio98/direction
+    fi
 else
     hwmon0_path="/sys/class/hwmon/hwmon0/"
     hwmon1_path="/sys/class/hwmon/hwmon1/"
@@ -51,6 +69,24 @@ else
     gpio_en0_path="/sys/class/gpio/gpio934/value"
     gpio_en1_path="/sys/class/gpio/gpio939/value"
     gpio_en2_path="/sys/class/gpio/gpio937/value"
+
+    if [ ! -f /sys/class/gpio/gpio961/direction ]; then
+	    echo 961 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio961/direction
+	    echo 963 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio963/direction
+	    echo 965 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio965/direction
+    fi
+
+    if [ ! -f /sys/class/gpio/gpio934/direction ]; then
+	    echo 934 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio934/direction
+	    echo 939 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio939/direction
+	    echo 937 > /sys/class/gpio/export
+	    echo in > /sys/class/gpio/gpio937/direction
+    fi
 fi
 
 # Detect hash board type

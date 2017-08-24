@@ -292,7 +292,7 @@ function stats()
 
 	for line in stats do
 		if ver.hashboardtype == "HB10" then
-			local sta, id, elapsed, slot, freqs_avg, temp_in, temp_out, effective_chips =
+			local sta, id, elapsed, slot, freqs_avg, temp_in, temp_out, effective_chips, upfreq_complete =
 			line:match("STATS=(%d+)," ..
 				"ID=([%a%d]+)," ..
 				"Elapsed=(%d+)," ..
@@ -306,6 +306,8 @@ function stats()
 				"temp_5=(-?[%.%d]+)," ..
 				".*," ..
 				"chip_model_effective_count=(%d+)," ..
+				".*," ..
+				"upfreq_complete=(%d+)," ..
 				".*,")
 
 			if sta then
@@ -316,11 +318,12 @@ function stats()
 					['freqs_avg'] = freqs_avg,
 					['temp_1'] = temp_out,
 					['temp_2'] = temp_in,
-					['effective_chips'] = effective_chips
+					['effective_chips'] = effective_chips,
+					['upfreq_complete'] = upfreq_complete
 				}
 			end
 		else
-			local sta, id, elapsed, slot, freqs_avg, temp_out, temp_in, effective_chips =
+			local sta, id, elapsed, slot, freqs_avg, temp_out, temp_in, effective_chips, upfreq_complete =
 			line:match("STATS=(%d+)," ..
 				"ID=([%a%d]+)," ..
 				"Elapsed=(%d+)," ..
@@ -333,6 +336,8 @@ function stats()
 				"temp_2=(-?[%.%d]+)," ..
 				".*," ..
 				"chip_model_effective_count=(%d+)," ..
+				".*," ..
+				"upfreq_complete=(%d+)," ..
 				".*,")
 
 			if sta then
@@ -343,7 +348,8 @@ function stats()
 					['freqs_avg'] = freqs_avg,
 					['temp_1'] = temp_out,
 					['temp_2'] = temp_in,
-					['effective_chips'] = effective_chips
+					['effective_chips'] = effective_chips,
+					['upfreq_complete'] = upfreq_complete
 				}
 			end
 		end

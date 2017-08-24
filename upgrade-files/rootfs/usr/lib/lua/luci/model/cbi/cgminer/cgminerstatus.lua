@@ -21,87 +21,88 @@ f = SimpleForm("cgminerstatus", translate("CGMiner Status") ..
 f.reset = false
 f.submit = false
 
-t = f:section(Table, luci.controller.cgminer.summary(), translate("Summary"))
-t:option(DummyValue, "elapsed", translate("Elapsed"))
-ghsav = t:option(DummyValue, "mhsav", translate("GHSav"))
+t0 = f:section(Table, luci.controller.cgminer.summary(), translate("Summary"))
+t0:option(DummyValue, "elapsed", translate("Elapsed"))
+ghsav = t0:option(DummyValue, "mhsav", translate("GHSav"))
 function ghsav.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section):gsub(",","")
 	return string.format("%.2f", tonumber(v)/1000)
 end
 
-t:option(DummyValue, "accepted", translate("Accepted"))
-t:option(DummyValue, "rejected", translate("Rejected"))
-t:option(DummyValue, "networkblocks", translate("NetworkBlocks"))
-t:option(DummyValue, "bestshare", translate("BestShare"))
-t:option(DummyValue, "fanspeedin", translate("FanSpeedIn"))
-t:option(DummyValue, "fanspeedout", translate("FanSpeedOut"))
+t0:option(DummyValue, "accepted", translate("Accepted"))
+t0:option(DummyValue, "rejected", translate("Rejected"))
+t0:option(DummyValue, "networkblocks", translate("NetworkBlocks"))
+t0:option(DummyValue, "bestshare", translate("BestShare"))
+t0:option(DummyValue, "fanspeedin", translate("FanSpeedIn"))
+t0:option(DummyValue, "fanspeedout", translate("FanSpeedOut"))
 
-t1 = f:section(Table, luci.controller.cgminer.pools(), translate("Pools"))
-t1:option(DummyValue, "pool", translate("Pool"))
-t1:option(DummyValue, "url", translate("URL"))
-t1:option(DummyValue, "stratumactive", translate("Active"))
-t1:option(DummyValue, "user", translate("User"))
+t1 = f:section(Table, luci.controller.cgminer.devs(), translate("Devices"))
+t1:option(DummyValue, "name", translate("Device"))
+t1:option(DummyValue, "enable", translate("Enabled"))
 t1:option(DummyValue, "status", translate("Status"))
-t1:option(DummyValue, "stratumdifficulty", translate("Difficulty"))
-t1:option(DummyValue, "getworks", translate("GetWorks"))
-t1:option(DummyValue, "accepted", translate("Accepted"))
-t1:option(DummyValue, "rejected", translate("Rejected"))
-t1:option(DummyValue, "stale", translate("Stale"))
-t1:option(DummyValue, "lastsharetime", translate("LST"))
-t1:option(DummyValue, "lastsharedifficulty", translate("LSD"))
-
-t2 = f:section(Table, luci.controller.cgminer.devs(), translate("Devices"))
-t2:option(DummyValue, "name", translate("Device"))
-t2:option(DummyValue, "enable", translate("Enabled"))
-t2:option(DummyValue, "status", translate("Status"))
-ghsav = t2:option(DummyValue, "mhsav", translate("GHSav"))
+ghsav = t1:option(DummyValue, "mhsav", translate("GHSav"))
 function ghsav.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v/1000)
 end
 
-ghs5s = t2:option(DummyValue, "mhs5s", translate("GHS5s"))
+ghs5s = t1:option(DummyValue, "mhs5s", translate("GHS5s"))
 function ghs5s.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v/1000)
 end
 
-ghs1m = t2:option(DummyValue, "mhs1m", translate("GHS1m"))
+ghs1m = t1:option(DummyValue, "mhs1m", translate("GHS1m"))
 function ghs1m.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v/1000)
 end
 
-ghs5m = t2:option(DummyValue, "mhs5m", translate("GHS5m"))
+ghs5m = t1:option(DummyValue, "mhs5m", translate("GHS5m"))
 function ghs5m.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v/1000)
 end
 
-ghs15m = t2:option(DummyValue, "mhs15m", translate("GHS15m"))
+ghs15m = t1:option(DummyValue, "mhs15m", translate("GHS15m"))
 function ghs15m.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v/1000)
 end
 
-t2:option(DummyValue, "lvw", translate("LastValidWork"))
+t1:option(DummyValue, "lvw", translate("LastValidWork"))
 
-t3 = f:section(Table, luci.controller.cgminer.stats(), translate(""))
-t3:option(DummyValue, "id", translate("Device"))
-t3:option(DummyValue, "freqs_avg", translate("Frequency(avg)"))
-t3:option(DummyValue, "effective_chips", translate("EffectiveChips"))
+t2 = f:section(Table, luci.controller.cgminer.stats(), translate(""))
+t2:option(DummyValue, "id", translate("Device"))
+t2:option(DummyValue, "freqs_avg", translate("Frequency(avg)"))
+t2:option(DummyValue, "upfreq_complete", translate("UpfreqCompleted"))
+t2:option(DummyValue, "effective_chips", translate("EffectiveChips"))
 
-temp1=t3:option(DummyValue, "temp_1", translate("Temperature1"))
+temp1=t2:option(DummyValue, "temp_1", translate("Temperature1"))
 function temp1.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v)
 end
 
-temp2=t3:option(DummyValue, "temp_2", translate("Temperature2"))
+temp2=t2:option(DummyValue, "temp_2", translate("Temperature2"))
 function temp2.cfgvalue(self, section)
 	local v = Value.cfgvalue(self, section)
 	return string.format("%.2f", v)
 end
+
+t3 = f:section(Table, luci.controller.cgminer.pools(), translate("Pools"))
+t3:option(DummyValue, "pool", translate("Pool"))
+t3:option(DummyValue, "url", translate("URL"))
+t3:option(DummyValue, "stratumactive", translate("Active"))
+t3:option(DummyValue, "user", translate("User"))
+t3:option(DummyValue, "status", translate("Status"))
+t3:option(DummyValue, "stratumdifficulty", translate("Difficulty"))
+t3:option(DummyValue, "getworks", translate("GetWorks"))
+t3:option(DummyValue, "accepted", translate("Accepted"))
+t3:option(DummyValue, "rejected", translate("Rejected"))
+t3:option(DummyValue, "stale", translate("Stale"))
+t3:option(DummyValue, "lastsharetime", translate("LST"))
+t3:option(DummyValue, "lastsharedifficulty", translate("LSD"))
 
 t4 = f:section(Table, luci.controller.cgminer.events(), translate("Events"))
 t4:option(DummyValue, "id", translate("EventCode"))

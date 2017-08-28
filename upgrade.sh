@@ -892,8 +892,10 @@ if [ -f /usr/bin/temp-monitor ]; then
     rm -f /usr/bin/temp-monitor
 fi
 
-# Sync to flash
-sync
+# Sync to flash (don't sync for H3 as there is a bug in NAND driver which may block system when syncing)
+if [ "$isH3Platform" == false ]; then
+    sync
+fi
 
 echo ""
 echo "Done, reboot control board ..."

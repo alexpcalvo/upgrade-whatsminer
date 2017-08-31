@@ -108,7 +108,7 @@ t4 = f:section(Table, luci.controller.cgminer.events(), translate("Events"))
 t4:option(DummyValue, "id", translate("EventCode"))
 t4:option(DummyValue, "cause", translate("EventCause"))
 t4:option(DummyValue, "action", translate("EventAction"))
-t4:option(DummyValue, "times", translate("TotalTimes"))
+t4:option(DummyValue, "times", translate("EventCount"))
 t4:option(DummyValue, "lasttime", translate("LastTime"))
 t4:option(DummyValue, "source", translate("EventSource"))
 

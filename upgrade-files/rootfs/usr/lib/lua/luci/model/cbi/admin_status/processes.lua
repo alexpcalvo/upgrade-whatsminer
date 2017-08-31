@@ -13,22 +13,22 @@ t:option(DummyValue, "COMMAND", translate("Command"))
 t:option(DummyValue, "%CPU", translate("CPU usage (%)"))
 t:option(DummyValue, "%MEM", translate("Memory usage (%)"))
 
-hup = t:option(Button, "_hup", translate("Hang Up"))
-hup.inputstyle = "reload"
-function hup.write(self, section)
-	null, self.tag_error[section] = luci.sys.process.signal(section, 1)
-end
+-- hup = t:option(Button, "_hup", translate("Hang Up"))
+-- hup.inputstyle = "reload"
+-- function hup.write(self, section)
+-- 	null, self.tag_error[section] = luci.sys.process.signal(section, 1)
+-- end
 
-term = t:option(Button, "_term", translate("Terminate"))
-term.inputstyle = "remove"
-function term.write(self, section)
-	null, self.tag_error[section] = luci.sys.process.signal(section, 15)
-end
+-- term = t:option(Button, "_term", translate("Terminate"))
+-- term.inputstyle = "remove"
+-- function term.write(self, section)
+-- 	null, self.tag_error[section] = luci.sys.process.signal(section, 15)
+-- end
 
-kill = t:option(Button, "_kill", translate("Kill"))
-kill.inputstyle = "reset"
-function kill.write(self, section)
-	null, self.tag_error[section] = luci.sys.process.signal(section, 9)
-end
+-- kill = t:option(Button, "_kill", translate("Kill"))
+-- kill.inputstyle = "reset"
+-- function kill.write(self, section)
+-- 	null, self.tag_error[section] = luci.sys.process.signal(section, 9)
+-- end
 
 return f

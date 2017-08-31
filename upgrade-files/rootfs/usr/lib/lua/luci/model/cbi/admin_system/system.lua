@@ -32,13 +32,13 @@ o = s:taboption("general", DummyValue, "_systime", translate("Local Time"))
 o.template = "admin_system/clock_status"
 
 
-o = s:taboption("general", Value, "hostname", translate("Hostname"))
-o.datatype = "hostname"
+-- o = s:taboption("general", Value, "hostname", translate("Hostname"))
+-- o.datatype = "hostname"
 
-function o.write(self, section, value)
-	Value.write(self, section, value)
-	sys.hostname(value)
-end
+-- function o.write(self, section, value)
+--	Value.write(self, section, value)
+--	sys.hostname(value)
+-- end
 
 
 o = s:taboption("general", ListValue, "zonename", translate("Timezone"))

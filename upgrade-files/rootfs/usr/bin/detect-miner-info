@@ -132,6 +132,18 @@ else
     fi
 fi
 
+# Detect power supply version
+power_version=`readpower | grep 'Read power version'`
+if [ "$power_version" = "Read power version = d0 00 00 00 01 06" ]; then
+    power_type="P3"
+elif [ "$power_version" = "Read power version = d0 00 00 00 01 05" ]; then
+    power_type="P2"
+elif [ "$power_version" = "Read power version = d0 00 00 00 00 04" ]; then
+    power_type="P1"
+else
+    power_type="PX"
+fi
+
 # Detect firmware version
 firmware_version=`cat /etc/microbt_release | grep FIRMWARE_VERSION | awk -F '=' '{print $2}'`
 firmware_version=`echo ${firmware_version:1}`
@@ -153,6 +165,7 @@ fi
 echo -n "-$control_board_type" >> $OUTPUT_FILENAME
 echo -n "-$control_board_version" >> $OUTPUT_FILENAME
 echo -n "-$hash_board_version" >> $OUTPUT_FILENAME
+echo -n "-$power_type" >> $OUTPUT_FILENAME
 echo -n "-$firmware_version" >> $OUTPUT_FILENAME
 
 echo -n "Detected Miner Info: "

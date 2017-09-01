@@ -195,8 +195,32 @@ else
 	end
 end
 
+-- Detect power type
+local p1 = "d0 00 00 00 00 04"
+local p2 = "d0 00 00 00 01 05"
+local p3 = "d0 00 00 00 01 06"
+
+t = io.popen('readpower')
+a = t:read("*all")
+
+local t1 = string.match(a, p1)
+local t2 = string.match(a, p2)
+local t3 = string.match(a, p3)
+
+local powertype = "PX"
+
+if t1 == p1 then
+   powertype = "P1"
+end
+if t2 == p2 then
+   powertype = "P2"
+end
+if t3 == p3 then
+   powertype = "P3"
+end
+
 minermodel = minername .. " " .. modelname
-hardwareversion = modelname .. "." .. hashboardtype .. "." .. controlboardtype
+hardwareversion = modelname .. "." .. hashboardtype .. "." .. controlboardtype .. "." .. powertype
 
 luciname    = "LuCI Master"
 luciversion = "git-16.336.70424-1fd43b4"

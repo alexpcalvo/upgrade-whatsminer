@@ -5,8 +5,9 @@ conf = m:section(TypedSection, "pools", "")
 conf.anonymous = true
 conf.addremove = false
 
-ntp = conf:option(ListValue, "ntp_enable", translate("NTP Service(Default: Disable)"))
-ntp.default = "asia"
+ntp = conf:option(ListValue, "ntp_enable", translate("NTP Service(Default: Global)"))
+ntp.default = "global"
+ntp:value("global", translate("Global"))
 ntp:value("asia", translate("ASIA"))
 ntp:value("openwrt", translate("OpenWrt Default"))
 ntp:value("disable", translate("Disable"))

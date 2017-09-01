@@ -129,6 +129,43 @@ if [ $cpu_ratio -eq 0 ]; then
     fi
 fi
 
+check_upfreq_complete() {
+    # Get upfreq_complete flag for each hash board
+    asc0_field=`find_field "$ASC0" "Upfreq Complete"`
+    asc1_field=`find_field "$ASC1" "Upfreq Complete"`
+    asc2_field=`find_field "$ASC2" "Upfreq Complete"`
+
+    upfreq_complete_0=`echo $asc0_field | cut -d "=" -f2`
+    upfreq_complete_1=`echo $asc1_field | cut -d "=" -f2`
+    upfreq_complete_2=`echo $asc2_field | cut -d "=" -f2`
+
+    # Skip checking empty slot
+    if [ "$upfreq_complete_0" = "" ]; then
+        upfreq_complete_0=1
+    fi
+    if [ "$upfreq_complete_1" = "" ]; then
+        upfreq_complete_1=1
+    fi
+    if [ "$upfreq_complete_2" = "" ]; then
+        upfreq_complete_2=1
+    fi
+
+    #
+    # Make sure cgminer upfreq completed
+    #
+    if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
+        logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
+        exit 0;
+    else
+        if [ ! -f /tmp/cgminer-upfreq-completed ]; then
+            # To make sure MHS stable, skip one time after upfreq completed
+            logger "cgminer-monitor: cgminer upfreq completed"
+            touch /tmp/cgminer-upfreq-completed
+            exit 0;
+        fi
+    fi
+}
+
 #
 # cgminer active, check MHS
 #
@@ -153,6 +190,8 @@ STATUS=`echo $cgminer_api_edevs | cut -d "|" -f1`
 ASC0=`echo $cgminer_api_edevs | cut -d "|" -f2`
 ASC1=`echo $cgminer_api_edevs | cut -d "|" -f3`
 ASC2=`echo $cgminer_api_edevs | cut -d "|" -f4`
+
+check_upfreq_complete
 
 asc0_slot=`find_field "$ASC0" "Slot"`
 asc1_slot=`find_field "$ASC1" "Slot"`

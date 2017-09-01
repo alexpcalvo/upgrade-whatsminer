@@ -622,8 +622,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/boot"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
         chmod 755 /etc/init.d/boot
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/boot /etc/init.d/boot
+        chmod 555 /etc/init.d/boot
     fi
 fi
 
@@ -632,8 +633,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/detect-cgminer-config"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config
         chmod 755 /etc/init.d/detect-cgminer-config
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/detect-cgminer-config /etc/init.d/detect-cgminer-config
+        chmod 555 /etc/init.d/detect-cgminer-config
         cd /etc/rc.d/
         ln -s ../init.d/detect-cgminer-config S80detect-cgminer-config >/dev/null 2>&1
         cd - >/dev/null
@@ -645,7 +647,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/crontabs/root ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/root`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/crontabs/root"
-        cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/
+        chmod 644 /etc/crontabs/root
+        cp -f /tmp/upgrade-files/rootfs/etc/crontabs/root /etc/crontabs/root
+        chmod 444 /etc/crontabs/root
     fi
 fi
 
@@ -654,8 +658,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/cgminer"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer
         chmod 755 /etc/init.d/cgminer
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/cgminer /etc/init.d/cgminer
+        chmod 555 /etc/init.d/cgminer
     fi
 fi
 
@@ -664,8 +669,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/system-monitor ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/system-monitor /etc/init.d/system-monitor`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/system-monitor"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/system-monitor /etc/init.d/system-monitor
         chmod 755 /etc/init.d/system-monitor
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/system-monitor /etc/init.d/system-monitor
+        chmod 555 /etc/init.d/system-monitor
         cd /etc/rc.d/
         ln -s ../init.d/system-monitor S90system-monitor >/dev/null 2>&1
         cd - >/dev/null
@@ -677,8 +683,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/sdcard-upgrade"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade
         chmod 755 /etc/init.d/sdcard-upgrade
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/sdcard-upgrade /etc/init.d/sdcard-upgrade
+        chmod 555 /etc/init.d/sdcard-upgrade
         cd /etc/rc.d/
         ln -s ../init.d/sdcard-upgrade S97sdcard-upgrade >/dev/null 2>&1
         cd - >/dev/null
@@ -690,8 +697,9 @@ if [ -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon /etc/init.d/remote-daemon`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /etc/init.d/remote-daemon"
-        cp -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon /etc/init.d/remote-daemon
         chmod 755 /etc/init.d/remote-daemon
+        cp -f /tmp/upgrade-files/rootfs/etc/init.d/remote-daemon /etc/init.d/remote-daemon
+        chmod 555 /etc/init.d/remote-daemon
         cd /etc/rc.d/
         ln -s ../init.d/remote-daemon S90remote-daemon >/dev/null 2>&1
         cd - >/dev/null
@@ -703,8 +711,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/cgminer`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/cgminer"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/cgminer
         chmod 755 /usr/bin/cgminer
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer /usr/bin/cgminer
+        chmod 555 /usr/bin/cgminer
     fi
 fi
 
@@ -713,8 +722,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/cgminer-api`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/cgminer-api"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/cgminer-api
         chmod 755 /usr/bin/cgminer-api
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-api /usr/bin/cgminer-api
+        chmod 555 /usr/bin/cgminer-api
     fi
 fi
 
@@ -723,8 +733,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/cgminer-monitor`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/cgminer-monitor"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/cgminer-monitor
         chmod 755 /usr/bin/cgminer-monitor
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/cgminer-monitor /usr/bin/cgminer-monitor
+        chmod 555 /usr/bin/cgminer-monitor
     fi
 fi
 
@@ -733,8 +744,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/system-monitor ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/system-monitor /usr/bin/system-monitor`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/system-monitor"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/system-monitor /usr/bin/system-monitor
         chmod 755 /usr/bin/system-monitor
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/system-monitor /usr/bin/system-monitor
+        chmod 555 /usr/bin/system-monitor
     fi
 fi
 
@@ -743,8 +755,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/setpower ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/setpower`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/setpower"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/setpower
         chmod 755 /usr/bin/setpower
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/setpower /usr/bin/setpower
+        chmod 555 /usr/bin/setpower
     fi
 fi
 
@@ -753,8 +766,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/readpower ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/readpower`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/readpower"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/readpower
         chmod 755 /usr/bin/readpower
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/readpower /usr/bin/readpower
+        chmod 555 /usr/bin/readpower
     fi
 fi
 
@@ -763,8 +777,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/keyd ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/keyd"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd
         chmod 755 /usr/bin/keyd
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/keyd /usr/bin/keyd
+        chmod 555 /usr/bin/keyd
     fi
 fi
 
@@ -773,8 +788,9 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/remote-daemon"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon
         chmod 755 /usr/bin/remote-daemon
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon
+        chmod 555 /usr/bin/remote-daemon
     fi
 fi
 
@@ -783,19 +799,26 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /usr/bin/detect-miner-info"
-        cp -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info
         chmod 755 /usr/bin/detect-miner-info
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info
+        chmod 555 /usr/bin/detect-miner-info
     fi
 fi
 
 # /usr/lib/lua
 if [ -d /tmp/upgrade-files/rootfs/usr/lib/lua ]; then
-    cd /tmp/upgrade-files/rootfs/usr/lib/lua
-    find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-new.txt
-    cd /usr/lib/lua
-    find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-cur.txt
-    DIFF=`cmp /tmp/lua-md5sum-new.txt /tmp/lua-md5sum-cur.txt`
-    if [ "$DIFF" != "" ]; then
+    if [ -d /usr/lib/lua ]; then
+        cd /tmp/upgrade-files/rootfs/usr/lib/lua
+        find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-new.txt
+        cd /usr/lib/lua
+        find ./ -type f -print0 | xargs -0 md5sum | sort > /tmp/lua-md5sum-cur.txt
+        DIFF=`cmp /tmp/lua-md5sum-new.txt /tmp/lua-md5sum-cur.txt`
+        if [ "$DIFF" != "" ]; then
+            echo "Upgrading /usr/lib/lua"
+            rm -fr /usr/lib/lua
+            cp -afr /tmp/upgrade-files/rootfs/usr/lib/lua /usr/lib/
+        fi
+    else
         echo "Upgrading /usr/lib/lua"
         rm -fr /usr/lib/lua
         cp -afr /tmp/upgrade-files/rootfs/usr/lib/lua /usr/lib/
@@ -808,32 +831,36 @@ if [ -f /tmp/upgrade-files/rootfs/bin/bitmicro-test ]; then
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /bin/bitmicro-test"
         rm -f /bin/bitmicrotest
-        cp -f /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/bitmicro-test
         chmod 755 /bin/bitmicro-test
+        cp -f /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/bitmicro-test
+        chmod 555 /bin/bitmicro-test
     fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-readchipid ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/test-readchipid`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /bin/test-readchipid"
-        cp -f /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/test-readchipid
         chmod 755 /bin/test-readchipid
+        cp -f /tmp/upgrade-files/rootfs/bin/test-readchipid /bin/test-readchipid
+        chmod 555 /bin/test-readchipid
     fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/test-sendgoldenwork`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /bin/test-sendgoldenwork"
-        cp -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/test-sendgoldenwork
         chmod 755 /bin/test-sendgoldenwork
+        cp -f /tmp/upgrade-files/rootfs/bin/test-sendgoldenwork /bin/test-sendgoldenwork
+        chmod 555 /bin/test-sendgoldenwork
     fi
 fi
 if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/test-hashboard`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /bin/test-hashboard"
-        cp -f /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/test-hashboard
         chmod 755 /bin/test-hashboard
+        cp -f /tmp/upgrade-files/rootfs/bin/test-hashboard /bin/test-hashboard
+        chmod 555 /bin/test-hashboard
     fi
 fi
 
@@ -868,6 +895,24 @@ if [ ! -f /usr/sbin/sensors ]; then
     fi
 fi
 
+# Confirm file attributes again
+chmod 555 /usr/bin/cgminer
+chmod 555 /usr/bin/cgminer-api
+chmod 555 /usr/bin/cgminer-monitor
+chmod 555 /usr/bin/detect-miner-info
+chmod 555 /usr/bin/keyd
+chmod 555 /usr/bin/readpower
+chmod 555 /usr/bin/setpower
+chmod 555 /usr/bin/system-monitor
+chmod 555 /usr/bin/remote-daemon
+chmod 555 /etc/init.d/boot
+chmod 555 /etc/init.d/cgminer
+chmod 555 /etc/init.d/detect-cgminer-config
+chmod 555 /etc/init.d/remote-daemon
+chmod 555 /etc/init.d/system-monitor
+chmod 555 /etc/init.d/sdcard-upgrade
+chmod 555 /bin/bitmicro-test
+
 # Remove unused files
 if [ -f /etc/config/firewall ]; then
     rm -f /etc/config/firewall
@@ -896,11 +941,19 @@ if [ -f /usr/bin/phonixtest ]; then
     rm -f /usr/bin/phonixtest
 fi
 
+if [ -f /usr/bin/remote-update-cgminer ]; then
+    rm -f /usr/bin/remote-update-cgminer
+fi
+
+if [ -f /etc/init.d/boot.bak ]; then
+    rm -f /etc/init.d/boot.bak
+fi
+
+echo "Done, reboot control board ..."
+
 # Sync to flash (don't sync for H3 as there is a bug in NAND driver which may block system when syncing)
-if [ "$isH3Platform" == false ]; then
+if [ "$isH3Platform" = false ]; then
     sync
 fi
 
-echo ""
-echo "Done, reboot control board ..."
 reboot

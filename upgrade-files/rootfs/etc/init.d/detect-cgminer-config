@@ -76,18 +76,14 @@ start() {
 
     if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
         if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-            hash_board="HB12"
             miner_type="M1"
         else
-            hash_board="HB20"
             miner_type="M1s"
         fi
     elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
         if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-            hash_board="ALB10"
             miner_type="M2"
         else
-            hash_board="ALB20"
             miner_type="M3"
         fi
     else
@@ -102,46 +98,47 @@ start() {
         fi
 
         if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
-            hash_board="HB10"
-            miner_type="M1"
+            miner_type="M0"
         else
-            hash_board="unknown"
             miner_type="unknown"
         fi
     fi
 
-    logger "detect-cgminer-config: miner_type=$miner_type hash_board=$hash_board"
+    logger "detect-cgminer-config: miner_type=$miner_type"
 
-    if [ "$hash_board" = "unknown" ]; then
+    if [ "$miner_type" = "unknown" ]; then
         exit 1;
     fi
 
     # Start linking files ...
-    if [ "$hash_board" = "ALB10" ]; then
-        CGMINERFILE="cgminer.alb10"
-        CGMINERDEFAULTFILE="cgminer.default.alb10"
-        POWERSFILE="powers.alb10"
-    fi
-    if [ "$hash_board" = "ALB20" ]; then
-        CGMINERFILE="cgminer.alb20"
-        CGMINERDEFAULTFILE="cgminer.default.alb20"
-        POWERSFILE="powers.alb20"
-    fi
-    if [ "$hash_board" = "HB10" ]; then
-        CGMINERFILE="cgminer.hash10"
-        CGMINERDEFAULTFILE="cgminer.default.hash10"
-        POWERSFILE="powers.hash10"
-    fi
-    if [ "$hash_board" = "HB12" ]; then
-        CGMINERFILE="cgminer.hash12"
-        CGMINERDEFAULTFILE="cgminer.default.hash12"
-        POWERSFILE="powers.hash12"
-    fi
-    if [ "$hash_board" = "HB20" ]; then
-        CGMINERFILE="cgminer.hash20"
-        CGMINERDEFAULTFILE="cgminer.default.hash20"
-        POWERSFILE="powers.hash20"
-    fi
+
+    case $miner_type in
+        M0)
+            CGMINERFILE="cgminer.m0"
+            CGMINERDEFAULTFILE="cgminer.default.m0"
+            POWERSFILE="powers.m0"
+            ;;
+        M1)
+            CGMINERFILE="cgminer.m1"
+            CGMINERDEFAULTFILE="cgminer.default.m1"
+            POWERSFILE="powers.m1"
+            ;;
+        M1s)
+            CGMINERFILE="cgminer.m1s"
+            CGMINERDEFAULTFILE="cgminer.default.m1s"
+            POWERSFILE="powers.m1s"
+            ;;
+        M2)
+            CGMINERFILE="cgminer.m2"
+            CGMINERDEFAULTFILE="cgminer.default.m2"
+            POWERSFILE="powers.m2"
+            ;;
+        M3)
+            CGMINERFILE="cgminer.m3"
+            CGMINERDEFAULTFILE="cgminer.default.m3"
+            POWERSFILE="powers.m3"
+            ;;
+    esac
 
     if [ -f /etc/config/$CGMINERFILE ]; then
         DIFF=`cmp /etc/config/$CGMINERFILE /etc/config/cgminer`
@@ -152,7 +149,7 @@ start() {
             cd -
             logger "detect-cgminer-config: linking /etc/config/cgminer to /etc/config/$CGMINERFILE"
         else
-            logger "detect-cgminer-config: /etc/config/cgminer remains unchanged"
+            logger "detect-cgminer-config: /etc/config/cgminer --> /etc/config/$CGMINERFILE remains unchanged"
         fi
     fi
     if [ -f /etc/config/$CGMINERDEFAULTFILE ]; then
@@ -164,7 +161,7 @@ start() {
             cd -
             logger "detect-cgminer-config: linking /etc/config/cgminer.default to /etc/config/$CGMINERDEFAULTFILE"
         else
-            logger "detect-cgminer-config: /etc/config/cgminer.default remains unchanged"
+            logger "detect-cgminer-config: /etc/config/cgminer.default --> /etc/config/$CGMINERDEFAULTFILE remains unchanged"
         fi
     fi
     if [ -f /etc/config/$POWERSFILE ]; then
@@ -176,7 +173,7 @@ start() {
             cd -
             logger "detect-cgminer-config: linking /etc/config/powers to /etc/config/$POWERSFILE"
         else
-            logger "detect-cgminer-config: /etc/config/powers remains unchanged"
+            logger "detect-cgminer-config: /etc/config/powers --> /etc/config/$POWERSFILE remains unchanged"
         fi
     fi
 }

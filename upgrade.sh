@@ -126,15 +126,15 @@ fi
 
 if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
     if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-        hash_board="HB12"
+        miner_type="M1"
     else
-        hash_board="HB20"
+        miner_type="M1s"
     fi
 elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
     if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-        hash_board="ALB10"
+        miner_type="M2"
     else
-        hash_board="ALB20"
+        miner_type="M3"
     fi
 else
     if [ -f $hwmon0_path/name ]; then
@@ -148,13 +148,13 @@ else
     fi
 
     if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
-        hash_board="HB10"
+        miner_type="M0"
     else
-        hash_board="unknown"
+        miner_type="unknown"
     fi
 fi
 
-echo "Detected machine type: control_board=$control_board, hash_board=$hash_board"
+echo "Detected machine type: control_board=$control_board, miner_type=$miner_type"
 
 if [ "$control_board" = "unknown" ]; then
     echo "*********************************************************************"
@@ -163,9 +163,9 @@ if [ "$control_board" = "unknown" ]; then
     exit 0
 fi
 
-if [ "$hash_board" = "unknown" ]; then
-    echo "Unknown hash board, assume hash_board=ALB10."
-    hash_board="ALB10"
+if [ "$miner_type" = "unknown" ]; then
+    echo "Unknown hash board, assume miner_type=M1."
+    miner_type="M1"
 fi
 
 # Compare two files.
@@ -223,31 +223,33 @@ else
     BOOTFILE="BOOT-ZYNQ10"
 fi
 
-if [ "$hash_board" = "ALB10" ]; then
-    CGMINERFILE="cgminer.alb10"
-    CGMINERDEFAULTFILE="cgminer.default.alb10"
-    POWERSFILE="powers.alb10"
-fi
-if [ "$hash_board" = "ALB20" ]; then
-    CGMINERFILE="cgminer.alb20"
-    CGMINERDEFAULTFILE="cgminer.default.alb20"
-    POWERSFILE="powers.alb20"
-fi
-if [ "$hash_board" = "HB10" ]; then
-    CGMINERFILE="cgminer.hash10"
-    CGMINERDEFAULTFILE="cgminer.default.hash10"
-    POWERSFILE="powers.hash10"
-fi
-if [ "$hash_board" = "HB12" ]; then
-    CGMINERFILE="cgminer.hash12"
-    CGMINERDEFAULTFILE="cgminer.default.hash12"
-    POWERSFILE="powers.hash12"
-fi
-if [ "$hash_board" = "HB20" ]; then
-    CGMINERFILE="cgminer.hash20"
-    CGMINERDEFAULTFILE="cgminer.default.hash20"
-    POWERSFILE="powers.hash20"
-fi
+case $miner_type in
+    M0)
+        CGMINERFILE="cgminer.m0"
+        CGMINERDEFAULTFILE="cgminer.default.m0"
+        POWERSFILE="powers.m0"
+        ;;
+    M1)
+        CGMINERFILE="cgminer.m1"
+        CGMINERDEFAULTFILE="cgminer.default.m1"
+        POWERSFILE="powers.m1"
+        ;;
+    M1s)
+        CGMINERFILE="cgminer.m1s"
+        CGMINERDEFAULTFILE="cgminer.default.m1s"
+        POWERSFILE="powers.m1s"
+        ;;
+    M2)
+        CGMINERFILE="cgminer.m2"
+        CGMINERDEFAULTFILE="cgminer.default.m2"
+        POWERSFILE="powers.m2"
+        ;;
+    M3)
+        CGMINERFILE="cgminer.m3"
+        CGMINERDEFAULTFILE="cgminer.default.m3"
+        POWERSFILE="powers.m3"
+        ;;
+esac
 
 # boot (mtd1)
 if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
@@ -352,58 +354,58 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     fi
 fi
 
-# /etc/config/powers.alb20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.alb20 /etc/config/powers.alb20`
+# /etc/config/powers.m3
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3 /etc/config/powers.m3`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.alb20"
-        chmod 644 /etc/config/powers.alb20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.alb20 /etc/config/powers.alb20
-        chmod 444 /etc/config/powers.alb20 # readonly
+        echo "Upgrading /etc/config/powers.m3"
+        chmod 644 /etc/config/powers.m3
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3 /etc/config/powers.m3
+        chmod 444 /etc/config/powers.m3 # readonly
     fi
 fi
 
-# /etc/config/powers.alb10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10`
+# /etc/config/powers.m2
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m2 /etc/config/powers.m2`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.alb10"
-        chmod 644 /etc/config/powers.alb10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.alb10 /etc/config/powers.alb10
-        chmod 444 /etc/config/powers.alb10 # readonly
+        echo "Upgrading /etc/config/powers.m2"
+        chmod 644 /etc/config/powers.m2
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 /etc/config/powers.m2
+        chmod 444 /etc/config/powers.m2 # readonly
     fi
 fi
 
-# /etc/config/powers.hash20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash20 /etc/config/powers.hash20`
+# /etc/config/powers.m1s
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1s ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m1s /etc/config/powers.m1s`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.hash20"
-        chmod 644 /etc/config/powers.hash20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash20 /etc/config/powers.hash20
-        chmod 444 /etc/config/powers.hash20 # readonly
+        echo "Upgrading /etc/config/powers.m1s"
+        chmod 644 /etc/config/powers.m1s
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m1s /etc/config/powers.m1s
+        chmod 444 /etc/config/powers.m1s # readonly
     fi
 fi
 
-# /etc/config/powers.hash12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash12 /etc/config/powers.hash12`
+# /etc/config/powers.m1
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m1 /etc/config/powers.m1`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.hash12"
-        chmod 644 /etc/config/powers.hash12
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash12 /etc/config/powers.hash12
-        chmod 444 /etc/config/powers.hash12 # readonly
+        echo "Upgrading /etc/config/powers.m1"
+        chmod 644 /etc/config/powers.m1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 /etc/config/powers.m1
+        chmod 444 /etc/config/powers.m1 # readonly
     fi
 fi
 
-# /etc/config/powers.hash10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.hash10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.hash10 /etc/config/powers.hash10`
+# /etc/config/powers.m0
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m0 /etc/config/powers.m0`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.hash10"
-        chmod 644 /etc/config/powers.hash10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.hash10 /etc/config/powers.hash10
-        chmod 444 /etc/config/powers.hash10 # readonly
+        echo "Upgrading /etc/config/powers.m0"
+        chmod 644 /etc/config/powers.m0
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 /etc/config/powers.m0
+        chmod 444 /etc/config/powers.m0 # readonly
     fi
 fi
 
@@ -485,108 +487,108 @@ fi
 
 # Upgrade /etc/config/cgminer after updating pools
 
-# /etc/config/cgminer.alb20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 /etc/config/cgminer.alb20`
+# /etc/config/cgminer.m3
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3 /etc/config/cgminer.m3`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.alb20 to /etc/config/cgminer.alb20"
-        chmod 644 /etc/config/cgminer.alb20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb20 /etc/config/cgminer.alb20
-        chmod 444 /etc/config/cgminer.alb20 # readonly
+        echo "Upgrading cgminer.m3 to /etc/config/cgminer.m3"
+        chmod 644 /etc/config/cgminer.m3
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3 /etc/config/cgminer.m3
+        chmod 444 /etc/config/cgminer.m3 # readonly
     fi
 fi
-# /etc/config/cgminer.default.alb20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 /etc/config/cgminer.default.alb20`
+# /etc/config/cgminer.default.m3
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3 /etc/config/cgminer.default.m3`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.alb20 to /etc/config/cgminer.default.alb20"
-        chmod 644 /etc/config/cgminer.default.alb20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb20 /etc/config/cgminer.default.alb20
-        chmod 444 /etc/config/cgminer.default.alb20 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.alb10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.alb10 to /etc/config/cgminer.alb10"
-        chmod 644 /etc/config/cgminer.alb10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.alb10 /etc/config/cgminer.alb10
-        chmod 444 /etc/config/cgminer.alb10 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.alb10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.alb10 to /etc/config/cgminer.default.alb10"
-        chmod 644 /etc/config/cgminer.default.alb10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.alb10 /etc/config/cgminer.default.alb10
-        chmod 444 /etc/config/cgminer.default.alb10 # readonly
+        echo "Upgrading cgminer.default.m3 to /etc/config/cgminer.default.m3"
+        chmod 644 /etc/config/cgminer.default.m3
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3 /etc/config/cgminer.default.m3
+        chmod 444 /etc/config/cgminer.default.m3 # readonly
     fi
 fi
 
-# /etc/config/cgminer.hash20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 /etc/config/cgminer.hash20`
+# /etc/config/cgminer.m2
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 /etc/config/cgminer.m2`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.hash20 to /etc/config/cgminer.hash20"
-        chmod 644 /etc/config/cgminer.hash20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash20 /etc/config/cgminer.hash20
-        chmod 444 /etc/config/cgminer.hash20 # readonly
+        echo "Upgrading cgminer.m2 to /etc/config/cgminer.m2"
+        chmod 644 /etc/config/cgminer.m2
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 /etc/config/cgminer.m2
+        chmod 444 /etc/config/cgminer.m2 # readonly
     fi
 fi
-# /etc/config/cgminer.default.hash20
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 /etc/config/cgminer.default.hash20`
+# /etc/config/cgminer.default.m2
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 /etc/config/cgminer.default.m2`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.hash20 to /etc/config/cgminer.default.hash20"
-        chmod 644 /etc/config/cgminer.default.hash20
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash20 /etc/config/cgminer.default.hash20
-        chmod 444 /etc/config/cgminer.default.hash20 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.hash12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.hash12 to /etc/config/cgminer.hash12"
-        chmod 644 /etc/config/cgminer.hash12
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash12 /etc/config/cgminer.hash12
-        chmod 444 /etc/config/cgminer.hash12 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.hash12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.hash12 to /etc/config/cgminer.default.hash12"
-        chmod 644 /etc/config/cgminer.default.hash12
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash12 /etc/config/cgminer.default.hash12
-        chmod 444 /etc/config/cgminer.default.hash12 # readonly
+        echo "Upgrading cgminer.default.m2 to /etc/config/cgminer.default.m2"
+        chmod 644 /etc/config/cgminer.default.m2
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 /etc/config/cgminer.default.m2
+        chmod 444 /etc/config/cgminer.default.m2 # readonly
     fi
 fi
 
-# /etc/config/cgminer.hash10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10`
+# /etc/config/cgminer.m1s
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s /etc/config/cgminer.m1s`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.hash10 to /etc/config/cgminer.hash10"
-        chmod 644 /etc/config/cgminer.hash10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.hash10 /etc/config/cgminer.hash10
-        chmod 444 /etc/config/cgminer.hash10 # readonly
+        echo "Upgrading cgminer.m1s to /etc/config/cgminer.m1s"
+        chmod 644 /etc/config/cgminer.m1s
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s /etc/config/cgminer.m1s
+        chmod 444 /etc/config/cgminer.m1s # readonly
     fi
 fi
-# /etc/config/cgminer.default.hash10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10`
+# /etc/config/cgminer.default.m1s
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s /etc/config/cgminer.default.m1s`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.hash10 to /etc/config/cgminer.default.hash10"
-        chmod 644 /etc/config/cgminer.default.hash10
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.hash10 /etc/config/cgminer.default.hash10
-        chmod 444 /etc/config/cgminer.default.hash10 # readonly
+        echo "Upgrading cgminer.default.m1s to /etc/config/cgminer.default.m1s"
+        chmod 644 /etc/config/cgminer.default.m1s
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s /etc/config/cgminer.default.m1s
+        chmod 444 /etc/config/cgminer.default.m1s # readonly
+    fi
+fi
+
+# /etc/config/cgminer.m1
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 /etc/config/cgminer.m1`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.m1 to /etc/config/cgminer.m1"
+        chmod 644 /etc/config/cgminer.m1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 /etc/config/cgminer.m1
+        chmod 444 /etc/config/cgminer.m1 # readonly
+    fi
+fi
+# /etc/config/cgminer.default.m1
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 /etc/config/cgminer.default.m1`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.m1 to /etc/config/cgminer.default.m1"
+        chmod 644 /etc/config/cgminer.default.m1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 /etc/config/cgminer.default.m1
+        chmod 444 /etc/config/cgminer.default.m1 # readonly
+    fi
+fi
+
+# /etc/config/cgminer.m0
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 /etc/config/cgminer.m0`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.m0 to /etc/config/cgminer.m0"
+        chmod 644 /etc/config/cgminer.m0
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 /etc/config/cgminer.m0
+        chmod 444 /etc/config/cgminer.m0 # readonly
+    fi
+fi
+# /etc/config/cgminer.default.m0
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 /etc/config/cgminer.default.m0`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.m0 to /etc/config/cgminer.default.m0"
+        chmod 644 /etc/config/cgminer.default.m0
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 /etc/config/cgminer.default.m0
+        chmod 444 /etc/config/cgminer.default.m0 # readonly
     fi
 fi
 
@@ -947,6 +949,54 @@ fi
 
 if [ -f /etc/init.d/boot.bak ]; then
     rm -f /etc/init.d/boot.bak
+fi
+
+if [ -f /etc/config/powers.hash10 ]; then
+    rm -f /etc/config/powers.hash10
+fi
+if [ -f /etc/config/powers.hash12 ]; then
+    rm -f /etc/config/powers.hash12
+fi
+if [ -f /etc/config/powers.hash20 ]; then
+    rm -f /etc/config/powers.hash20
+fi
+if [ -f /etc/config/powers.alb10 ]; then
+    rm -f /etc/config/powers.alb10
+fi
+if [ -f /etc/config/powers.alb20 ]; then
+    rm -f /etc/config/powers.alb20
+fi
+
+if [ -f /etc/config/cgminer.hash10 ]; then
+    rm -f /etc/config/cgminer.hash10
+fi
+if [ -f /etc/config/cgminer.hash12 ]; then
+    rm -f /etc/config/cgminer.hash12
+fi
+if [ -f /etc/config/cgminer.hash20 ]; then
+    rm -f /etc/config/cgminer.hash20
+fi
+if [ -f /etc/config/cgminer.alb10 ]; then
+    rm -f /etc/config/cgminer.alb10
+fi
+if [ -f /etc/config/cgminer.alb20 ]; then
+    rm -f /etc/config/cgminer.alb20
+fi
+
+if [ -f /etc/config/cgminer.default.hash10 ]; then
+    rm -f /etc/config/cgminer.default.hash10
+fi
+if [ -f /etc/config/cgminer.default.hash12 ]; then
+    rm -f /etc/config/cgminer.default.hash12
+fi
+if [ -f /etc/config/cgminer.default.hash20 ]; then
+    rm -f /etc/config/cgminer.default.hash20
+fi
+if [ -f /etc/config/cgminer.default.alb10 ]; then
+    rm -f /etc/config/cgminer.default.alb10
+fi
+if [ -f /etc/config/cgminer.default.alb20 ]; then
+    rm -f /etc/config/cgminer.default.alb20
 fi
 
 echo "Done, reboot control board ..."

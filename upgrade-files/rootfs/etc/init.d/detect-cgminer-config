@@ -140,6 +140,8 @@ start() {
             ;;
     esac
 
+    configfilechanged=false
+
     if [ -f /etc/config/$CGMINERFILE ]; then
         DIFF=`cmp /etc/config/$CGMINERFILE /etc/config/cgminer`
         if [ ! -f /etc/config/cgminer -o "$DIFF" != "" ]; then
@@ -147,6 +149,7 @@ start() {
             rm -f cgminer
             ln -s $CGMINERFILE cgminer
             cd -
+            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/cgminer to /etc/config/$CGMINERFILE"
         else
             logger "detect-cgminer-config: /etc/config/cgminer --> /etc/config/$CGMINERFILE remains unchanged"
@@ -159,6 +162,7 @@ start() {
             rm -f cgminer.default
             ln -s $CGMINERDEFAULTFILE cgminer.default
             cd -
+            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/cgminer.default to /etc/config/$CGMINERDEFAULTFILE"
         else
             logger "detect-cgminer-config: /etc/config/cgminer.default --> /etc/config/$CGMINERDEFAULTFILE remains unchanged"
@@ -171,9 +175,14 @@ start() {
             rm -f powers
             ln -s $POWERSFILE powers
             cd -
+            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/powers to /etc/config/$POWERSFILE"
         else
             logger "detect-cgminer-config: /etc/config/powers --> /etc/config/$POWERSFILE remains unchanged"
         fi
+    fi
+
+    if [ "$configfilechanged" = true -a "$isH3Platform" = false ]; then
+        sync
     fi
 }

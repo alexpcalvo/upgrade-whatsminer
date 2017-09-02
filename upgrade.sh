@@ -1004,6 +1004,8 @@ echo "Done, reboot control board ..."
 # Sync to flash (don't sync for H3 as there is a bug in NAND driver which may block system when syncing)
 if [ "$isH3Platform" = false ]; then
     sync
+    mount /dev/root -o remount,ro
+    sleep 2
 fi
 
 reboot

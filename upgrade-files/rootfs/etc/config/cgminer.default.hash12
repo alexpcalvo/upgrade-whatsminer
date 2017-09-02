@@ -1,5 +1,6 @@
 
 config cgminer 'default'
+	option miner_type 'M1'
 	option temperature_limit '85'
 	option fan_speed_limit '6000'
 	option chip_test_start_freq '384'

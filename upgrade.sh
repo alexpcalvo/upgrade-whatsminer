@@ -322,27 +322,6 @@ fi
 # Verify and upgrade /tmp/upgrade-files/rootfs/*
 #
 
-# /etc/microbt_release
-if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/microbt_release"
-        chmod 644 /etc/microbt_release >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
-        chmod 444 /etc/microbt_release # readonly
-    fi
-fi
-# /etc/cgminer_version
-if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/cgminer_version`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/cgminer_version"
-        chmod 644 /etc/cgminer_version >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
-        chmod 444 /etc/cgminer_version # readonly
-    fi
-fi
-
 # /etc/config/system
 if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/system /etc/config/system`
@@ -999,13 +978,36 @@ if [ -f /etc/config/cgminer.default.alb20 ]; then
     rm -f /etc/config/cgminer.default.alb20
 fi
 
+# /etc/microbt_release
+if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/microbt_release"
+        chmod 644 /etc/microbt_release >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
+        chmod 444 /etc/microbt_release # readonly
+    fi
+fi
+# /etc/cgminer_version
+if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/cgminer_version`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/cgminer_version"
+        chmod 644 /etc/cgminer_version >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
+        chmod 444 /etc/cgminer_version # readonly
+    fi
+fi
+
 echo "Done, reboot control board ..."
 
-# Sync to flash (don't sync for H3 as there is a bug in NAND driver which may block system when syncing)
-if [ "$isH3Platform" = false ]; then
-    sync
-    mount /dev/root -o remount,ro
-    sleep 2
+# H3 may be blocked in sync, so we force to reboot without sync when 20s passed
+if [ "$isH3Platform" = true ]; then
+    sleep 20 && reboot -n &
 fi
+
+sync
+mount /dev/root -o remount,ro
+sleep 2
 
 reboot

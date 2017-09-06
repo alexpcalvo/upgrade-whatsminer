@@ -7,7 +7,7 @@ module("luci.controller.admin.status", package.seeall)
 function index()
 	entry({"admin", "status"}, alias("admin", "status", "cgminerstatus"), _("Status"), 20).index = true
 	entry({"admin", "status", "syslog"}, call("action_syslog"), _("System Log"), 5)
-	entry({"admin", "status", "dmesg"}, call("action_dmesg"), _("Kernel Log"), 6)
+--	entry({"admin", "status", "dmesg"}, call("action_dmesg"), _("Kernel Log"), 6)
 	entry({"admin", "status", "processes"}, cbi("admin_status/processes"), _("Processes"), 7)
 	entry({"admin", "status", "overview"}, template("admin_status/index"), _("Overview"), 8)
 end

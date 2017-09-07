@@ -175,7 +175,8 @@ diff_files() {
     if [ ! -f $1 -o ! -f $2 ]; then
         echo "yes"
     else
-        DIFF=`cmp $1 $2 2>/dev/null`
+        cmp $1 $2 > /tmp/upgrade-file.diff 2>&1
+        DIFF=`cat /tmp/upgrade-file.diff`
         if [ "$DIFF" = "" ]; then
             echo "no"
         else
@@ -845,15 +846,31 @@ if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
     fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/restore-factory-settings ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/restore-factory-settings /usr/bin/restore-factory-settings`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/restore-factory-settings"
+        chmod 755 /usr/bin/restore-factory-settings >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/restore-factory-settings /usr/bin/restore-factory-settings
+        chmod 555 /usr/bin/restore-factory-settings
+    fi
+fi
+
 if [ -f /tmp/upgrade-files/rootfs/etc/shadow ]; then
-	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/shadow /etc/shadow`
-	if [ "$DIFF" = "yes" ]; then
-		echo "Upgrading /etc/shadow and /etc/shadow-"
+	if [ ! -f /etc/shadow ]; then
+		echo "Upgrading /etc/shadow"
 		cp -f /tmp/upgrade-files/rootfs/etc/shadow /etc/shadow
-		cp -f /tmp/upgrade-files/rootfs/etc/shadow- /etc/shadow-
-		chmod 644 /etc/shadow
-		chmod 644 /etc/shadow-
+        chmod 644 /etc/shadow
 	fi
+fi
+if [ -f /tmp/upgrade-files/rootfs/etc/shadow.default ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/shadow.default /etc/shadow.default`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/shadow.default"
+        chmod 755 /etc/shadow.default
+        cp -f /tmp/upgrade-files/rootfs/etc/shadow.default /etc/shadow.default
+        chmod 555 /etc/shadow.default
+    fi
 fi
 
 # sensors and relative libs

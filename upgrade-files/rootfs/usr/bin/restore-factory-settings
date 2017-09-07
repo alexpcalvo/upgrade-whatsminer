@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Script to restore factory settings. Called by keyd.
+#
+
+isH3Platform=false
+
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+    isH3Platform=true
+fi
+
+chmod 644 /etc/config/cgminer.m0
+chmod 644 /etc/config/cgminer.m1
+chmod 644 /etc/config/cgminer.m1s
+chmod 644 /etc/config/cgminer.m2
+chmod 644 /etc/config/cgminer.m3
+cp -f /etc/config/cgminer.default.m0 /etc/config/cgminer.m0
+cp -f /etc/config/cgminer.default.m1 /etc/config/cgminer.m1
+cp -f /etc/config/cgminer.default.m1s /etc/config/cgminer.m1s
+cp -f /etc/config/cgminer.default.m2 /etc/config/cgminer.m2
+cp -f /etc/config/cgminer.default.m3 /etc/config/cgminer.m3
+chmod 444 /etc/config/cgminer.m0
+chmod 444 /etc/config/cgminer.m1
+chmod 444 /etc/config/cgminer.m1s
+chmod 444 /etc/config/cgminer.m2
+chmod 444 /etc/config/cgminer.m3
+
+chmod 644 /etc/config/pools
+cp -f /etc/config/pools.default /etc/config/pools
+
+chmod 644 /etc/config/network
+cp -f /etc/config/network.default /etc/config/network
+
+chmod 644 /etc/shadow
+cp -f /etc/shadow.default /etc/shadow
+
+sync
+
+if [ "$isH3Platform" = false ]; then
+    mount /dev/root -o remount,ro
+fi

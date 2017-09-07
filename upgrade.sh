@@ -846,6 +846,16 @@ if [ -f /tmp/upgrade-files/rootfs/bin/test-hashboard ]; then
     fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/pre-reboot ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/pre-reboot /usr/bin/pre-reboot`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/pre-reboot"
+        chmod 755 /usr/bin/pre-reboot >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/pre-reboot /usr/bin/pre-reboot
+        chmod 555 /usr/bin/pre-reboot
+    fi
+fi
+
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/restore-factory-settings ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/restore-factory-settings /usr/bin/restore-factory-settings`
     if [ "$DIFF" = "yes" ]; then
@@ -1018,13 +1028,11 @@ fi
 
 echo "Done, reboot control board ..."
 
-# H3 may be blocked in sync, so we force to reboot without sync when 20s passed
-if [ "$isH3Platform" = true ]; then
-    sleep 20 && reboot -n &
-fi
+# reboot or sync may be blocked under some conditions
+# so we call 'reboot -n -f' background to force rebooting
+# after sleep timeout
+sleep 20 && reboot -n -f &
 
 sync
-mount /dev/root -o remount,ro
-sleep 2
-
+mount /dev/root -o remount,ro >/dev/null 2>&1
 reboot

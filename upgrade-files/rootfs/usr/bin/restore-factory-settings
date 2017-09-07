@@ -35,8 +35,5 @@ cp -f /etc/config/network.default /etc/config/network
 chmod 644 /etc/shadow
 cp -f /etc/shadow.default /etc/shadow
 
-sync
-
-if [ "$isH3Platform" = false ]; then
-    mount /dev/root -o remount,ro
-fi
+# Call pre-reboot before reboot
+/usr/bin/pre-reboot

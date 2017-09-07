@@ -94,6 +94,7 @@ function httpget(url, stream, target)
 end
 
 function reboot()
+	os.execute("/usr/bin/pre-reboot")
 	return os.execute("reboot >/dev/null 2>&1")
 end
 

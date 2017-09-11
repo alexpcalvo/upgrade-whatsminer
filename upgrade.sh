@@ -243,6 +243,12 @@ if [ "$isH3Platform" = true ]; then
         newfile=`echo $file | sed 's/\.h3$//'`
         mv $file $newfile
     done
+
+    boot_part=`cat /proc/cmdline | grep boot_part`
+    if [ "$boot_part" = "" ]; then
+        rm /tmp/upgrade-files/bin/boot.fex
+        mv /tmp/upgrade-files/bin/old-boot.fex /tmp/upgrade-files/bin/boot.fex
+    fi
 else
     # ZYNQ: 1) remove useless files for h3
     rm -f /tmp/upgrade-files/bin/boot.fex

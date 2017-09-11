@@ -149,6 +149,13 @@ firmware_version=`cat /etc/microbt_release | grep FIRMWARE_VERSION | awk -F '=' 
 firmware_version=`echo ${firmware_version:1}`
 firmware_version=`echo ${firmware_version%\'*}`
 
+if [ "$isH3Platform" = true ]; then
+    boot_part=`cat /proc/cmdline | grep boot_part`
+    if [ "$boot_part" = "" ]; then
+        firmware_version=`echo OLD-$firmware_version`
+    fi
+fi
+
 # Output info
 echo -n "WhatsMiner" > $OUTPUT_FILENAME
 if [ "$hash_board_version" = "HB10" -o "$hash_board_version" = "HB12" ]; then

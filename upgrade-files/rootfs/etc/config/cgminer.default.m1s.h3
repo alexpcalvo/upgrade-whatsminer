@@ -17,3 +17,4 @@ config cgminer 'default'
 	option pre_heat_temp '45'
 	option pre_heat_end_freq '504'
 	option pre_heat_timeout '60'
+

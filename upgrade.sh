@@ -186,6 +186,51 @@ diff_files() {
 }
 
 #
+# Kill services
+#
+killall -9 crond >/dev/null 2>&1
+killall -9 system-monitor >/dev/null 2>&1
+killall -9 temp-monitor >/dev/null 2>&1
+killall -9 keyd >/dev/null 2>&1
+killall -9 cgminer >/dev/null 2>&1
+killall -9 uhttpd >/dev/null 2>&1
+killall -9 ntpd >/dev/null 2>&1
+killall -9 udevd >/dev/null 2>&1
+
+#
+# 1. Upgrade /tmp/upgrade-rootfs/
+#
+if [ -d /tmp/upgrade-rootfs ]; then
+    echo "Upgrading rootfs ..."
+    
+    rm -fr /usr/lib/lua
+
+    if [ "$isH3Platform" = false ]; then
+        cp -afr /tmp/upgrade-rootfs/zynq-root/* /
+    else
+        cp -afr /tmp/upgrade-rootfs/h3-root/* /
+    fi
+
+    echo "Done, reboot control board ..."
+
+    # reboot or sync may be blocked under some conditions
+    # so we call 'reboot -n -f' background to force rebooting
+    # after sleep timeout
+    sleep 20 && reboot -n -f &
+
+    sync
+    mount /dev/root -o remount,ro >/dev/null 2>&1
+    reboot
+    exit 1
+fi
+
+#
+# 2. Upgrade /tmp/upgrade-files/
+#
+
+echo "Upgrading files ..."
+
+#
 # Prepare rootfs
 #
 if [ "$isH3Platform" = true ]; then
@@ -203,15 +248,6 @@ else
     rm -f /tmp/upgrade-files/bin/boot.fex
     find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
 fi
-
-#
-# Kill services
-#
-killall -9 crond >/dev/null 2>&1
-killall -9 system-monitor >/dev/null 2>&1
-killall -9 temp-monitor >/dev/null 2>&1
-killall -9 keyd >/dev/null 2>&1
-killall -9 cgminer >/dev/null 2>&1
 
 #
 # Verify and upgrade /tmp/upgrade-files/bin/*
@@ -344,6 +380,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3 ]; then
         chmod 444 /etc/config/powers.m3 # readonly
     fi
 fi
+# /etc/config/powers.default.m3
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3 /etc/config/powers.default.m3`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m3"
+        chmod 644 /etc/config/powers.default.m3 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3 /etc/config/powers.default.m3
+        chmod 444 /etc/config/powers.default.m3 # readonly
+    fi
+fi
 
 # /etc/config/powers.m2
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 ]; then
@@ -353,6 +399,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 ]; then
         chmod 644 /etc/config/powers.m2 >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 /etc/config/powers.m2
         chmod 444 /etc/config/powers.m2 # readonly
+    fi
+fi
+# /etc/config/powers.default.m2
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 /etc/config/powers.default.m2`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m2"
+        chmod 644 /etc/config/powers.default.m2 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 /etc/config/powers.default.m2
+        chmod 444 /etc/config/powers.default.m2 # readonly
     fi
 fi
 
@@ -366,6 +422,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1s ]; then
         chmod 444 /etc/config/powers.m1s # readonly
     fi
 fi
+# /etc/config/powers.default.m1s
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s /etc/config/powers.default.m1s`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m1s"
+        chmod 644 /etc/config/powers.default.m1s >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s /etc/config/powers.default.m1s
+        chmod 444 /etc/config/powers.default.m1s # readonly
+    fi
+fi
 
 # /etc/config/powers.m1
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 ]; then
@@ -377,6 +443,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 ]; then
         chmod 444 /etc/config/powers.m1 # readonly
     fi
 fi
+# /etc/config/powers.default.m1
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 /etc/config/powers.default.m1`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m1"
+        chmod 644 /etc/config/powers.default.m1 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 /etc/config/powers.default.m1
+        chmod 444 /etc/config/powers.default.m1 # readonly
+    fi
+fi
 
 # /etc/config/powers.m0
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 ]; then
@@ -386,6 +462,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 ]; then
         chmod 644 /etc/config/powers.m0 >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 /etc/config/powers.m0
         chmod 444 /etc/config/powers.m0 # readonly
+    fi
+fi
+# /etc/config/powers.default.m0
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 /etc/config/powers.default.m0`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m0"
+        chmod 644 /etc/config/powers.default.m0 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 /etc/config/powers.default.m0
+        chmod 444 /etc/config/powers.default.m0 # readonly
     fi
 fi
 

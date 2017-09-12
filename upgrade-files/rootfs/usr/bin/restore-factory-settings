@@ -3,39 +3,16 @@
 # Script to restore factory settings. Called by keyd.
 #
 
-# Restore /etc/config/cgminer
-chmod 644 /etc/config/cgminer.m0
-chmod 644 /etc/config/cgminer.m1
-chmod 644 /etc/config/cgminer.m1s
-chmod 644 /etc/config/cgminer.m2
-chmod 644 /etc/config/cgminer.m3
-cp -f /etc/config/cgminer.default.m0 /etc/config/cgminer.m0
-cp -f /etc/config/cgminer.default.m1 /etc/config/cgminer.m1
-cp -f /etc/config/cgminer.default.m1s /etc/config/cgminer.m1s
-cp -f /etc/config/cgminer.default.m2 /etc/config/cgminer.m2
-cp -f /etc/config/cgminer.default.m3 /etc/config/cgminer.m3
-chmod 444 /etc/config/cgminer.m0
-chmod 444 /etc/config/cgminer.m1
-chmod 444 /etc/config/cgminer.m1s
-chmod 444 /etc/config/cgminer.m2
-chmod 444 /etc/config/cgminer.m3
+# Restore /etc/config/cgminer.* and /etc/config/powers.*
+for name in m0 m1 m1s m2 m3; do
+    chmod 644 /etc/config/cgminer.$name
+    cp -f /etc/config/cgminer.default.$name /etc/config/cgminer.$name
+    chmod 444 /etc/config/cgminer.$name
 
-# Restore /etc/config/powers
-chmod 644 /etc/config/powers.m0
-chmod 644 /etc/config/powers.m1
-chmod 644 /etc/config/powers.m1s
-chmod 644 /etc/config/powers.m2
-chmod 644 /etc/config/powers.m3
-cp -f /etc/config/powers.default.m0 /etc/config/powers.m0
-cp -f /etc/config/powers.default.m1 /etc/config/powers.m1
-cp -f /etc/config/powers.default.m1s /etc/config/powers.m1s
-cp -f /etc/config/powers.default.m2 /etc/config/powers.m2
-cp -f /etc/config/powers.default.m3 /etc/config/powers.m3
-chmod 444 /etc/config/powers.m0
-chmod 444 /etc/config/powers.m1
-chmod 444 /etc/config/powers.m1s
-chmod 444 /etc/config/powers.m2
-chmod 444 /etc/config/powers.m3
+    chmod 644 /etc/config/powers.$name
+    cp -f /etc/config/powers.default.$name /etc/config/powers.$name
+    chmod 444 /etc/config/powers.$name
+done
 
 # Restore /etc/config/pools
 chmod 644 /etc/config/pools

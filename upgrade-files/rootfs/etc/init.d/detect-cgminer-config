@@ -3,144 +3,14 @@
 START=80
 STOP=20
 
-isH3Platform=false
-
 start() {
-    cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-    if [ "$cpuinfo" != "" ]; then
-        isH3Platform=true
-    fi
+    source /usr/bin/miner-detect-common
 
-    if [ "$isH3Platform" = true ]; then
-        hwmon0_path="/sys/class/hwmon/hwmon1/device/"
-        hwmon1_path="/sys/class/hwmon/hwmon2/device/"
-        hwmon2_path="/sys/class/hwmon/hwmon3/device/"
-        hwmon4_path="/sys/class/hwmon/hwmon5/device/"
-
-        gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
-        gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
-        gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
-    
-        gpio_en0_path="/sys/class/gpio/gpio96/value"
-        gpio_en1_path="/sys/class/gpio/gpio97/value"
-        gpio_en2_path="/sys/class/gpio/gpio98/value"
-    else
-        hwmon0_path="/sys/class/hwmon/hwmon0/"
-        hwmon1_path="/sys/class/hwmon/hwmon1/"
-        hwmon2_path="/sys/class/hwmon/hwmon2/"
-        hwmon4_path="/sys/class/hwmon/hwmon4/"
-
-        gpio_hotplug0_path="/sys/class/gpio/gpio961/value"
-        gpio_hotplug1_path="/sys/class/gpio/gpio963/value"
-        gpio_hotplug2_path="/sys/class/gpio/gpio965/value"
-
-        gpio_en0_path="/sys/class/gpio/gpio934/value"
-        gpio_en1_path="/sys/class/gpio/gpio939/value"
-        gpio_en2_path="/sys/class/gpio/gpio937/value"
-    fi
-
-    # Detect hash board type
-    if [ -f $hwmon0_path/name ]; then
-        name0=`cat $hwmon0_path/name`
-    fi
-    if [ -f $hwmon1_path/name ]; then
-        name1=`cat $hwmon1_path/name`
-    fi
-    if [ -f $hwmon2_path/name ]; then
-        name2=`cat $hwmon2_path/name`
-    fi
-
-    gpio_hotplug0=`cat $gpio_hotplug0_path`
-    gpio_hotplug1=`cat $gpio_hotplug1_path`
-    gpio_hotplug2=`cat $gpio_hotplug2_path`
-
-    gpio_en0=`cat $gpio_en0_path`
-    gpio_en1=`cat $gpio_en1_path`
-    gpio_en2=`cat $gpio_en2_path`
-
-    if [ $gpio_hotplug0 = "0" -a $gpio_en0 = "1" ]; then
-        hash_board_type0="1"
-    else
-        hash_board_type0="0"
-    fi
-    if [ $gpio_hotplug1 = "0" -a $gpio_en1 = "1" ]; then
-        hash_board_type1="1"
-    else
-        hash_board_type1="0"
-    fi
-    if [ $gpio_hotplug2 = "0" -a $gpio_en2 = "1" ]; then
-        hash_board_type2="1"
-    else
-        hash_board_type2="0"
-    fi
-
-    if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
-        if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-            miner_type="M1"
-        else
-            miner_type="M1s"
-        fi
-    elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-        if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-            miner_type="M2"
-        else
-            miner_type="M3"
-        fi
-    else
-        if [ -f $hwmon0_path/name ]; then
-            name0=`cat $hwmon0_path/name`
-        fi
-        if [ -f $hwmon2_path/name ]; then
-            name1=`cat $hwmon2_path/name`
-        fi
-        if [ -f $hwmon4_path/name ]; then
-            name2=`cat $hwmon4_path/name`
-        fi
-
-        if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
-            miner_type="M0"
-        else
-            miner_type="unknown"
-        fi
-    fi
-
-    logger "detect-cgminer-config: miner_type=$miner_type"
+    logger "detect-cgminer-config: miner_type=$miner_type hash_board_version=$hash_board_version"
 
     if [ "$miner_type" = "unknown" ]; then
         exit 1;
     fi
-
-    # Start linking files ...
-
-    case $miner_type in
-        M0)
-            CGMINERFILE="cgminer.m0"
-            CGMINERDEFAULTFILE="cgminer.default.m0"
-            POWERSFILE="powers.m0"
-            ;;
-        M1)
-            CGMINERFILE="cgminer.m1"
-            CGMINERDEFAULTFILE="cgminer.default.m1"
-            POWERSFILE="powers.m1"
-            ;;
-        M1s)
-            CGMINERFILE="cgminer.m1s"
-            CGMINERDEFAULTFILE="cgminer.default.m1s"
-            POWERSFILE="powers.m1s"
-            ;;
-        M2)
-            CGMINERFILE="cgminer.m2"
-            CGMINERDEFAULTFILE="cgminer.default.m2"
-            POWERSFILE="powers.m2"
-            ;;
-        M3)
-            CGMINERFILE="cgminer.m3"
-            CGMINERDEFAULTFILE="cgminer.default.m3"
-            POWERSFILE="powers.m3"
-            ;;
-    esac
-
-    configfilechanged=false
 
     if [ -f /etc/config/$CGMINERFILE ]; then
         DIFF=`cmp /etc/config/$CGMINERFILE /etc/config/cgminer`
@@ -148,8 +18,8 @@ start() {
             cd /etc/config/
             rm -f cgminer
             ln -s $CGMINERFILE cgminer
+            sync
             cd -
-            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/cgminer to /etc/config/$CGMINERFILE"
         else
             logger "detect-cgminer-config: /etc/config/cgminer --> /etc/config/$CGMINERFILE remains unchanged"
@@ -161,8 +31,8 @@ start() {
             cd /etc/config/
             rm -f cgminer.default
             ln -s $CGMINERDEFAULTFILE cgminer.default
+            sync
             cd -
-            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/cgminer.default to /etc/config/$CGMINERDEFAULTFILE"
         else
             logger "detect-cgminer-config: /etc/config/cgminer.default --> /etc/config/$CGMINERDEFAULTFILE remains unchanged"
@@ -174,15 +44,11 @@ start() {
             cd /etc/config/
             rm -f powers
             ln -s $POWERSFILE powers
+            sync
             cd -
-            configfilechanged=true
             logger "detect-cgminer-config: linking /etc/config/powers to /etc/config/$POWERSFILE"
         else
             logger "detect-cgminer-config: /etc/config/powers --> /etc/config/$POWERSFILE remains unchanged"
         fi
-    fi
-
-    if [ "$configfilechanged" = true -a "$isH3Platform" = false ]; then
-        sync
     fi
 }

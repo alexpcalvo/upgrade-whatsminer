@@ -6,99 +6,17 @@
 # 2. test-sendgoldenwork /dev/ttyS3
 #
 
-#
-# Detect chip number according to hash board type
-#
-isH3Platform=false
+# Detect miner info
+source /usr/bin/miner-detect-common
 
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
-    isH3Platform=true
-fi
-
-if [ "$isH3Platform" = true ]; then
+if [ "$control_board_type" = "H3" ]; then
     DEFAULT_DEV="/dev/ttyS1"
-    PLATFORM="H3"
-    
-    hwmon0_path="/sys/class/hwmon/hwmon1/device/"
-    hwmon1_path="/sys/class/hwmon/hwmon2/device/"
-    hwmon2_path="/sys/class/hwmon/hwmon3/device/"
-    hwmon4_path="/sys/class/hwmon/hwmon5/device/"
-
-    gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
-    gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
-    gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
-    
-    gpio_en0_path="/sys/class/gpio/gpio96/value"
-    gpio_en1_path="/sys/class/gpio/gpio97/value"
-    gpio_en2_path="/sys/class/gpio/gpio98/value"
-
-    gpio_reset0_path="/sys/class/gpio/gpio99/value"
-    gpio_reset1_path="/sys/class/gpio/gpio100/value"
-    gpio_reset2_path="/sys/class/gpio/gpio101/value"
 else
     DEFAULT_DEV="/dev/ttyS2"
-    PLATFORM="ZYNQ"
-    
-    hwmon0_path="/sys/class/hwmon/hwmon0/"
-    hwmon1_path="/sys/class/hwmon/hwmon1/"
-    hwmon2_path="/sys/class/hwmon/hwmon2/"
-    hwmon4_path="/sys/class/hwmon/hwmon4/"
-
-    gpio_hotplug0_path="/sys/class/gpio/gpio961/value"
-    gpio_hotplug1_path="/sys/class/gpio/gpio963/value"
-    gpio_hotplug2_path="/sys/class/gpio/gpio965/value"
-
-    gpio_en0_path="/sys/class/gpio/gpio934/value"
-    gpio_en1_path="/sys/class/gpio/gpio939/value"
-    gpio_en2_path="/sys/class/gpio/gpio937/value"
-
-    gpio_reset0_path="/sys/class/gpio/gpio960/value"
-    gpio_reset1_path="/sys/class/gpio/gpio962/value"
-    gpio_reset2_path="/sys/class/gpio/gpio964/value"
 fi
 
-if [ -f $hwmon0_path/name ]; then
-    name0=`cat $hwmon0_path/name`
-fi
-if [ -f $hwmon1_path/name ]; then
-    name1=`cat $hwmon1_path/name`
-fi
-if [ -f $hwmon2_path/name ]; then
-    name2=`cat $hwmon2_path/name`
-fi
-
-gpio_hotplug0=`cat $gpio_hotplug0_path`
-gpio_hotplug1=`cat $gpio_hotplug1_path`
-gpio_hotplug2=`cat $gpio_hotplug2_path`
-
-gpio_en0=`cat $gpio_en0_path`
-gpio_en1=`cat $gpio_en1_path`
-gpio_en2=`cat $gpio_en2_path`
-
-if [ $gpio_hotplug0 = "1" ]; then
-    gpio_en0="1"
-fi
-if [ $gpio_hotplug1 = "1" ]; then
-    gpio_en1="1"
-fi
-if [ $gpio_hotplug2 = "1" ]; then
-    gpio_en2="1"
-fi
-
-if [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-    if [ $gpio_en0 = "0" -o $gpio_en1 = "0" -o $gpio_en2 = "0" ]; then
-        CHIP_NUM=63
-    else
-        CHIP_NUM=38
-    fi
-else
-    if [ $gpio_en0 = "0" -o $gpio_en1 = "0" -o $gpio_en2 = "0" ]; then
-        CHIP_NUM=60
-    else
-        CHIP_NUM=66
-    fi
-fi
+PLATFORM=$control_board_type
+CHIP_NUM=$chip_num
 
 if [ "$1" = "" ]; then
     DEV=$DEFAULT_DEV
@@ -107,8 +25,8 @@ else
 fi
 
 echo "-----------------------------------------------------------------"
-echo "PLATFORM=$PLATFORM"
-echo "hwmon_name0=$name0 hwmon_name1=$name1 hwmon_name2=$name2"
+echo "Platform=$PLATFORM Miner=$miner_type"
+echo "hwmon0_name=$hwmon0_name hwmon1_name=$hwmon1_name hwmon2_name=$hwmon2_name"
 echo "gpio_hotplug0=$gpio_hotplug0 gpio_hotplug1=$gpio_hotplug1 gpio_hotplug2=$gpio_hotplug2"
 echo "gpio_en0=$gpio_en0 gpio_en1=$gpio_en1 gpio_en2=$gpio_en2"
 echo "DEV=$DEV CHIP_NUM=$CHIP_NUM"

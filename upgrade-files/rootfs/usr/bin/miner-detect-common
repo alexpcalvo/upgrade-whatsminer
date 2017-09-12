@@ -1,0 +1,214 @@
+#!/bin/sh
+#
+# Common script to detect the miner info.
+#
+
+# Detect control board type and version
+cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+if [ "$cpuinfo" != "" ]; then
+    control_board_type="H3"
+    control_board_version="CB20"
+else
+    control_board_type="ZYNQ"
+
+    memsize=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
+    if [ $memsize -le 262144 ]; then
+        control_board_version="CB12"
+    else
+        control_board_version="CB10"
+    fi
+fi
+
+if [ "$control_board_type" = "H3" ]; then
+    hwmon0_path="/sys/class/hwmon/hwmon1/device/"
+    hwmon1_path="/sys/class/hwmon/hwmon2/device/"
+    hwmon2_path="/sys/class/hwmon/hwmon3/device/"
+    hwmon4_path="/sys/class/hwmon/hwmon5/device/"
+
+    gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
+    gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
+    gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
+    
+    gpio_en0_path="/sys/class/gpio/gpio96/value"
+    gpio_en1_path="/sys/class/gpio/gpio97/value"
+    gpio_en2_path="/sys/class/gpio/gpio98/value"
+
+    gpio_reset0_path="/sys/class/gpio/gpio99/value"
+    gpio_reset1_path="/sys/class/gpio/gpio100/value"
+    gpio_reset2_path="/sys/class/gpio/gpio101/value"
+
+    eeprom0_path="/sys/bus/i2c/devices/1-0050/eeprom"
+    eeprom1_path="/sys/bus/i2c/devices/1-0051/eeprom"
+    eeprom2_path="/sys/bus/i2c/devices/1-0052/eeprom"
+else
+    hwmon0_path="/sys/class/hwmon/hwmon0/"
+    hwmon1_path="/sys/class/hwmon/hwmon1/"
+    hwmon2_path="/sys/class/hwmon/hwmon2/"
+    hwmon4_path="/sys/class/hwmon/hwmon4/"
+
+    gpio_hotplug0_path="/sys/class/gpio/gpio961/value"
+    gpio_hotplug1_path="/sys/class/gpio/gpio963/value"
+    gpio_hotplug2_path="/sys/class/gpio/gpio965/value"
+
+    gpio_en0_path="/sys/class/gpio/gpio934/value"
+    gpio_en1_path="/sys/class/gpio/gpio939/value"
+    gpio_en2_path="/sys/class/gpio/gpio937/value"
+
+    gpio_reset0_path="/sys/class/gpio/gpio960/value"
+    gpio_reset1_path="/sys/class/gpio/gpio962/value"
+    gpio_reset2_path="/sys/class/gpio/gpio964/value"
+
+    eeprom0_path="/sys/bus/i2c/devices/0-0050/eeprom"
+    eeprom1_path="/sys/bus/i2c/devices/0-0051/eeprom"
+    eeprom2_path="/sys/bus/i2c/devices/0-0052/eeprom"
+fi
+
+# Detect hash board version and miner type
+if [ -f $hwmon0_path/name ]; then
+    hwmon0_name=`cat $hwmon0_path/name`
+fi
+if [ -f $hwmon1_path/name ]; then
+    hwmon1_name=`cat $hwmon1_path/name`
+fi
+if [ -f $hwmon2_path/name ]; then
+    hwmon2_name=`cat $hwmon2_path/name`
+fi
+
+gpio_hotplug0=`cat $gpio_hotplug0_path`
+gpio_hotplug1=`cat $gpio_hotplug1_path`
+gpio_hotplug2=`cat $gpio_hotplug2_path`
+
+gpio_en0=`cat $gpio_en0_path`
+gpio_en1=`cat $gpio_en1_path`
+gpio_en2=`cat $gpio_en2_path`
+
+if [ $gpio_hotplug0 = "0" -a $gpio_en0 = "1" ]; then
+    hash_board_type0="1"
+else
+    hash_board_type0="0"
+fi
+if [ $gpio_hotplug1 = "0" -a $gpio_en1 = "1" ]; then
+    hash_board_type1="1"
+else
+    hash_board_type1="0"
+fi
+if [ $gpio_hotplug2 = "0" -a $gpio_en2 = "1" ]; then
+    hash_board_type2="1"
+else
+    hash_board_type2="0"
+fi
+
+if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = "tmp421" ]; then
+    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+        hash_board_version="HB12"
+    else
+        hash_board_version="HB20"
+    fi
+elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "lm75" ]; then
+    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET0=$?
+    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET1=$?
+    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
+
+    if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
+            hash_board_version="HB11"
+    else
+        if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+            hash_board_version="ALB10"
+        else
+            hash_board_version="ALB20"
+        fi
+    fi
+else
+    if [ -f $hwmon0_path/name ]; then
+        hwmon0_name=`cat $hwmon0_path/name`
+    fi
+    if [ -f $hwmon2_path/name ]; then
+        hwmon1_name=`cat $hwmon2_path/name`
+    fi
+    if [ -f $hwmon4_path/name ]; then
+        hwmon2_name=`cat $hwmon4_path/name`
+    fi
+
+    if [ "$hwmon0_name" = "tmp423" -o "$hwmon1_name" = "tmp423" -o "$hwmon2_name" = "tmp423" ]; then
+        hash_board_version="HB10"
+    else
+        hash_board_version="unknown"
+    fi
+fi
+
+case $hash_board_version in
+    HB10)
+        miner_type="M0"
+        chip_num=66
+        CGMINERFILE="cgminer.m0"
+        CGMINERDEFAULTFILE="cgminer.default.m0"
+        POWERSFILE="powers.m0"
+        ;;
+    HB12)
+        miner_type="M1"
+        chip_num=66
+        CGMINERFILE="cgminer.m1"
+        CGMINERDEFAULTFILE="cgminer.default.m1"
+        POWERSFILE="powers.m1"
+        ;;
+    HB20)
+        miner_type="M1s"
+        chip_num=60
+        CGMINERFILE="cgminer.m1s"
+        CGMINERDEFAULTFILE="cgminer.default.m1s"
+        POWERSFILE="powers.m1s"
+        ;;
+    ALB10)
+        miner_type="M2"
+        chip_num=38
+        CGMINERFILE="cgminer.m2"
+        CGMINERDEFAULTFILE="cgminer.default.m2"
+        POWERSFILE="powers.m2"        
+        ;;
+    ALB20)
+        miner_type="M3"
+        chip_num=63
+        CGMINERFILE="cgminer.m3"
+        CGMINERDEFAULTFILE="cgminer.default.m3"
+        POWERSFILE="powers.m3"
+        ;;
+    HB11)
+        miner_type="M3"
+        chip_num=66
+        CGMINERFILE="cgminer.m3f"
+        CGMINERDEFAULTFILE="cgminer.default.m3f"
+        POWERSFILE="powers.m3f"
+        ;;
+    *)
+        miner_type="unknown"
+        chip_num=66
+        ;;
+esac
+
+# Detect power supply version
+power_version=`readpower | grep 'Read power version'`
+if [ "$power_version" = "Read power version = d0 00 00 00 01 06" ]; then
+    power_type="P3"
+elif [ "$power_version" = "Read power version = d0 00 00 00 01 05" ]; then
+    power_type="P2"
+elif [ "$power_version" = "Read power version = d0 00 00 00 00 04" ]; then
+    power_type="P1"
+else
+    power_type="PX"
+fi
+
+# Detect firmware version
+if [ -f /etc/microbt_release ]; then
+    firmware_version=`cat /etc/microbt_release | grep FIRMWARE_VERSION | awk -F '=' '{print $2}'`
+    firmware_version=`echo ${firmware_version:1}`
+    firmware_version=`echo ${firmware_version%\'*}`
+
+    if [ "$control_board_type" = "H3" ]; then
+        boot_part=`cat /proc/cmdline | grep boot_part`
+        if [ "$boot_part" = "" ]; then
+            firmware_version=`echo OLD-$firmware_version`
+        fi
+    fi
+else
+    firmware_version="unknown"
+fi

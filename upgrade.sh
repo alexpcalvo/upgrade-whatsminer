@@ -25,147 +25,13 @@ else
     fi
 fi
 
-if [ "$isH3Platform" = true ]; then
-    hwmon0_path="/sys/class/hwmon/hwmon1/device/"
-    hwmon1_path="/sys/class/hwmon/hwmon2/device/"
-    hwmon2_path="/sys/class/hwmon/hwmon3/device/"
-    hwmon4_path="/sys/class/hwmon/hwmon5/device/"
-
-    gpio_hotplug0_path="/sys/class/gpio/gpio15/value"
-    gpio_hotplug1_path="/sys/class/gpio/gpio7/value"
-    gpio_hotplug2_path="/sys/class/gpio/gpio8/value"
-
-    gpio_en0_path="/sys/class/gpio/gpio96/value"
-    gpio_en1_path="/sys/class/gpio/gpio97/value"
-    gpio_en2_path="/sys/class/gpio/gpio98/value"
-
-    if [ ! -f /sys/class/gpio/gpio15/direction ]; then
-	    echo 15 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio15/direction
-	    echo 7 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio7/direction
-	    echo 8 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio8/direction
-    fi
-
-    if [ ! -f /sys/class/gpio/gpio96/direction ]; then
-	    echo 96 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio96/direction
-	    echo 97 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio97/direction
-	    echo 98 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio98/direction
-    fi
-else
-    hwmon0_path="/sys/class/hwmon/hwmon0/"
-    hwmon1_path="/sys/class/hwmon/hwmon1/"
-    hwmon2_path="/sys/class/hwmon/hwmon2/"
-    hwmon4_path="/sys/class/hwmon/hwmon4/"
-
-    gpio_hotplug0_path="/sys/class/gpio/gpio961/value"
-    gpio_hotplug1_path="/sys/class/gpio/gpio963/value"
-    gpio_hotplug2_path="/sys/class/gpio/gpio965/value"
-
-    gpio_en0_path="/sys/class/gpio/gpio934/value"
-    gpio_en1_path="/sys/class/gpio/gpio939/value"
-    gpio_en2_path="/sys/class/gpio/gpio937/value"
-
-    if [ ! -f /sys/class/gpio/gpio961/direction ]; then
-	    echo 961 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio961/direction
-	    echo 963 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio963/direction
-	    echo 965 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio965/direction
-    fi
-
-    if [ ! -f /sys/class/gpio/gpio934/direction ]; then
-	    echo 934 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio934/direction
-	    echo 939 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio939/direction
-	    echo 937 > /sys/class/gpio/export
-	    echo in > /sys/class/gpio/gpio937/direction
-    fi
-fi
-
-# Detect hash board type
-if [ -f $hwmon0_path/name ]; then
-    name0=`cat $hwmon0_path/name`
-fi
-if [ -f $hwmon1_path/name ]; then
-    name1=`cat $hwmon1_path/name`
-fi
-if [ -f $hwmon2_path/name ]; then
-    name2=`cat $hwmon2_path/name`
-fi
-
-gpio_hotplug0=`cat $gpio_hotplug0_path`
-gpio_hotplug1=`cat $gpio_hotplug1_path`
-gpio_hotplug2=`cat $gpio_hotplug2_path`
-
-gpio_en0=`cat $gpio_en0_path`
-gpio_en1=`cat $gpio_en1_path`
-gpio_en2=`cat $gpio_en2_path`
-
-if [ $gpio_hotplug0 = "0" -a $gpio_en0 = "1" ]; then
-    hash_board_type0="1"
-else
-    hash_board_type0="0"
-fi
-if [ $gpio_hotplug1 = "0" -a $gpio_en1 = "1" ]; then
-    hash_board_type1="1"
-else
-    hash_board_type1="0"
-fi
-if [ $gpio_hotplug2 = "0" -a $gpio_en2 = "1" ]; then
-    hash_board_type2="1"
-else
-    hash_board_type2="0"
-fi
-
-if [ "$name0" = "tmp421" -o "$name1" = "tmp421" -o "$name2" = "tmp421" ]; then
-    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-        miner_type="M1"
-    else
-        miner_type="M1s"
-    fi
-elif [ "$name0" = "lm75" -o "$name1" = "lm75" -o "$name2" = "lm75" ]; then
-    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
-        miner_type="M2"
-    else
-        miner_type="M3"
-    fi
-else
-    if [ -f $hwmon0_path/name ]; then
-        name0=`cat $hwmon0_path/name`
-    fi
-    if [ -f $hwmon2_path/name ]; then
-        name1=`cat $hwmon2_path/name`
-    fi
-    if [ -f $hwmon4_path/name ]; then
-        name2=`cat $hwmon4_path/name`
-    fi
-
-    if [ "$name0" = "tmp423" -o "$name1" = "tmp423" -o "$name2" = "tmp423" ]; then
-        miner_type="M0"
-    else
-        miner_type="unknown"
-    fi
-fi
-
-echo "Detected machine type: control_board=$control_board, miner_type=$miner_type"
+echo "Detected machine type: control_board=$control_board"
 
 if [ "$control_board" = "unknown" ]; then
     echo "*********************************************************************"
     echo "Unknown control board, quit the upgrade process."
     echo "*********************************************************************"
     exit 0
-fi
-
-if [ "$miner_type" = "unknown" ]; then
-    echo "Unknown hash board, assume miner_type=M1."
-    miner_type="M1"
 fi
 
 # Compare two files.
@@ -266,34 +132,6 @@ else
     BOOTFILE="BOOT-ZYNQ10"
 fi
 
-case $miner_type in
-    M0)
-        CGMINERFILE="cgminer.m0"
-        CGMINERDEFAULTFILE="cgminer.default.m0"
-        POWERSFILE="powers.m0"
-        ;;
-    M1)
-        CGMINERFILE="cgminer.m1"
-        CGMINERDEFAULTFILE="cgminer.default.m1"
-        POWERSFILE="powers.m1"
-        ;;
-    M1s)
-        CGMINERFILE="cgminer.m1s"
-        CGMINERDEFAULTFILE="cgminer.default.m1s"
-        POWERSFILE="powers.m1s"
-        ;;
-    M2)
-        CGMINERFILE="cgminer.m2"
-        CGMINERDEFAULTFILE="cgminer.default.m2"
-        POWERSFILE="powers.m2"
-        ;;
-    M3)
-        CGMINERFILE="cgminer.m3"
-        CGMINERDEFAULTFILE="cgminer.default.m3"
-        POWERSFILE="powers.m3"
-        ;;
-esac
-
 # boot (mtd1)
 if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
     # verify with mtd data
@@ -373,6 +211,27 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
         chmod 644 /etc/config/system >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/etc/config/system /etc/config/system
         chmod 444 /etc/config/system # readonly
+    fi
+fi
+
+# /etc/config/powers.m3f
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3f ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3f /etc/config/powers.m3f`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.m3f"
+        chmod 644 /etc/config/powers.m3f >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3f /etc/config/powers.m3f
+        chmod 444 /etc/config/powers.m3f # readonly
+    fi
+fi
+# /etc/config/powers.default.m3f
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3f ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3f /etc/config/powers.default.m3f`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m3f"
+        chmod 644 /etc/config/powers.default.m3f >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3f /etc/config/powers.default.m3f
+        chmod 444 /etc/config/powers.default.m3f # readonly
     fi
 fi
 
@@ -481,20 +340,6 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 ]; then
     fi
 fi
 
-# Link /etc/config/powers
-if [ -f /tmp/upgrade-files/rootfs/etc/config/$POWERSFILE ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$POWERSFILE /etc/config/powers`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Link $POWERSFILE to /etc/config/powers"
-        cd /etc/config/
-        chmod 644 powers >/dev/null 2>&1
-        rm -f powers
-        ln -s $POWERSFILE powers
-        chmod 444 powers
-        cd - >/dev/null
-    fi
-fi
-
 # /etc/config/network.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/network.default ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/network.default /etc/config/network.default`
@@ -558,6 +403,27 @@ if [ ! -f /etc/config/pools ]; then
 fi
 
 # Upgrade /etc/config/cgminer after updating pools
+
+# /etc/config/cgminer.m3f
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3f ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3f /etc/config/cgminer.m3f`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.m3f to /etc/config/cgminer.m3f"
+        chmod 644 /etc/config/cgminer.m3f >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3f /etc/config/cgminer.m3f
+        chmod 444 /etc/config/cgminer.m3f # readonly
+    fi
+fi
+# /etc/config/cgminer.default.m3f
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3f ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3f /etc/config/cgminer.default.m3f`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.m3f to /etc/config/cgminer.default.m3f"
+        chmod 644 /etc/config/cgminer.default.m3f >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3f /etc/config/cgminer.default.m3f
+        chmod 444 /etc/config/cgminer.default.m3f # readonly
+    fi
+fi
 
 # /etc/config/cgminer.m3
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3 ]; then
@@ -661,33 +527,6 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 ]; then
         chmod 644 /etc/config/cgminer.default.m0 >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 /etc/config/cgminer.default.m0
         chmod 444 /etc/config/cgminer.default.m0 # readonly
-    fi
-fi
-
-# Link /etc/config/cgminer
-if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$CGMINERFILE /etc/config/cgminer`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Link $CGMINERFILE to /etc/config/cgminer"
-        cd /etc/config/
-        chmod 644 cgminer >/dev/null 2>&1
-        rm -f cgminer
-        ln -s $CGMINERFILE cgminer
-        chmod 444 cgminer
-        cd - >/dev/null
-    fi
-fi
-# Link /etc/config/cgminer.default
-if [ -f /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/$CGMINERDEFAULTFILE /etc/config/cgminer.default`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Link $CGMINERDEFAULTFILE to /etc/config/cgminer.default"
-        cd /etc/config/
-        chmod 644 cgminer.default >/dev/null 2>&1
-        rm -f cgminer.default
-        ln -s $CGMINERDEFAULTFILE cgminer.default
-        chmod 444 cgminer.default
-        cd - >/dev/null
     fi
 fi
 
@@ -865,6 +704,17 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon ]; then
         chmod 755 /usr/bin/remote-daemon
         cp -f /tmp/upgrade-files/rootfs/usr/bin/remote-daemon /usr/bin/remote-daemon
         chmod 555 /usr/bin/remote-daemon
+    fi
+fi
+
+# /usr/bin/miner-detect-common
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/miner-detect-common ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/miner-detect-common /usr/bin/miner-detect-common`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/miner-detect-common"
+        chmod 755 /usr/bin/miner-detect-common
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/miner-detect-common /usr/bin/miner-detect-common
+        chmod 555 /usr/bin/miner-detect-common
     fi
 fi
 

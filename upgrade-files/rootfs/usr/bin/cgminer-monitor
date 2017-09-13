@@ -93,7 +93,17 @@ if [ "$C" = "0" ]; then
 fi
 if [ "$C" != "1" ]; then
     killall -s 9 cgminer
-    sleep 1
+    sleep 2
+
+    C=`pidof cgminer | wc -w`
+    if [ "$C" != "0" ]; then
+        logger "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie"
+        echo "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie" >> /root/.events/event-reboot-control-board
+
+        sleep 5 && reboot -n -f &
+        reboot
+    fi
+
     /etc/init.d/cgminer start
     exit 0;
 fi

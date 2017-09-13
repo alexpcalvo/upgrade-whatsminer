@@ -729,6 +729,17 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info ]; then
     fi
 fi
 
+# /usr/bin/lua-detect-version
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/lua-detect-version ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/lua-detect-version /usr/bin/lua-detect-version`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/lua-detect-version"
+        chmod 755 /usr/bin/lua-detect-version
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/lua-detect-version /usr/bin/lua-detect-version
+        chmod 555 /usr/bin/lua-detect-version
+    fi
+fi
+
 # /usr/lib/lua
 if [ -d /tmp/upgrade-files/rootfs/usr/lib/lua ]; then
     if [ -d /usr/lib/lua ]; then
@@ -849,7 +860,9 @@ fi
 chmod 555 /usr/bin/cgminer
 chmod 555 /usr/bin/cgminer-api
 chmod 555 /usr/bin/cgminer-monitor
+chmod 555 /usr/bin/miner-detect-common
 chmod 555 /usr/bin/detect-miner-info
+chmod 555 /usr/bin/lua-detect-version
 chmod 555 /usr/bin/keyd
 chmod 555 /usr/bin/readpower
 chmod 555 /usr/bin/setpower

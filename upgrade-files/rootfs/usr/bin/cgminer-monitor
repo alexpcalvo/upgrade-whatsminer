@@ -79,6 +79,24 @@ find_field() {
     echo ""
 }
 
+reboot_control_board() {
+    sleep 5 && reboot -n -f &
+    reboot
+}
+
+kill_cgminer() {
+    killall -s 9 cgminer
+    sleep 2
+
+    C=`pidof cgminer | wc -w`
+    if [ "$C" != "0" ]; then
+        logger "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep"
+        echo "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep" >> /root/.events/event-reboot-control-board
+
+        reboot_control_board
+    fi
+}
+
 isH3Platform=false  
 
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
@@ -92,18 +110,8 @@ if [ "$C" = "0" ]; then
     exit 0;
 fi
 if [ "$C" != "1" ]; then
-    killall -s 9 cgminer
-    sleep 2
-
-    C=`pidof cgminer | wc -w`
-    if [ "$C" != "0" ]; then
-        logger "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie"
-        echo "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie" >> /root/.events/event-reboot-control-board
-
-        sleep 5 && reboot -n -f &
-        reboot
-    fi
-
+    logger "Kill all cgminers as there are more than one cgminer processes"
+    kill_cgminer
     /etc/init.d/cgminer start
     exit 0;
 fi
@@ -122,8 +130,7 @@ if [ $cpu_ratio -eq 0 ]; then
     # Check twice
     cpu_ratio=`top -d5 -n2 | grep "cgminer --bitmicro-options" | grep -v grep | awk '{print $8}' | sed 's/%//g' | sed -n '2p'`
     if [ $cpu_ratio -eq 0 ]; then
-        killall -s 9 cgminer
-        sleep 1
+        kill_cgminer
         /etc/init.d/cgminer start
 
         logger "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`"
@@ -254,7 +261,7 @@ if [ $asc0_mhs_av_v -lt $MHS_T_H -o $asc1_mhs_av_v -lt $MHS_T_H -o $asc2_mhs_av_
             if [ ! -f /root/.cgminer-monitor-reboot-system ]; then
                 echo "cgminer-monitor $asc0_mhs_av_v|$asc1_mhs_av_v|$asc2_mhs_av_v, $MHS_T_H|$MHS_T_L, reboot system at `date`" >> /root/.cgminer-monitor-reboot-system
                 echo "`date`|E002|Reboot control board|cgminer-monitor|HS < 2.4T and cgminer restarted x3" >> /root/.events/event-reboot-control-board
-		        reboot
+                reboot_control_board
                 sleep 5
 		        exit 0;
 	        fi
@@ -306,8 +313,7 @@ if [ $asc0_mhs_av_v -lt $MHS_T_H -o $asc1_mhs_av_v -lt $MHS_T_H -o $asc2_mhs_av_
             echo "cgminer-monitor $asc0_mhs_av_v|$asc1_mhs_av_v|$asc2_mhs_av_v, $MHS_T_H|$MHS_T_L, cgminer restarted $i at `date`" >> /tmp/cgminer-restart.log
             logger "cgminer-monitor $asc0_mhs_av_v|$asc1_mhs_av_v|$asc2_mhs_av_v, $MHS_T_H|$MHS_T_L, cgminer restarted $i at `date`"
 
-            killall -s 9 cgminer
-            sleep 1
+            kill_cgminer
             /etc/init.d/cgminer start
             touch /tmp/cgminer-restart-time$i
 

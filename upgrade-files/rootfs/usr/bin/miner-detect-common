@@ -100,9 +100,11 @@ fi
 
 if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = "tmp421" ]; then
     if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+        miner_type="M1"
         hash_board_version="HB12"
     else
-        hash_board_version="HB20"
+        miner_type="M1s"
+        hash_board_version="HB13"
     fi
 elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "lm75" ]; then
     dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET0=$?
@@ -110,12 +112,15 @@ elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "l
     dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
 
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
+            miner_type="M3"
             hash_board_version="HB11"
     else
         if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+            miner_type="M2"
             hash_board_version="ALB10"
         else
-            hash_board_version="ALB20"
+            miner_type="M3"
+            hash_board_version="HB10"
         fi
     fi
 else
@@ -130,54 +135,55 @@ else
     fi
 
     if [ "$hwmon0_name" = "tmp423" -o "$hwmon1_name" = "tmp423" -o "$hwmon2_name" = "tmp423" ]; then
+        miner_type="M0"
         hash_board_version="HB10"
     else
         hash_board_version="unknown"
     fi
 fi
 
-case $hash_board_version in
-    HB10)
-        miner_type="M0"
+case $miner_type in
+    M0)
         chip_num=66
         CGMINERFILE="cgminer.m0"
         CGMINERDEFAULTFILE="cgminer.default.m0"
         POWERSFILE="powers.m0"
         ;;
-    HB12)
-        miner_type="M1"
+    M1)
         chip_num=66
         CGMINERFILE="cgminer.m1"
         CGMINERDEFAULTFILE="cgminer.default.m1"
         POWERSFILE="powers.m1"
         ;;
-    HB20)
-        miner_type="M1s"
+    M1s)
         chip_num=60
         CGMINERFILE="cgminer.m1s"
         CGMINERDEFAULTFILE="cgminer.default.m1s"
         POWERSFILE="powers.m1s"
         ;;
-    ALB10)
-        miner_type="M2"
+    M2)
         chip_num=38
         CGMINERFILE="cgminer.m2"
         CGMINERDEFAULTFILE="cgminer.default.m2"
         POWERSFILE="powers.m2"        
         ;;
-    ALB20)
-        miner_type="M3"
-        chip_num=63
-        CGMINERFILE="cgminer.m3"
-        CGMINERDEFAULTFILE="cgminer.default.m3"
-        POWERSFILE="powers.m3"
-        ;;
-    HB11)
-        miner_type="M3"
-        chip_num=66
-        CGMINERFILE="cgminer.m3f"
-        CGMINERDEFAULTFILE="cgminer.default.m3f"
-        POWERSFILE="powers.m3f"
+    M3)
+        case $hash_board_version in
+            HB10)
+                chip_num=63
+                CGMINERFILE="cgminer.m3.v10"
+                CGMINERDEFAULTFILE="cgminer.default.m3.v10"
+                POWERSFILE="powers.m3.v10"
+                ;;
+            HB11)
+                chip_num=66
+                CGMINERFILE="cgminer.m3.v11"
+                CGMINERDEFAULTFILE="cgminer.default.m3.v11"
+                POWERSFILE="powers.m3.v11"
+                ;;
+            *)
+                ;;
+        esac
         ;;
     *)
         miner_type="unknown"

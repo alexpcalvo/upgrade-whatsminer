@@ -985,6 +985,10 @@ if [ -f /etc/config/cgminer.default.m3f ]; then
     rm -f /etc/config/cgminer.default.m3f
 fi
 
+if [ -f /etc/config/firewall.unused ]; then
+    rm -f /etc/config/firewall.unused
+fi
+
 # /etc/microbt_release
 if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`

@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Script to perform operations before reboot, called by lua.
+#
+
+# reboot or sync may be blocked under some conditions
+# so we call 'reboot -n -f' background to force rebooting
+# after sleep timeout
+sleep 10 && reboot -n -f &
+
+sync
+mount /dev/root -o remount,ro

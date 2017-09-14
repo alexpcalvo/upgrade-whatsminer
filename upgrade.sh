@@ -64,17 +64,102 @@ killall -9 ntpd >/dev/null 2>&1
 killall -9 udevd >/dev/null 2>&1
 
 #
-# 1. Upgrade /tmp/upgrade-rootfs/
+# Prepare rootfs
+#
+if [ "$isH3Platform" = true ]; then
+    # H3: 1) remove useless files; 2) replace xxx with xxx.h3
+    rm -f `ls /tmp/upgrade-bin/* | grep -v boot.fex`
+    rm -f /tmp/upgrade-files/packages/*
+
+    for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
+    do
+        newfile=`echo $file | sed 's/\.h3$//'`
+        mv $file $newfile
+    done
+
+    boot_part=`cat /proc/cmdline | grep boot_part`
+    if [ "$boot_part" = "" ]; then
+        rm /tmp/upgrade-bin/boot.fex
+        mv /tmp/upgrade-bin/old-boot.fex /tmp/upgrade-bin/boot.fex
+    fi
+else
+    # ZYNQ: 1) remove useless files for h3
+    rm -f /tmp/upgrade-bin/boot.fex
+    find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
+fi
+
+#
+# 1. Verify and upgrade /tmp/upgrade-bin/*
+#
+
+# Detected files
+if [ "$control_board" = "ZYNQ-CB12" ]; then
+    BOOTFILE="BOOT-ZYNQ12"
+else
+    BOOTFILE="BOOT-ZYNQ10"
+fi
+
+# boot (mtd1)
+if [ -f /tmp/upgrade-bin/$BOOTFILE.bin ]; then
+    # verify with mtd data
+    mtd verify /tmp/upgrade-bin/$BOOTFILE.bin /dev/mtd1 2>/tmp/.mtd-verify-stderr.txt
+    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
+    if [ "$result_success" != "Success" ]; then
+        # upgrade to mtd
+        echo "Upgrading $BOOTFILE.bin to /dev/mtd1"
+        mtd erase /dev/mtd1
+        mtd write /tmp/upgrade-bin/$BOOTFILE.bin /dev/mtd1
+    fi
+fi
+
+# kernel (mtd4 for ZYNQ)
+if [ -f /tmp/upgrade-bin/uImage ]; then
+    # verify with mtd data
+    mtd verify /tmp/upgrade-bin/uImage /dev/mtd4 2>/tmp/.mtd-verify-stderr.txt
+    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
+    if [ "$result_success" != "Success" ]; then
+        # upgrade to mtd
+        echo "Upgrading kernel.bin to /dev/mtd4"
+        mtd erase /dev/mtd4
+        mtd write /tmp/upgrade-bin/uImage /dev/mtd4
+    fi
+fi
+
+# kernel (nandc for H3)
+if [ -f /tmp/upgrade-bin/boot.fex ]; then
+    new_md5=`md5sum /tmp/upgrade-bin/boot.fex | awk '{print $1}'`
+    if [ "`cat /etc/boot.md5`" != "$new_md5" ]; then
+        echo "Upgrading boot.fex to /dev/nandc"
+        cat /tmp/upgrade-bin/boot.fex > /dev/nandc
+        echo $new_md5 > /etc/boot.md5
+    fi
+fi
+
+# devicetree (mtd5)
+if [ -f /tmp/upgrade-bin/devicetree.dtb ]; then
+    # verify with mtd data
+    mtd verify /tmp/upgrade-bin/devicetree.dtb /dev/mtd5 2>/tmp/.mtd-verify-stderr.txt
+    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
+    if [ "$result_success" != "Success" ]; then
+        # upgrade to mtd
+        echo "Upgrading devicetree.bin to /dev/mtd5"
+        mtd erase /dev/mtd5
+        mtd write /tmp/upgrade-bin/devicetree.dtb /dev/mtd5
+    fi
+fi
+
+#
+# 2. Upgrade /tmp/upgrade-rootfs/
 #
 if [ -d /tmp/upgrade-rootfs ]; then
     echo "Upgrading rootfs ..."
-    
+
     rm -fr /usr/lib/lua
 
-    if [ "$isH3Platform" = false ]; then
-        cp -afr /tmp/upgrade-rootfs/zynq-root/* /
-    else
+    if [ "$isH3Platform" = true ]; then
         cp -afr /tmp/upgrade-rootfs/h3-root/* /
+    else
+        cp -afr /tmp/upgrade-rootfs/zynq-root/* /
     fi
 
     echo "Done, reboot control board ..."
@@ -91,117 +176,10 @@ if [ -d /tmp/upgrade-rootfs ]; then
 fi
 
 #
-# 2. Upgrade /tmp/upgrade-files/
+# 3. Upgrade /tmp/upgrade-files/
 #
 
 echo "Upgrading files ..."
-
-#
-# Prepare rootfs
-#
-if [ "$isH3Platform" = true ]; then
-    # H3: 1) remove useless files; 2) replace xxx with xxx.h3
-    rm -f `ls /tmp/upgrade-files/bin/* | grep -v boot.fex`
-    rm -f /tmp/upgrade-files/packages/*
-
-    for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
-    do
-        newfile=`echo $file | sed 's/\.h3$//'`
-        mv $file $newfile
-    done
-
-    boot_part=`cat /proc/cmdline | grep boot_part`
-    if [ "$boot_part" = "" ]; then
-        rm /tmp/upgrade-files/bin/boot.fex
-        mv /tmp/upgrade-files/bin/old-boot.fex /tmp/upgrade-files/bin/boot.fex
-    fi
-else
-    # ZYNQ: 1) remove useless files for h3
-    rm -f /tmp/upgrade-files/bin/boot.fex
-    find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
-fi
-
-#
-# Verify and upgrade /tmp/upgrade-files/bin/*
-#
-
-# Detected files
-if [ "$control_board" = "ZYNQ-CB12" ]; then
-    BOOTFILE="BOOT-ZYNQ12"
-else
-    BOOTFILE="BOOT-ZYNQ10"
-fi
-
-# boot (mtd1)
-if [ -f /tmp/upgrade-files/bin/$BOOTFILE.bin ]; then
-    # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/$BOOTFILE.bin /dev/mtd1 2>/tmp/.mtd-verify-stderr.txt
-    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
-    if [ "$result_success" != "Success" ]; then
-        # Require to upgrade.
-        # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/$BOOTFILE.bin | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/$BOOTFILE.md5 | awk '{print $1}'`
-        if [ "$md5v1" = "$md5v2" ]; then
-            # upgrade to mtd
-            echo "Upgrading $BOOTFILE.bin to /dev/mtd1"
-            mtd erase /dev/mtd1
-            mtd write /tmp/upgrade-files/bin/$BOOTFILE.bin /dev/mtd1
-        fi
-    fi
-fi
-
-# kernel (mtd4 for ZYNQ)
-if [ -f /tmp/upgrade-files/bin/uImage ]; then
-    # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/uImage /dev/mtd4 2>/tmp/.mtd-verify-stderr.txt
-    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
-    if [ "$result_success" != "Success" ]; then
-        # Require to upgrade.
-        # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/uImage | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/uImage.md5 | awk '{print $1}'`
-        if [ "$md5v1" = "$md5v2" ]; then
-            # upgrade to mtd
-            echo "Upgrading kernel.bin to /dev/mtd4"
-            mtd erase /dev/mtd4
-            mtd write /tmp/upgrade-files/bin/uImage /dev/mtd4
-        fi
-    fi
-fi
-
-# kernel (nandc for H3)
-if [ -f /tmp/upgrade-files/bin/boot.fex ]; then
-    new_md5=`md5sum /tmp/upgrade-files/bin/boot.fex | awk '{print $1}'`
-    if [ "`cat /etc/boot.md5`" != "$new_md5" ]; then
-        echo "Upgrading boot.fex to /dev/nandc"
-        cat /tmp/upgrade-files/bin/boot.fex > /dev/nandc
-        echo $new_md5 > /etc/boot.md5
-    fi
-fi
-
-# devicetree (mtd5)
-if [ -f /tmp/upgrade-files/bin/devicetree.dtb ]; then
-    # verify with mtd data
-    mtd verify /tmp/upgrade-files/bin/devicetree.dtb /dev/mtd5 2>/tmp/.mtd-verify-stderr.txt
-    result_success=`cat /tmp/.mtd-verify-stderr.txt | grep Success`
-    if [ "$result_success" != "Success" ]; then
-        # Require to upgrade.
-        # First check the md5.
-        md5v1=`md5sum /tmp/upgrade-files/bin/devicetree.dtb | awk '{print $1}'`
-        md5v2=`cat /tmp/upgrade-files/bin/devicetree.md5 | awk '{print $1}'`
-        if [ "$md5v1" = "$md5v2" ]; then
-            # upgrade to mtd
-            echo "Upgrading devicetree.bin to /dev/mtd5"
-            mtd erase /dev/mtd5
-            mtd write /tmp/upgrade-files/bin/devicetree.dtb /dev/mtd5
-        fi
-    fi
-fi
-
-#
-# Verify and upgrade /tmp/upgrade-files/rootfs/*
-#
 
 # /etc/config/system
 if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then

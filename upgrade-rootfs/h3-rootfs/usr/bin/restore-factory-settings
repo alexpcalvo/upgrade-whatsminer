@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Script to restore factory settings. Called by keyd.
+#
+
+# Restore /etc/config/cgminer.* and /etc/config/powers.*
+for name in m0 m1 m1s m2 m3.v10 m3.v11; do
+    chmod 644 /etc/config/cgminer.$name
+    cp -f /etc/config/cgminer.default.$name /etc/config/cgminer.$name
+    chmod 444 /etc/config/cgminer.$name
+
+    chmod 644 /etc/config/powers.$name
+    cp -f /etc/config/powers.default.$name /etc/config/powers.$name
+    chmod 444 /etc/config/powers.$name
+done
+
+# Restore /etc/config/pools
+chmod 644 /etc/config/pools
+cp -f /etc/config/pools.default /etc/config/pools
+
+# Restore /etc/config/network
+chmod 644 /etc/config/network
+cp -f /etc/config/network.default /etc/config/network
+
+# Restore ssh password
+chmod 644 /etc/shadow
+cp -f /etc/shadow.default /etc/shadow
+
+# Call pre-reboot before reboot
+/usr/bin/pre-reboot

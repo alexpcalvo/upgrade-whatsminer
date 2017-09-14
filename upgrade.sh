@@ -960,6 +960,31 @@ if [ -f /etc/config/cgminer.default.alb20 ]; then
     rm -f /etc/config/cgminer.default.alb20
 fi
 
+if [ -f /etc/config/powers.m3 ]; then
+    rm -f /etc/config/powers.m3
+fi
+if [ -f /etc/config/powers.default.m3 ]; then
+    rm -f /etc/config/powers.default.m3
+fi
+if [ -f /etc/config/powers.m3f ]; then
+    rm -f /etc/config/powers.m3f
+fi
+if [ -f /etc/config/powers.default.m3f ]; then
+    rm -f /etc/config/powers.default.m3f
+fi
+if [ -f /etc/config/cgminer.m3 ]; then
+    rm -f /etc/config/cgminer.m3
+fi
+if [ -f /etc/config/cgminer.default.m3 ]; then
+    rm -f /etc/config/cgminer.default.m3
+fi
+if [ -f /etc/config/cgminer.m3f ]; then
+    rm -f /etc/config/cgminer.m3f
+fi
+if [ -f /etc/config/cgminer.default.m3f ]; then
+    rm -f /etc/config/cgminer.default.m3f
+fi
+
 # /etc/microbt_release
 if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`

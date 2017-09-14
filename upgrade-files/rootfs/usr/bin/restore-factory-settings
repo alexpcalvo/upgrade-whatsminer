@@ -4,7 +4,7 @@
 #
 
 # Restore /etc/config/cgminer.* and /etc/config/powers.*
-for name in m0 m1 m1s m2 m3; do
+for name in m0 m1 m1s m2 m3.v10 m3.v11; do
     chmod 644 /etc/config/cgminer.$name
     cp -f /etc/config/cgminer.default.$name /etc/config/cgminer.$name
     chmod 444 /etc/config/cgminer.$name

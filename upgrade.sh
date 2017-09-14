@@ -69,13 +69,16 @@ killall -9 udevd >/dev/null 2>&1
 if [ "$isH3Platform" = true ]; then
     # H3: 1) remove useless files; 2) replace xxx with xxx.h3
     rm -f `ls /tmp/upgrade-bin/* | grep -v boot.fex`
-    rm -f /tmp/upgrade-files/packages/*
 
-    for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
-    do
-        newfile=`echo $file | sed 's/\.h3$//'`
-        mv $file $newfile
-    done
+    if [ -d /tmp/upgrade-files ]; then
+        rm -f /tmp/upgrade-files/packages/*
+
+        for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
+        do
+            newfile=`echo $file | sed 's/\.h3$//'`
+            mv $file $newfile
+        done
+    fi
 
     boot_part=`cat /proc/cmdline | grep boot_part`
     if [ "$boot_part" = "" ]; then
@@ -85,7 +88,10 @@ if [ "$isH3Platform" = true ]; then
 else
     # ZYNQ: 1) remove useless files for h3
     rm -f /tmp/upgrade-bin/boot.fex
-    find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
+    rm -f /tmp/upgrade-bin/old-boot.fex
+    if [ -d /tmp/upgrade-files/rootfs ]; then
+        find /tmp/upgrade-files/rootfs -name "*.h3" | xargs rm -f
+    fi
 fi
 
 #
@@ -157,10 +163,30 @@ if [ -d /tmp/upgrade-rootfs ]; then
     rm -fr /usr/lib/lua
 
     if [ "$isH3Platform" = true ]; then
-        cp -afr /tmp/upgrade-rootfs/h3-root/* /
+        cp -afr /tmp/upgrade-rootfs/h3-rootfs/* /
     else
-        cp -afr /tmp/upgrade-rootfs/zynq-root/* /
+        cp -afr /tmp/upgrade-rootfs/zynq-rootfs/* /
     fi
+
+    # Confirm file attributes again
+    chmod 555 /usr/bin/cgminer
+    chmod 555 /usr/bin/cgminer-api
+    chmod 555 /usr/bin/cgminer-monitor
+    chmod 555 /usr/bin/miner-detect-common
+    chmod 555 /usr/bin/detect-miner-info
+    chmod 555 /usr/bin/lua-detect-version
+    chmod 555 /usr/bin/keyd
+    chmod 555 /usr/bin/readpower
+    chmod 555 /usr/bin/setpower
+    chmod 555 /usr/bin/system-monitor
+    chmod 555 /usr/bin/remote-daemon
+    chmod 555 /etc/init.d/boot
+    chmod 555 /etc/init.d/cgminer
+    chmod 555 /etc/init.d/detect-cgminer-config
+    chmod 555 /etc/init.d/remote-daemon
+    chmod 555 /etc/init.d/system-monitor
+    chmod 555 /etc/init.d/sdcard-upgrade
+    chmod 555 /bin/bitmicro-test
 
     echo "Done, reboot control board ..."
 

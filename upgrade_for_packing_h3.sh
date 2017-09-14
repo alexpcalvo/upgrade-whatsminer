@@ -35,8 +35,8 @@ rm -f $target_dir/usr/lib/lua/luci/controller/firewall.lua
 
 cp -af $tmp_src_dir/* $target_dir/
 
-if [ -f $upgrade_dir/upgrade-files/bin/boot.fex ]; then
-	md5sum $upgrade_dir/upgrade-files/bin/boot.fex | awk '{print $1}' > $target_dir/etc/boot.md5
+if [ -f $upgrade_dir/upgrade-bin/boot.fex ]; then
+	md5sum $upgrade_dir/upgrade-bin/boot.fex | awk '{print $1}' > $target_dir/etc/boot.md5
 fi
 
 rm -rf $tmp_src_dir

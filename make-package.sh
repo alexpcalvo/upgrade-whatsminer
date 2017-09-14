@@ -10,6 +10,8 @@ UPGRADE_ROOTFS_PACKAGENAME=upgrade-whatsminer-rootfs-$VERSION_NUMBER.tgz
 rm -f whatsminer-*.zip upgrade-*.tgz
 
 tar zcf $UPGRADE_FILES_PACKAGENAME  upgrade.sh upgrade-bin upgrade-files
+
+./update-upgrade-rootfs.sh
 tar zcf $UPGRADE_ROOTFS_PACKAGENAME upgrade.sh upgrade-bin upgrade-rootfs
 
 #PACKAGE_NAME=whatsminer-$MACHINE_TYPE-$VERSION_NUMBER-upgrade

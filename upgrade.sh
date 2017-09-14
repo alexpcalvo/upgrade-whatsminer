@@ -187,6 +187,8 @@ if [ -d /tmp/upgrade-rootfs ]; then
     chmod 555 /etc/init.d/system-monitor
     chmod 555 /etc/init.d/sdcard-upgrade
     chmod 555 /bin/bitmicro-test
+    chmod 444 /etc/microbt_release
+    chmod 444 /etc/cgminer_version
 
     echo "Done, reboot control board ..."
 
@@ -860,26 +862,6 @@ if [ ! -f /usr/sbin/sensors ]; then
     fi
 fi
 
-# Confirm file attributes again
-chmod 555 /usr/bin/cgminer
-chmod 555 /usr/bin/cgminer-api
-chmod 555 /usr/bin/cgminer-monitor
-chmod 555 /usr/bin/miner-detect-common
-chmod 555 /usr/bin/detect-miner-info
-chmod 555 /usr/bin/lua-detect-version
-chmod 555 /usr/bin/keyd
-chmod 555 /usr/bin/readpower
-chmod 555 /usr/bin/setpower
-chmod 555 /usr/bin/system-monitor
-chmod 555 /usr/bin/remote-daemon
-chmod 555 /etc/init.d/boot
-chmod 555 /etc/init.d/cgminer
-chmod 555 /etc/init.d/detect-cgminer-config
-chmod 555 /etc/init.d/remote-daemon
-chmod 555 /etc/init.d/system-monitor
-chmod 555 /etc/init.d/sdcard-upgrade
-chmod 555 /bin/bitmicro-test
-
 # Remove unused files
 if [ -f /etc/config/firewall ]; then
     rm -f /etc/config/firewall
@@ -1013,6 +995,29 @@ if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
         chmod 444 /etc/cgminer_version # readonly
     fi
 fi
+
+
+# Confirm file attributes again
+chmod 555 /usr/bin/cgminer
+chmod 555 /usr/bin/cgminer-api
+chmod 555 /usr/bin/cgminer-monitor
+chmod 555 /usr/bin/miner-detect-common
+chmod 555 /usr/bin/detect-miner-info
+chmod 555 /usr/bin/lua-detect-version
+chmod 555 /usr/bin/keyd
+chmod 555 /usr/bin/readpower
+chmod 555 /usr/bin/setpower
+chmod 555 /usr/bin/system-monitor
+chmod 555 /usr/bin/remote-daemon
+chmod 555 /etc/init.d/boot
+chmod 555 /etc/init.d/cgminer
+chmod 555 /etc/init.d/detect-cgminer-config
+chmod 555 /etc/init.d/remote-daemon
+chmod 555 /etc/init.d/system-monitor
+chmod 555 /etc/init.d/sdcard-upgrade
+chmod 555 /bin/bitmicro-test
+chmod 444 /etc/microbt_release
+chmod 444 /etc/cgminer_version
 
 echo "Done, reboot control board ..."
 

@@ -1,22 +1,44 @@
 #!/bin/bash
 
-MACHINE_TYPE="m1-m1s-m2-m3-common"
+MACHINE_TYPE="m1-m1s-m2-m3"
 
 VERSION_NUMBER=`cat upgrade-files/rootfs/etc/microbt_release | grep FIRMWARE_VERSION | cut -d"=" -f2 | sed "s/'//g"`
 
-UPGRADE_FILES_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-$VERSION_NUMBER.tgz
-UPGRADE_ROOTFS_PACKAGENAME=upgrade-whatsminer-rootfs-$VERSION_NUMBER.tgz
+UPGRADE_FULL_PACKAGENAME=upgrade-whatsminer-full-$VERSION_NUMBER.tgz
+UPGRADE_FILES_COMMON_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-common-$VERSION_NUMBER.tgz
+UPGRADE_FILES_ZYNQ_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-zynq-$VERSION_NUMBER.tgz
+UPGRADE_FILES_H3_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-h3-$VERSION_NUMBER.tgz
 
-rm -f whatsminer-*.zip upgrade-*.tgz
+rm -f whatsminer-*.zip upgrade-whatsminer*.tgz
 
-tar zcf $UPGRADE_FILES_PACKAGENAME  upgrade.sh upgrade-bin upgrade-files
+# Create tmp dir
+cp -af upgrade-bin .upgrade-bin-bak
 
+# Generate UPGRADE_FULL_PACKAGENAME
 ./update-upgrade-rootfs.sh
-tar zcf $UPGRADE_ROOTFS_PACKAGENAME upgrade.sh upgrade-bin upgrade-rootfs
+tar zcf $UPGRADE_FULL_PACKAGENAME upgrade.sh upgrade-bin upgrade-rootfs
 
-#PACKAGE_NAME=whatsminer-$MACHINE_TYPE-$VERSION_NUMBER-upgrade
-#zip $PACKAGE_NAME.zip HOWTO remote-upgrade.sh $UPGRADE_FILES_PACKAGENAME
+# Generate UPGRADE_FILES_COMMON_PACKAGENAME
+tar zcf $UPGRADE_FILES_COMMON_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
+
+# Generate UPGRADE_FILES_ZYNQ_PACKAGENAME
+rm -f upgrade-bin/boot.fex upgrade-bin/old-boot.fex upgrade-bin/BOOT-ZYNQ10.bin upgrade-bin/BOOT-ZYNQ12.bin upgrade-bin/uImage
+tar zcf $UPGRADE_FILES_ZYNQ_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
+
+# Generate UPGRADE_FILES_H3_PACKAGENAME
+cp -f .upgrade-bin-bak/* upgrade-bin/
+rm -f upgrade-bin/BOOT-ZYNQ10.bin upgrade-bin/BOOT-ZYNQ12.bin upgrade-bin/devicetree.dtb upgrade-bin/uImage
+tar zcf $UPGRADE_FILES_H3_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
+
+# Restore upgrade-bin and remove tmp dir
+cp -f .upgrade-bin-bak/* upgrade-bin/
+rm -fr .upgrade-bin-bak
+
+#WHATSMINER_PACKAGE_NAME=whatsminer-$MACHINE_TYPE-$VERSION_NUMBER-upgrade
+#zip $WHATSMINER_PACKAGE_NAME.zip HOWTO remote-upgrade.sh $UPGRADE_FILES_PACKAGENAME
 
 echo "Generated packages:"
-echo "  $UPGRADE_FILES_PACKAGENAME"
-echo "  $UPGRADE_ROOTFS_PACKAGENAME"
+echo "  $UPGRADE_FULL_PACKAGENAME"
+echo "  $UPGRADE_FILES_COMMON_PACKAGENAME"
+echo "  $UPGRADE_FILES_ZYNQ_PACKAGENAME"
+echo "  $UPGRADE_FILES_H3_PACKAGENAME"

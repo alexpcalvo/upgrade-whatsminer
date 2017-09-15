@@ -3,5 +3,7 @@
 START=90
 
 start() {
-   /usr/bin/phonixtest & 
+   /usr/bin/phonixtest 
+   rm /etc/rc.d/S90phonixtest
+   sync
 }

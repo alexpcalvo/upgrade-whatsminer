@@ -37,9 +37,9 @@ if [ "$control_board_type" = "H3" ]; then
     gpio_reset1_path="/sys/class/gpio/gpio100/value"
     gpio_reset2_path="/sys/class/gpio/gpio101/value"
 
-    eeprom0_path="/sys/bus/i2c/devices/1-0050/eeprom"
-    eeprom1_path="/sys/bus/i2c/devices/1-0051/eeprom"
-    eeprom2_path="/sys/bus/i2c/devices/1-0052/eeprom"
+    eeprom0_path="/sys/bus/i2c/devices/0-0050/eeprom"
+    eeprom1_path="/sys/bus/i2c/devices/0-0051/eeprom"
+    eeprom2_path="/sys/bus/i2c/devices/0-0052/eeprom"
 else
     hwmon0_path="/sys/class/hwmon/hwmon0/"
     hwmon1_path="/sys/class/hwmon/hwmon1/"

@@ -108,8 +108,8 @@ if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = 
     fi
 elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "lm75" ]; then
     dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET0=$?
-    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET1=$?
-    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
+    dd if=$eeprom1_path bs=8 count=1 >/dev/null 2>&1;RET1=$?
+    dd if=$eeprom2_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
 
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
             miner_type="M3"

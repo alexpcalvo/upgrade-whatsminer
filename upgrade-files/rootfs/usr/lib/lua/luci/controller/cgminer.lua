@@ -291,7 +291,7 @@ function stats()
 	end
 
 	for line in stats do
-		if ver.hashboardtype == "HB10" then
+		if ver.modelname == "M0" then
 			local sta, id, elapsed, slot, freqs_avg, temp_in, temp_out, effective_chips, upfreq_complete =
 			line:match("STATS=(%d+)," ..
 				"ID=([%a%d]+)," ..

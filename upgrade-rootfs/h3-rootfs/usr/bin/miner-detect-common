@@ -37,9 +37,9 @@ if [ "$control_board_type" = "H3" ]; then
     gpio_reset1_path="/sys/class/gpio/gpio100/value"
     gpio_reset2_path="/sys/class/gpio/gpio101/value"
 
-    eeprom0_path="/sys/bus/i2c/devices/1-0050/eeprom"
-    eeprom1_path="/sys/bus/i2c/devices/1-0051/eeprom"
-    eeprom2_path="/sys/bus/i2c/devices/1-0052/eeprom"
+    eeprom0_path="/sys/bus/i2c/devices/0-0050/eeprom"
+    eeprom1_path="/sys/bus/i2c/devices/0-0051/eeprom"
+    eeprom2_path="/sys/bus/i2c/devices/0-0052/eeprom"
 else
     hwmon0_path="/sys/class/hwmon/hwmon0/"
     hwmon1_path="/sys/class/hwmon/hwmon1/"
@@ -108,8 +108,8 @@ if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = 
     fi
 elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "lm75" ]; then
     dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET0=$?
-    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET1=$?
-    dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
+    dd if=$eeprom1_path bs=8 count=1 >/dev/null 2>&1;RET1=$?
+    dd if=$eeprom2_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
 
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
             miner_type="M3"

@@ -29,9 +29,28 @@ echo "Detected machine type: control_board=$control_board"
 
 if [ "$control_board" = "unknown" ]; then
     echo "*********************************************************************"
-    echo "Unknown control board, quit the upgrade process."
+    echo "Unknown control board type, quit the upgrade process."
     echo "*********************************************************************"
     exit 0
+fi
+
+if [ -f /tmp/package-type ]; then
+    package_type=`cat /tmp/package-type`
+
+    if [ "$package_type" = "ZYNQ" -a "$isH3Platform" = true ]; then
+        echo "****************************************************************************************************"
+        echo "Package type ($package_type) mismatched with control board type ($control_board), quit the upgrade process."
+        echo "****************************************************************************************************"
+        rm -fr /tmp/package-type /tmp/upgrade-bin /tmp/upgrade-files
+        exit 0
+    fi
+    if [ "$package_type" = "H3" -a "$isH3Platform" = false ]; then
+        echo "****************************************************************************************************"
+        echo "Package type ($package_type) mismatched with control board type ($control_board), quit the upgrade process."
+        echo "****************************************************************************************************"
+        rm -fr /tmp/package-type /tmp/upgrade-bin /tmp/upgrade-files
+        exit 0
+    fi
 fi
 
 # Compare two files.

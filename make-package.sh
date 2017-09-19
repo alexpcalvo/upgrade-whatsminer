@@ -23,16 +23,19 @@ tar zcf $UPGRADE_FILES_COMMON_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
 
 # Generate UPGRADE_FILES_ZYNQ_PACKAGENAME
 rm -f upgrade-bin/boot.fex upgrade-bin/old-boot.fex upgrade-bin/BOOT-ZYNQ10.bin upgrade-bin/BOOT-ZYNQ12.bin upgrade-bin/uImage
-tar zcf $UPGRADE_FILES_ZYNQ_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
+echo "ZYNQ" > package-type
+tar zcf $UPGRADE_FILES_ZYNQ_PACKAGENAME package-type upgrade.sh upgrade-bin upgrade-files
 
 # Generate UPGRADE_FILES_H3_PACKAGENAME
 cp -f .upgrade-bin-bak/* upgrade-bin/
 rm -f upgrade-bin/BOOT-ZYNQ10.bin upgrade-bin/BOOT-ZYNQ12.bin upgrade-bin/devicetree.dtb upgrade-bin/uImage
-tar zcf $UPGRADE_FILES_H3_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
+echo "H3" > package-type
+tar zcf $UPGRADE_FILES_H3_PACKAGENAME package-type upgrade.sh upgrade-bin upgrade-files
 
 # Restore upgrade-bin and remove tmp dir
 cp -f .upgrade-bin-bak/* upgrade-bin/
 rm -fr .upgrade-bin-bak
+rm -f package-type
 
 #WHATSMINER_PACKAGE_NAME=whatsminer-$MACHINE_TYPE-$VERSION_NUMBER-upgrade
 #zip $WHATSMINER_PACKAGE_NAME.zip HOWTO remote-upgrade.sh $UPGRADE_FILES_PACKAGENAME

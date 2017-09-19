@@ -97,6 +97,12 @@ kill_cgminer() {
     fi
 }
 
+miner_thread_count() {
+    cgminer_pid=`pidof cgminer`
+    thread_count=`grep Miner /proc/$cgminer_pid/task/*/comm | wc -w`
+    echo $thread_count
+}
+
 isH3Platform=false  
 
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
@@ -137,6 +143,17 @@ if [ $cpu_ratio -eq 0 ]; then
         echo "cgminer-monitor cpu ratio=0%, cgminer restarted at `date`" >> /tmp/cgminer-restart.log
         echo "`date`|E008|Restart cgminer|cgminer-monitor|CPU percent is 0" >> /root/.events/event-restart-cgminer
         exit 0;
+    fi
+fi
+
+if [ $(miner_thread_count) = 0 ]; then
+    sleep 2
+    if [ $(miner_thread_count) = 0 ]; then
+        logger "cgminer-monitor Miner thread isn't present, cgminer restarted at `date`"
+        echo "`date`|E010|Restart cgminer|cgminer-monitor|Miner thread isn't present" >> /root/.events/event-restart-cgminer
+
+        kill_cgminer
+        /etc/init.d/cgminer start
     fi
 fi
 

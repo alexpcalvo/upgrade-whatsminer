@@ -90,8 +90,8 @@ kill_cgminer() {
 
     C=`pidof cgminer | wc -w`
     if [ "$C" != "0" ]; then
-        logger "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep"
-        echo "`date`|E009|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep" >> /root/.events/event-reboot-control-board
+        logger "`date`|E012|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep"
+        echo "`date`|E012|Reboot control board|cgminer-monitor|cgminer may be zombie or in uninterruptible sleep" >> /root/.events/event-reboot-control-board
 
         reboot_control_board
     fi

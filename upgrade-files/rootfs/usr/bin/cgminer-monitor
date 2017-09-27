@@ -147,7 +147,7 @@ if [ $cpu_ratio -eq 0 ]; then
 fi
 
 if [ $(miner_thread_count) = 0 ]; then
-    sleep 2
+    sleep 5
     if [ $(miner_thread_count) = 0 ]; then
         logger "cgminer-monitor Miner thread isn't present, cgminer restarted at `date`"
         echo "`date`|E010|Restart cgminer|cgminer-monitor|Miner thread isn't present" >> /root/.events/event-restart-cgminer
@@ -181,7 +181,7 @@ check_upfreq_complete() {
     #
     # Make sure cgminer upfreq completed
     #
-    if [ $upfreq_complete_0 -ne 1 -o $upfreq_complete_1 -ne 1 -o $upfreq_complete_2 -ne 1 ]; then
+    if [ $upfreq_complete_0 -lt 1 -o $upfreq_complete_1 -lt 1 -o $upfreq_complete_2 -lt 1 ]; then
         logger "cgminer-monitor: cgminer upfreq not completed (sm0=$upfreq_complete_0, sm1=$upfreq_complete_1, sm2=$upfreq_complete_2)"
         exit 0;
     else

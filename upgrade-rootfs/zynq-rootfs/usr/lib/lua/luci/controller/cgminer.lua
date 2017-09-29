@@ -366,7 +366,8 @@ function events()
 	local f1 = io.open("/root/.events/event-reboot-control-board")
 	local f2 = io.open("/root/.events/event-reset-hash-board")
 	local f3 = io.open("/root/.events/event-restart-cgminer")
-    local f4 = io.open("/root/.events/event-zero-hash-rate")
+	local f4 = io.open("/root/.events/event-zero-hash-rate")
+	local f5 = io.open("/tmp/event-auto-adjust-voltage")
 
 	if f1 then
 		count = 0
@@ -466,6 +467,31 @@ function events()
 		}
 
 		io.close(f4)
+	end
+
+	if f5 then
+		count = 0
+		for line in f5:lines() do
+        		count = count + 1
+ 	       		lastline = line
+		end
+
+		local r5 = {}
+
+		for a in string.gmatch(lastline, "([^|]+)") do
+    			table.insert(r5, a)
+		end
+
+		data[#data+1] = {
+			['lasttime'] = r5[1],
+			['id'] = r5[2],
+			['action'] = r5[3],
+			['source'] = r5[4],
+			['cause'] = r5[5],
+			['times'] = tostring(count)
+		}
+
+		io.close(f5)
 	end
 
 	return data

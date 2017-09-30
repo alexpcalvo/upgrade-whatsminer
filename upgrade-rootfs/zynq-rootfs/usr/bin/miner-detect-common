@@ -112,8 +112,13 @@ elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "l
     dd if=$eeprom2_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
 
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
+        if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
             miner_type="M3"
             hash_board_version="HB11"
+        else
+            miner_type="M3"
+            hash_board_version="HB12"
+        fi
     else
         if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
             miner_type="M2"
@@ -180,6 +185,12 @@ case $miner_type in
                 CGMINERFILE="cgminer.m3.v11"
                 CGMINERDEFAULTFILE="cgminer.default.m3.v11"
                 POWERSFILE="powers.m3.v11"
+                ;;
+            HB12)
+                chip_num=63
+                CGMINERFILE="cgminer.m3.v12"
+                CGMINERDEFAULTFILE="cgminer.default.m3.v12"
+                POWERSFILE="powers.m3.v12"
                 ;;
             *)
                 ;;

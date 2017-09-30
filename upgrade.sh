@@ -239,6 +239,27 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     fi
 fi
 
+# /etc/config/powers.m3.v12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 /etc/config/powers.m3.v12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.m3.v12"
+        chmod 644 /etc/config/powers.m3.v12 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 /etc/config/powers.m3.v12
+        chmod 444 /etc/config/powers.m3.v12 # readonly
+    fi
+fi
+# /etc/config/powers.default.m3.v12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 /etc/config/powers.default.m3.v12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/powers.default.m3.v12"
+        chmod 644 /etc/config/powers.default.m3.v12 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 /etc/config/powers.default.m3.v12
+        chmod 444 /etc/config/powers.default.m3.v12 # readonly
+    fi
+fi
+
 # /etc/config/powers.m3.v11
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v11 ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v11 /etc/config/powers.m3.v11`
@@ -428,6 +449,27 @@ if [ ! -f /etc/config/pools ]; then
 fi
 
 # Upgrade /etc/config/cgminer after updating pools
+
+# /etc/config/cgminer.m3.v12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 /etc/config/cgminer.m3.v12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.m3.v12 to /etc/config/cgminer.m3.v12"
+        chmod 644 /etc/config/cgminer.m3.v12 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 /etc/config/cgminer.m3.v12
+        chmod 444 /etc/config/cgminer.m3.v12 # readonly
+    fi
+fi
+# /etc/config/cgminer.default.m3.v12
+if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 /etc/config/cgminer.default.m3.v12`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading cgminer.default.m3.v12 to /etc/config/cgminer.default.m3.v12"
+        chmod 644 /etc/config/cgminer.default.m3.v12 >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 /etc/config/cgminer.default.m3.v12
+        chmod 444 /etc/config/cgminer.default.m3.v12 # readonly
+    fi
+fi
 
 # /etc/config/cgminer.m3.v11
 if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v11 ]; then

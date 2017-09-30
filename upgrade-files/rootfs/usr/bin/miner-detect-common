@@ -83,23 +83,23 @@ gpio_en1=`cat $gpio_en1_path`
 gpio_en2=`cat $gpio_en2_path`
 
 if [ $gpio_hotplug0 = "0" -a $gpio_en0 = "1" ]; then
-    hash_board_type0="1"
+    gpio_en_val0="1"
 else
-    hash_board_type0="0"
+    gpio_en_val0="0"
 fi
 if [ $gpio_hotplug1 = "0" -a $gpio_en1 = "1" ]; then
-    hash_board_type1="1"
+    gpio_en_val1="1"
 else
-    hash_board_type1="0"
+    gpio_en_val1="0"
 fi
 if [ $gpio_hotplug2 = "0" -a $gpio_en2 = "1" ]; then
-    hash_board_type2="1"
+    gpio_en_val2="1"
 else
-    hash_board_type2="0"
+    gpio_en_val2="0"
 fi
 
 if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = "tmp421" ]; then
-    if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+    if [ $gpio_en_val0 = "1" -o $gpio_en_val1 = "1" -o $gpio_en_val2 = "1" ]; then
         miner_type="M1"
         hash_board_version="HB12"
     else
@@ -112,10 +112,15 @@ elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "l
     dd if=$eeprom2_path bs=8 count=1 >/dev/null 2>&1;RET2=$?
 
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
+        if [ $gpio_en_val0 = "1" -o $gpio_en_val1 = "1" -o $gpio_en_val2 = "1" ]; then
             miner_type="M3"
             hash_board_version="HB11"
+        else
+            miner_type="M3"
+            hash_board_version="HB12"
+        fi
     else
-        if [ $hash_board_type0 = "1" -o $hash_board_type1 = "1" -o $hash_board_type2 = "1" ]; then
+        if [ $gpio_en_val0 = "1" -o $gpio_en_val1 = "1" -o $gpio_en_val2 = "1" ]; then
             miner_type="M2"
             hash_board_version="ALB10"
         else
@@ -180,6 +185,12 @@ case $miner_type in
                 CGMINERFILE="cgminer.m3.v11"
                 CGMINERDEFAULTFILE="cgminer.default.m3.v11"
                 POWERSFILE="powers.m3.v11"
+                ;;
+            HB12)
+                chip_num=63
+                CGMINERFILE="cgminer.m3.v12"
+                CGMINERDEFAULTFILE="cgminer.default.m3.v12"
+                POWERSFILE="powers.m3.v12"
                 ;;
             *)
                 ;;

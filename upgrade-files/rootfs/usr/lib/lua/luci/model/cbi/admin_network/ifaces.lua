@@ -221,19 +221,19 @@ delegate = s:taboption("advanced", Flag, "delegate", translate("Use builtin IPv6
 delegate.default = delegate.enabled
 
 
-if not net:is_virtual() then
-	br = s:taboption("physical", Flag, "type", translate("Bridge interfaces"), translate("creates a bridge over specified interface(s)"))
-	br.enabled = "bridge"
-	br.rmempty = true
-	br:depends("proto", "static")
-	br:depends("proto", "dhcp")
-	br:depends("proto", "none")
-
-	stp = s:taboption("physical", Flag, "stp", translate("Enable <abbr title=\"Spanning Tree Protocol\">STP</abbr>"),
-		translate("Enables the Spanning Tree Protocol on this bridge"))
-	stp:depends("type", "bridge")
-	stp.rmempty = true
-end
+-- if not net:is_virtual() then
+-- 	br = s:taboption("physical", Flag, "type", translate("Bridge interfaces"), translate("creates a bridge over specified interface(s)"))
+--	br.enabled = "bridge"
+--	br.rmempty = true
+--	br:depends("proto", "static")
+--	br:depends("proto", "dhcp")
+--	br:depends("proto", "none")
+--
+--	stp = s:taboption("physical", Flag, "stp", translate("Enable <abbr title=\"Spanning Tree Protocol\">STP</abbr>"),
+--		translate("Enables the Spanning Tree Protocol on this bridge"))
+--	stp:depends("type", "bridge")
+--	stp.rmempty = true
+-- end
 
 
 if not net:is_floating() then

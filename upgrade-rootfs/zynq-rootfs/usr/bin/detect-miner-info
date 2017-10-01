@@ -11,12 +11,24 @@
 # WhatsMiner-M1-ZYNQ-CB12-ALB10-P3-20170705.10.1
 #
 
-# Detect miner info
-source /usr/bin/miner-detect-common
-
 # Output info
 OUTPUT_FILENAME="/tmp/miner-info"
 
+show_miner_info() {
+    echo -n "Detected Miner Info: "
+    cat $OUTPUT_FILENAME
+    echo ""
+}
+
+if [ -f $OUTPUT_FILENAME ]; then
+    show_miner_info
+    exit 1
+fi
+
+# Detect miner info
+source /usr/bin/miner-detect-common
+
+# Output to $OUTPUT_FILENAME
 echo -n "WhatsMiner" > $OUTPUT_FILENAME
 echo -n "-$miner_type" >> $OUTPUT_FILENAME
 echo -n "-$control_board_type" >> $OUTPUT_FILENAME
@@ -25,6 +37,4 @@ echo -n "-$hash_board_version" >> $OUTPUT_FILENAME
 echo -n "-$power_type" >> $OUTPUT_FILENAME
 echo -n "-$firmware_version" >> $OUTPUT_FILENAME
 
-echo -n "Detected Miner Info: "
-cat $OUTPUT_FILENAME
-echo ""
+show_miner_info

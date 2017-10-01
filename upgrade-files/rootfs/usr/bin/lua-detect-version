@@ -4,12 +4,12 @@
 # Called and used by /usr/bin/lua/luci/version.lua.
 #
 
+OUTPUT_FILENAME="/tmp/lua-version"
+
 # Detect miner info
 source /usr/bin/miner-detect-common
 
 # Output info
-OUTPUT_FILENAME="/tmp/lua-version"
-
 echo "MODEL_NAME='$miner_type'" > $OUTPUT_FILENAME
 echo "CONTROL_BOARD_TYPE='$control_board_type-$control_board_version'" >> $OUTPUT_FILENAME
 echo "HASH_BOARD_TYPE='$hash_board_version'" >> $OUTPUT_FILENAME

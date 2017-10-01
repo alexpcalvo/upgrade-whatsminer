@@ -3,15 +3,24 @@
 # Script to restore factory settings. Called by keyd.
 #
 
-# Restore /etc/config/cgminer.* and /etc/config/powers.*
-for name in m0 m1 m1s m2 m3.v10 m3.v11; do
-    chmod 644 /etc/config/cgminer.$name
-    cp -f /etc/config/cgminer.default.$name /etc/config/cgminer.$name
-    chmod 444 /etc/config/cgminer.$name
+# Restore /etc/config/powers.*
+for default_file in $(find /etc/config -name "powers.default.*")
+do
+    file=`echo $default_file | sed 's/default.//g'`
+    chmod 644 $file
+    echo "Copy $default_file to $file"
+    cp -f $default_file $file
+    chmod 444 $file
+done
 
-    chmod 644 /etc/config/powers.$name
-    cp -f /etc/config/powers.default.$name /etc/config/powers.$name
-    chmod 444 /etc/config/powers.$name
+# Restore /etc/config/cgminer.*
+for default_file in $(find /etc/config -name "cgminer.default.*")
+do
+    file=`echo $default_file | sed 's/default.//g'`
+    chmod 644 $file
+    echo "Copy $default_file to $file"
+    cp -f $default_file $file
+    chmod 444 $file
 done
 
 # Restore /etc/config/pools

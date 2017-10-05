@@ -103,6 +103,15 @@ miner_thread_count() {
     echo $thread_count
 }
 
+pools_active() {
+    is_active=`cgminer-api -o pools  | grep 'Stratum Active=true'`
+    if [ "$is_active" = "" ]; then
+        echo false
+    else
+        echo true
+    fi
+}
+
 isH3Platform=false  
 
 cpuinfo=`cat /proc/cpuinfo | grep sun8i`
@@ -155,6 +164,11 @@ if [ $(miner_thread_count) = 0 ]; then
         kill_cgminer
         /etc/init.d/cgminer start
     fi
+fi
+
+if [ $(pools_active) = false ]; then
+    logger "Pools aren't active, waiting..."
+    exit 0;
 fi
 
 check_upfreq_complete() {

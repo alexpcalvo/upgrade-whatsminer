@@ -239,6 +239,16 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/etc/config/uhttpd ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/uhttpd /etc/config/uhttpd`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/uhttpd"
+        chmod 644 /etc/config/uhttpd >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/uhttpd /etc/config/uhttpd
+        chmod 444 /etc/config/uhttpd
+    fi
+fi
+
 # /etc/config/powers.m3.v14
 if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v14 ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v14 /etc/config/powers.m3.v14`

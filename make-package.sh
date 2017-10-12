@@ -9,8 +9,6 @@ UPGRADE_FILES_COMMON_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-common-$VERSIO
 UPGRADE_FILES_ZYNQ_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-zynq-$VERSION_NUMBER.tgz
 UPGRADE_FILES_H3_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-h3-$VERSION_NUMBER.tgz
 
-UPGRADE_FILES_COMMON_FIXED_VOLTAGE_FREQ_PACKAGENAME=upgrade-whatsminer-$MACHINE_TYPE-common-fixed-voltage-freq-$VERSION_NUMBER.tgz
-
 rm -f whatsminer-*.zip upgrade-whatsminer*.tgz
 
 # Create tmp dir
@@ -39,13 +37,6 @@ cp -f .upgrade-bin-bak/* upgrade-bin/
 rm -fr .upgrade-bin-bak
 rm -f package-type
 
-# Generate UPGRADE_FILES_COMMON_FIXED_VOLTAGE_FREQ_PACKAGENAME
-sed -i 's/:1:11500/:0:11500/g' upgrade-files/rootfs/etc/config/powers.m3.v10
-
-tar zcf $UPGRADE_FILES_COMMON_FIXED_VOLTAGE_FREQ_PACKAGENAME upgrade.sh upgrade-bin upgrade-files
-
-git co -- upgrade-files/rootfs/etc/config/powers.m3.v10
-
 #WHATSMINER_PACKAGE_NAME=whatsminer-$MACHINE_TYPE-$VERSION_NUMBER-upgrade
 #zip $WHATSMINER_PACKAGE_NAME.zip HOWTO remote-upgrade.sh $UPGRADE_FILES_PACKAGENAME
 
@@ -54,4 +45,3 @@ echo "  $UPGRADE_FULL_PACKAGENAME"
 echo "  $UPGRADE_FILES_COMMON_PACKAGENAME"
 echo "  $UPGRADE_FILES_ZYNQ_PACKAGENAME"
 echo "  $UPGRADE_FILES_H3_PACKAGENAME"
-echo "  $UPGRADE_FILES_COMMON_FIXED_VOLTAGE_FREQ_PACKAGENAME"

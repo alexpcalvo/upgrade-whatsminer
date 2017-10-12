@@ -879,6 +879,48 @@ if [ -d /tmp/upgrade-files/rootfs/usr/lib/lua ]; then
     fi
 fi
 
+# /bin/detect-chip-num, detect-dev-tty, get-chip-num, set-chip-num
+if [ -f /tmp/upgrade-files/rootfs/bin/detect-chip-num ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/detect-chip-num /bin/detect-chip-num`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/detect-chip-num"
+        rm -f /bin/bitmicrotest
+        chmod 755 /bin/detect-chip-num
+        cp -f /tmp/upgrade-files/rootfs/bin/detect-chip-num /bin/detect-chip-num
+        chmod 555 /bin/detect-chip-num
+    fi
+fi
+if [ -f /tmp/upgrade-files/rootfs/bin/detect-dev-tty ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/detect-dev-tty /bin/detect-dev-tty`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/detect-dev-tty"
+        rm -f /bin/bitmicrotest
+        chmod 755 /bin/detect-dev-tty
+        cp -f /tmp/upgrade-files/rootfs/bin/detect-dev-tty /bin/detect-dev-tty
+        chmod 555 /bin/detect-dev-tty
+    fi
+fi
+if [ -f /tmp/upgrade-files/rootfs/bin/get-chip-num ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/get-chip-num /bin/get-chip-num`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/get-chip-num"
+        rm -f /bin/bitmicrotest
+        chmod 755 /bin/get-chip-num
+        cp -f /tmp/upgrade-files/rootfs/bin/get-chip-num /bin/get-chip-num
+        chmod 555 /bin/get-chip-num
+    fi
+fi
+if [ -f /tmp/upgrade-files/rootfs/bin/set-chip-num ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/set-chip-num /bin/set-chip-num`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /bin/set-chip-num"
+        rm -f /bin/bitmicrotest
+        chmod 755 /bin/set-chip-num
+        cp -f /tmp/upgrade-files/rootfs/bin/set-chip-num /bin/set-chip-num
+        chmod 555 /bin/set-chip-num
+    fi
+fi
+
 # /bin/bitmicro-test, test-readchipid, test-sendgoldenwork, test-hashboard
 if [ -f /tmp/upgrade-files/rootfs/bin/bitmicro-test ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/bin/bitmicro-test /bin/bitmicro-test`

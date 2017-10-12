@@ -6,20 +6,17 @@
 # 2. test-sendgoldenwork /dev/ttyS3
 #
 
-# Detect miner info
-source /usr/bin/miner-detect-common
+# Detect chip_num
+source /bin/detect-chip-num
 
-if [ "$control_board_type" = "H3" ]; then
-    DEFAULT_DEV="/dev/ttyS1"
-else
-    DEFAULT_DEV="/dev/ttyS2"
-fi
+# Detect dev_tty (/dev/ttySX)
+source /bin/detect-dev-tty
 
 PLATFORM=$control_board_type
 CHIP_NUM=$chip_num
 
 if [ "$1" = "" ]; then
-    DEV=$DEFAULT_DEV
+    DEV=$dev_tty
 else
     DEV=$1
 fi

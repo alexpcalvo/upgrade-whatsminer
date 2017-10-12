@@ -249,194 +249,20 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/uhttpd ]; then
     fi
 fi
 
-# /etc/config/powers.m3.v15
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v15 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v15 /etc/config/powers.m3.v15`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m3.v15"
-        chmod 644 /etc/config/powers.m3.v15 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v15 /etc/config/powers.m3.v15
-        chmod 444 /etc/config/powers.m3.v15 # readonly
-    fi
-fi
-# /etc/config/powers.default.m3.v15
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v15 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v15 /etc/config/powers.default.m3.v15`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m3.v15"
-        chmod 644 /etc/config/powers.default.m3.v15 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v15 /etc/config/powers.default.m3.v15
-        chmod 444 /etc/config/powers.default.m3.v15 # readonly
-    fi
-fi
+# /etc/config/powers.*
+for srcfile in $(find /tmp/upgrade-files/rootfs/etc/config -name "powers.*")
+do
+    filename=`echo $srcfile | sed 's/\/tmp\/upgrade-files\/rootfs\/etc\/config\///g'`
+    dstfile="/etc/config/$filename"
 
-# /etc/config/powers.m3.v14
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v14 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v14 /etc/config/powers.m3.v14`
+    DIFF=`diff_files $srcfile $dstfile`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m3.v14"
-        chmod 644 /etc/config/powers.m3.v14 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v14 /etc/config/powers.m3.v14
-        chmod 444 /etc/config/powers.m3.v14 # readonly
+        echo "Upgrading $dstfile"
+        chmod 644 $dstfile >/dev/null 2>&1
+        cp -f $srcfile $dstfile
+        chmod 444 $dstfile # readonly
     fi
-fi
-# /etc/config/powers.default.m3.v14
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v14 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v14 /etc/config/powers.default.m3.v14`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m3.v14"
-        chmod 644 /etc/config/powers.default.m3.v14 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v14 /etc/config/powers.default.m3.v14
-        chmod 444 /etc/config/powers.default.m3.v14 # readonly
-    fi
-fi
-
-# /etc/config/powers.m3.v12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 /etc/config/powers.m3.v12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m3.v12"
-        chmod 644 /etc/config/powers.m3.v12 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v12 /etc/config/powers.m3.v12
-        chmod 444 /etc/config/powers.m3.v12 # readonly
-    fi
-fi
-# /etc/config/powers.default.m3.v12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 /etc/config/powers.default.m3.v12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m3.v12"
-        chmod 644 /etc/config/powers.default.m3.v12 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v12 /etc/config/powers.default.m3.v12
-        chmod 444 /etc/config/powers.default.m3.v12 # readonly
-    fi
-fi
-
-# /etc/config/powers.m3.v11
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v11 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v11 /etc/config/powers.m3.v11`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m3.v11"
-        chmod 644 /etc/config/powers.m3.v11 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v11 /etc/config/powers.m3.v11
-        chmod 444 /etc/config/powers.m3.v11 # readonly
-    fi
-fi
-# /etc/config/powers.default.m3.v11
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v11 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v11 /etc/config/powers.default.m3.v11`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m3.v11"
-        chmod 644 /etc/config/powers.default.m3.v11 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v11 /etc/config/powers.default.m3.v11
-        chmod 444 /etc/config/powers.default.m3.v11 # readonly
-    fi
-fi
-
-# /etc/config/powers.m3.v10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m3.v10 /etc/config/powers.m3.v10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m3.v10"
-        chmod 644 /etc/config/powers.m3.v10 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m3.v10 /etc/config/powers.m3.v10
-        chmod 444 /etc/config/powers.m3.v10 # readonly
-    fi
-fi
-# /etc/config/powers.default.m3.v10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v10 /etc/config/powers.default.m3.v10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m3.v10"
-        chmod 644 /etc/config/powers.default.m3.v10 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m3.v10 /etc/config/powers.default.m3.v10
-        chmod 444 /etc/config/powers.default.m3.v10 # readonly
-    fi
-fi
-
-# /etc/config/powers.m2
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m2 /etc/config/powers.m2`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m2"
-        chmod 644 /etc/config/powers.m2 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m2 /etc/config/powers.m2
-        chmod 444 /etc/config/powers.m2 # readonly
-    fi
-fi
-# /etc/config/powers.default.m2
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 /etc/config/powers.default.m2`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m2"
-        chmod 644 /etc/config/powers.default.m2 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m2 /etc/config/powers.default.m2
-        chmod 444 /etc/config/powers.default.m2 # readonly
-    fi
-fi
-
-# /etc/config/powers.m1s
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1s ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m1s /etc/config/powers.m1s`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m1s"
-        chmod 644 /etc/config/powers.m1s >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m1s /etc/config/powers.m1s
-        chmod 444 /etc/config/powers.m1s # readonly
-    fi
-fi
-# /etc/config/powers.default.m1s
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s /etc/config/powers.default.m1s`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m1s"
-        chmod 644 /etc/config/powers.default.m1s >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1s /etc/config/powers.default.m1s
-        chmod 444 /etc/config/powers.default.m1s # readonly
-    fi
-fi
-
-# /etc/config/powers.m1
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m1 /etc/config/powers.m1`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m1"
-        chmod 644 /etc/config/powers.m1 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m1 /etc/config/powers.m1
-        chmod 444 /etc/config/powers.m1 # readonly
-    fi
-fi
-# /etc/config/powers.default.m1
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 /etc/config/powers.default.m1`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m1"
-        chmod 644 /etc/config/powers.default.m1 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m1 /etc/config/powers.default.m1
-        chmod 444 /etc/config/powers.default.m1 # readonly
-    fi
-fi
-
-# /etc/config/powers.m0
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.m0 /etc/config/powers.m0`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.m0"
-        chmod 644 /etc/config/powers.m0 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.m0 /etc/config/powers.m0
-        chmod 444 /etc/config/powers.m0 # readonly
-    fi
-fi
-# /etc/config/powers.default.m0
-if [ -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 /etc/config/powers.default.m0`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/config/powers.default.m0"
-        chmod 644 /etc/config/powers.default.m0 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/powers.default.m0 /etc/config/powers.default.m0
-        chmod 444 /etc/config/powers.default.m0 # readonly
-    fi
-fi
+done
 
 # /etc/config/network.default
 if [ -f /tmp/upgrade-files/rootfs/etc/config/network.default ]; then
@@ -502,194 +328,20 @@ fi
 
 # Upgrade /etc/config/cgminer after updating pools
 
-# /etc/config/cgminer.m3.v15
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v15 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v15 /etc/config/cgminer.m3.v15`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m3.v15 to /etc/config/cgminer.m3.v15"
-        chmod 644 /etc/config/cgminer.m3.v15 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v15 /etc/config/cgminer.m3.v15
-        chmod 444 /etc/config/cgminer.m3.v15 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m3.v15
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v15 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v15 /etc/config/cgminer.default.m3.v15`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m3.v15 to /etc/config/cgminer.default.m3.v15"
-        chmod 644 /etc/config/cgminer.default.m3.v15 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v15 /etc/config/cgminer.default.m3.v15
-        chmod 444 /etc/config/cgminer.default.m3.v15 # readonly
-    fi
-fi
+# /etc/config/cgminer.*
+for srcfile in $(find /tmp/upgrade-files/rootfs/etc/config -name "cgminer.*")
+do
+    filename=`echo $srcfile | sed 's/\/tmp\/upgrade-files\/rootfs\/etc\/config\///g'`
+    dstfile="/etc/config/$filename"
 
-# /etc/config/cgminer.m3.v14
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v14 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v14 /etc/config/cgminer.m3.v14`
+    DIFF=`diff_files $srcfile $dstfile`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m3.v14 to /etc/config/cgminer.m3.v14"
-        chmod 644 /etc/config/cgminer.m3.v14 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v14 /etc/config/cgminer.m3.v14
-        chmod 444 /etc/config/cgminer.m3.v14 # readonly
+        echo "Upgrading $dstfile"
+        chmod 644 $dstfile >/dev/null 2>&1
+        cp -f $srcfile $dstfile
+        chmod 444 $dstfile # readonly
     fi
-fi
-# /etc/config/cgminer.default.m3.v14
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v14 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v14 /etc/config/cgminer.default.m3.v14`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m3.v14 to /etc/config/cgminer.default.m3.v14"
-        chmod 644 /etc/config/cgminer.default.m3.v14 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v14 /etc/config/cgminer.default.m3.v14
-        chmod 444 /etc/config/cgminer.default.m3.v14 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m3.v12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 /etc/config/cgminer.m3.v12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m3.v12 to /etc/config/cgminer.m3.v12"
-        chmod 644 /etc/config/cgminer.m3.v12 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v12 /etc/config/cgminer.m3.v12
-        chmod 444 /etc/config/cgminer.m3.v12 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m3.v12
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 /etc/config/cgminer.default.m3.v12`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m3.v12 to /etc/config/cgminer.default.m3.v12"
-        chmod 644 /etc/config/cgminer.default.m3.v12 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v12 /etc/config/cgminer.default.m3.v12
-        chmod 444 /etc/config/cgminer.default.m3.v12 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m3.v11
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v11 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v11 /etc/config/cgminer.m3.v11`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m3.v11 to /etc/config/cgminer.m3.v11"
-        chmod 644 /etc/config/cgminer.m3.v11 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v11 /etc/config/cgminer.m3.v11
-        chmod 444 /etc/config/cgminer.m3.v11 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m3.v11
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v11 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v11 /etc/config/cgminer.default.m3.v11`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m3.v11 to /etc/config/cgminer.default.m3.v11"
-        chmod 644 /etc/config/cgminer.default.m3.v11 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v11 /etc/config/cgminer.default.m3.v11
-        chmod 444 /etc/config/cgminer.default.m3.v11 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m3.v10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v10 /etc/config/cgminer.m3.v10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m3.v10 to /etc/config/cgminer.m3.v10"
-        chmod 644 /etc/config/cgminer.m3.v10 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m3.v10 /etc/config/cgminer.m3.v10
-        chmod 444 /etc/config/cgminer.m3.v10 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m3.v10
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v10 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v10 /etc/config/cgminer.default.m3.v10`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m3.v10 to /etc/config/cgminer.default.m3.v10"
-        chmod 644 /etc/config/cgminer.default.m3.v10 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m3.v10 /etc/config/cgminer.default.m3.v10
-        chmod 444 /etc/config/cgminer.default.m3.v10 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m2
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 /etc/config/cgminer.m2`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m2 to /etc/config/cgminer.m2"
-        chmod 644 /etc/config/cgminer.m2 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m2 /etc/config/cgminer.m2
-        chmod 444 /etc/config/cgminer.m2 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m2
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 /etc/config/cgminer.default.m2`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m2 to /etc/config/cgminer.default.m2"
-        chmod 644 /etc/config/cgminer.default.m2 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m2 /etc/config/cgminer.default.m2
-        chmod 444 /etc/config/cgminer.default.m2 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m1s
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s /etc/config/cgminer.m1s`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m1s to /etc/config/cgminer.m1s"
-        chmod 644 /etc/config/cgminer.m1s >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1s /etc/config/cgminer.m1s
-        chmod 444 /etc/config/cgminer.m1s # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m1s
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s /etc/config/cgminer.default.m1s`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m1s to /etc/config/cgminer.default.m1s"
-        chmod 644 /etc/config/cgminer.default.m1s >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1s /etc/config/cgminer.default.m1s
-        chmod 444 /etc/config/cgminer.default.m1s # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m1
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 /etc/config/cgminer.m1`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m1 to /etc/config/cgminer.m1"
-        chmod 644 /etc/config/cgminer.m1 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m1 /etc/config/cgminer.m1
-        chmod 444 /etc/config/cgminer.m1 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m1
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 /etc/config/cgminer.default.m1`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m1 to /etc/config/cgminer.default.m1"
-        chmod 644 /etc/config/cgminer.default.m1 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m1 /etc/config/cgminer.default.m1
-        chmod 444 /etc/config/cgminer.default.m1 # readonly
-    fi
-fi
-
-# /etc/config/cgminer.m0
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 /etc/config/cgminer.m0`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.m0 to /etc/config/cgminer.m0"
-        chmod 644 /etc/config/cgminer.m0 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.m0 /etc/config/cgminer.m0
-        chmod 444 /etc/config/cgminer.m0 # readonly
-    fi
-fi
-# /etc/config/cgminer.default.m0
-if [ -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 /etc/config/cgminer.default.m0`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading cgminer.default.m0 to /etc/config/cgminer.default.m0"
-        chmod 644 /etc/config/cgminer.default.m0 >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/config/cgminer.default.m0 /etc/config/cgminer.default.m0
-        chmod 444 /etc/config/cgminer.default.m0 # readonly
-    fi
-fi
+done
 
 # /etc/init.d/boot
 if [ -f /tmp/upgrade-files/rootfs/etc/init.d/boot ]; then

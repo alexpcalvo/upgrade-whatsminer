@@ -114,7 +114,7 @@ elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "l
     if [ $RET0 = "0" -o $RET1 = "0" -o $RET2 = "0" ]; then
         if [ $gpio_en_val0 = "1" -o $gpio_en_val1 = "1" -o $gpio_en_val2 = "1" ]; then
             miner_type="M3"
-            hash_board_version="HB14"
+            hash_board_version="HB15"
         else
             miner_type="M3"
             hash_board_version="HB12"
@@ -197,6 +197,12 @@ case $miner_type in
                 CGMINERFILE="cgminer.m3.v14"
                 CGMINERDEFAULTFILE="cgminer.default.m3.v14"
                 POWERSFILE="powers.m3.v14"
+                ;;
+            HB15)
+                chip_num=63
+                CGMINERFILE="cgminer.m3.v15"
+                CGMINERDEFAULTFILE="cgminer.default.m3.v15"
+                POWERSFILE="powers.m3.v15"
                 ;;
             *)
                 ;;

@@ -20,6 +20,7 @@ else
     if [ "$cpuinfo" != "" ]; then
         isH3Platform=true
         control_board="H3"
+        mount -o remount,rw /dev/root /
     else
         control_board="unknown"
     fi

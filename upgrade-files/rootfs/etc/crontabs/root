@@ -1,1 +1,2 @@
 */15   *  *   *   *     /usr/bin/cgminer-monitor
+*/30   *  *   *   *     has_data_bak=`mount | grep data_bak` && if [ "$has_data_bak" != "" ]; then rsync -ar --delete /data/etc /data_bak; fi

@@ -239,6 +239,7 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/system ]; then
     fi
 fi
 
+# /etc/config/uhttpd
 if [ -f /tmp/upgrade-files/rootfs/etc/config/uhttpd ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/uhttpd /etc/config/uhttpd`
     if [ "$DIFF" = "yes" ]; then
@@ -246,6 +247,17 @@ if [ -f /tmp/upgrade-files/rootfs/etc/config/uhttpd ]; then
         chmod 644 /etc/config/uhttpd >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/etc/config/uhttpd /etc/config/uhttpd
         chmod 444 /etc/config/uhttpd
+    fi
+fi
+
+# /etc/config/luci
+if [ -f /tmp/upgrade-files/rootfs/etc/config/luci ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/config/luci /etc/config/luci`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /etc/config/luci"
+        chmod 644 /etc/config/luci >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/config/luci /etc/config/luci
+        chmod 644 /etc/config/luci
     fi
 fi
 

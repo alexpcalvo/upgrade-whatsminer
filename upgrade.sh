@@ -858,6 +858,17 @@ if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
     fi
 fi
 
+# Don't remount /dev/root rw for H3
+if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/80_mount_root`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /lib/preinit/80_mount_root"
+        chmod 644 /lib/preinit/80_mount_root >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/
+        chmod 444 /lib/preinit/80_mount_root # readonly
+    fi
+fi
+
 
 # Confirm file attributes again
 chmod 555 /usr/bin/cgminer

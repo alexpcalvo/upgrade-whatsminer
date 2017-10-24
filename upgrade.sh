@@ -71,6 +71,15 @@ diff_files() {
     fi
 }
 
+if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
+    if [ "$DIFF" = "no" ]; then
+        version=`cat /etc/microbt_release`
+        echo "Uprade package's version $version is the same as the system's, so needn't upgrade"
+        exit 0
+    fi
+fi
+
 #
 # Kill services
 #
@@ -837,16 +846,17 @@ if [ -f /etc/config/firewall.unused ]; then
     rm -f /etc/config/firewall.unused
 fi
 
-# /etc/microbt_release
-if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
+# Don't remount /dev/root rw for H3
+if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/80_mount_root`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/microbt_release"
-        chmod 644 /etc/microbt_release >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
-        chmod 444 /etc/microbt_release # readonly
+        echo "Upgrading /lib/preinit/80_mount_root"
+        chmod 644 /lib/preinit/80_mount_root >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/
+        chmod 444 /lib/preinit/80_mount_root # readonly
     fi
 fi
+
 # /etc/cgminer_version
 if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/cgminer_version`
@@ -858,14 +868,14 @@ if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
     fi
 fi
 
-# Don't remount /dev/root rw for H3
-if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/80_mount_root`
+# /etc/microbt_release
+if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
     if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /lib/preinit/80_mount_root"
-        chmod 644 /lib/preinit/80_mount_root >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/
-        chmod 444 /lib/preinit/80_mount_root # readonly
+        echo "Upgrading /etc/microbt_release"
+        chmod 644 /etc/microbt_release >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/etc/microbt_release /etc/
+        chmod 444 /etc/microbt_release # readonly
     fi
 fi
 

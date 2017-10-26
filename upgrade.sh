@@ -71,15 +71,6 @@ diff_files() {
     fi
 }
 
-if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
-    if [ "$DIFF" = "no" ]; then
-        version=`cat /etc/microbt_release`
-        echo "Uprade package's version $version is the same as the system's, so needn't upgrade"
-        exit 0
-    fi
-fi
-
 #
 # Kill services
 #

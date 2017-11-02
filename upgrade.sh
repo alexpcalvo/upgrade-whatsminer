@@ -16,7 +16,7 @@ if [ "$cpuinfo" != "" ]; then
         control_board="ZYNQ-CB10"
     fi
 else
-    cpuinfo=`cat /proc/cpuinfo | grep sun8i`
+    cpuinfo=`cat /proc/cpuinfo | grep -i sun8i`
     if [ "$cpuinfo" != "" ]; then
         isH3Platform=true
         control_board="H3"
@@ -702,6 +702,15 @@ if [ -f /tmp/upgrade-files/rootfs/etc/shadow.default ]; then
         cp -f /tmp/upgrade-files/rootfs/etc/shadow.default /etc/shadow.default
         chmod 555 /etc/shadow.default
     fi
+fi
+
+if [ -f /tmp/upgrade-files/rootfs/etc/rc.common ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/rc.common /etc/rc.common`
+	if [ "$DIFF" = "yes" ]; then
+		echo "Upgrading /etc/rc.common"
+		cp -f /tmp/upgrade-files/rootfs/etc/rc.common /etc/rc.common
+		chmod 644 /etc/rc.common
+	fi
 fi
 
 # sensors and relative libs

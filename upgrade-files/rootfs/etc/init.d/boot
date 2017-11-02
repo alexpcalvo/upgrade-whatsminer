@@ -7,8 +7,7 @@ STOP=98
 isH3Platform=false
 
 detect_cpuinfo() {
-	cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-	if [ "$cpuinfo" != "" ]; then
+	if [ "$CPUINFO_SUN8I" != "" ]; then
 		isH3Platform=true
 
 		# echo disabled > /sys/devices/virtual/thermal/thermal_zone0/mode

@@ -1,9 +1,10 @@
-#!/bin/sh /etc/rc.common
+#!/bin/sh
 #
 # Common script to detect the miner info.
 #
 
 # Detect control board type and version
+. /etc/cpuinfo_sun8i
 if [ "$CPUINFO_SUN8I" != "" ]; then
     control_board_type="H3"
     control_board_version="CB20"

@@ -4,7 +4,7 @@
 . $IPKG_INSTROOT/lib/functions.sh
 . $IPKG_INSTROOT/lib/functions/service.sh
 
-export CPUINFO_SUN8I=`cat /proc/cpuinfo | grep -i sun8i`
+. /etc/cpuinfo_sun8i
 initscript=$1
 action=${2:-help}
 shift 2
@@ -142,6 +142,4 @@ ALL_COMMANDS="start stop reload restart boot shutdown enable disable enabled dep
 list_contains ALL_COMMANDS "$action" || action=help
 [ "$action" = "reload" ] && action='eval reload "$@" || restart "$@" && :'
 $action "$@"
-
-export CPUINFO_SUN8I=`cat /proc/cpuinfo | grep -i sun8i`
 

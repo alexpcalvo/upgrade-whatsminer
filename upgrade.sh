@@ -713,6 +713,24 @@ if [ -f /tmp/upgrade-files/rootfs/etc/rc.common ]; then
 	fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/etc/profile ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/profile /etc/profile`
+	if [ "$DIFF" = "yes" ]; then
+		echo "Upgrading /etc/profile"
+		cp -f /tmp/upgrade-files/rootfs/etc/profile /etc/profile
+		chmod 644 /etc/profile
+	fi
+fi
+
+if [ -f /tmp/upgrade-files/rootfs/etc/cpuinfo_sun8i ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cpuinfo_sun8i /etc/cpuinfo_sun8i`
+	if [ "$DIFF" = "yes" ]; then
+		echo "Upgrading /etc/cpuinfo_sun8i"
+		cp -f /tmp/upgrade-files/rootfs/etc/cpuinfo_sun8i /etc/cpuinfo_sun8i
+		chmod 755 /etc/cpuinfo_sun8i
+	fi
+fi
+
 # sensors and relative libs
 if [ ! -f /usr/sbin/sensors ]; then
     if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then

@@ -1,8 +1,9 @@
-#!/bin/sh /etc/rc.common
+#!/bin/sh
 #
 # Auto detect dev_tty (/dev/ttySx)
 #
 
+. /etc/cpuinfo_sun8i
 if [ "$CPUINFO_SUN8I" != "" ]; then
     control_board_type="H3"
 else

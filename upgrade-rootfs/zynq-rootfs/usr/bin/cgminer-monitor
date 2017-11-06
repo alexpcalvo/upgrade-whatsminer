@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/sh /etc/rc.common
+
 # This file is for cron job
 
 # Functions definitions
@@ -114,8 +115,7 @@ pools_active() {
 
 isH3Platform=false  
 
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
+if [ "$CPUINFO_SUN8I" != "" ]; then
     isH3Platform=true
 fi
 

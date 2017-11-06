@@ -67,11 +67,22 @@ start() {
 	if [ "$_pool1url" != "" -a "$_pool1user" != "" -a "$_pool1pw" != "" ]; then
 		POOL1="-o $_pool1url -O $_pool1user:$_pool1pw"
 	fi
+	if [ "$_pool1url" != "" -a "$_pool1user" != "" -a "$_pool1pw" == "" ]; then
+		POOL1="-o $_pool1url -O $_pool1user"
+	fi
+    
 	if [ "$_pool2url" != "" -a "$_pool2user" != "" -a "$_pool2pw" != "" ]; then
 		POOL2="-o $_pool2url -O $_pool2user:$_pool2pw"
 	fi
+	if [ "$_pool2url" != "" -a "$_pool2user" != "" -a "$_pool2pw" == "" ]; then
+		POOL2="-o $_pool2url -O $_pool2user"
+	fi
+    
 	if [ "$_pool3url" != "" -a "$_pool3user" != "" -a "$_pool3pw" != "" ]; then
 		POOL3="-o $_pool3url -O $_pool3user:$_pool3pw"
+	fi
+	if [ "$_pool3url" != "" -a "$_pool3user" != "" -a "$_pool3pw" == "" ]; then
+		POOL3="-o $_pool3url -O $_pool3user"
 	fi
 
 	if [ "$_mo" != "" ]; then

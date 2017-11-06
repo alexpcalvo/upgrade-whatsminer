@@ -3,8 +3,8 @@
 # Auto detect dev_tty (/dev/ttySx)
 #
 
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
+. /etc/cpuinfo_sun8i
+if [ "$CPUINFO_SUN8I" != "" ]; then
     control_board_type="H3"
 else
     control_board_type="ZYNQ"

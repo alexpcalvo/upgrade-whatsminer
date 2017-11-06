@@ -4,8 +4,8 @@
 #
 
 # Detect control board type and version
-cpuinfo=`cat /proc/cpuinfo | grep sun8i`
-if [ "$cpuinfo" != "" ]; then
+. /etc/cpuinfo_sun8i
+if [ "$CPUINFO_SUN8I" != "" ]; then
     control_board_type="H3"
     control_board_version="CB20"
 else

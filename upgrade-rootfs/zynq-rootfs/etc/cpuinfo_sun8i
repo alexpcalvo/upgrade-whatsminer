@@ -1,0 +1,3 @@
+#!/bin/sh
+
+export CPUINFO_SUN8I=`cat /proc/cpuinfo | grep -i sun8i`

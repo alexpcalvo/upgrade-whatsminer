@@ -544,6 +544,28 @@ if [ -f /tmp/upgrade-files/rootfs/usr/bin/miner-detect-common ]; then
     fi
 fi
 
+# /usr/bin/miner-detect-by-legacy
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/miner-detect-by-legacy ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/miner-detect-by-legacy /usr/bin/miner-detect-by-legacy`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/miner-detect-by-legacy"
+        chmod 755 /usr/bin/miner-detect-by-legacy
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/miner-detect-by-legacy /usr/bin/miner-detect-by-legacy
+        chmod 555 /usr/bin/miner-detect-by-legacy
+    fi
+fi
+
+# /usr/bin/detect-eeprom-data
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/detect-eeprom-data ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/detect-eeprom-data /usr/bin/detect-eeprom-data`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/detect-eeprom-data"
+        chmod 755 /usr/bin/detect-eeprom-data
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/detect-eeprom-data /usr/bin/detect-eeprom-data
+        chmod 555 /usr/bin/detect-eeprom-data
+    fi
+fi
+
 # /usr/bin/detect-miner-info
 if [ -f /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/detect-miner-info /usr/bin/detect-miner-info`
@@ -864,6 +886,9 @@ if [ -f /etc/config/firewall.unused ]; then
     rm -f /etc/config/firewall.unused
 fi
 
+find /etc/config/ -name "*m3.v11*" | xargs rm -f
+find /etc/config/ -name "*m3.v14*" | xargs rm -f
+
 # Don't remount /dev/root rw for H3
 if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/80_mount_root`
@@ -903,6 +928,7 @@ chmod 555 /usr/bin/cgminer
 chmod 555 /usr/bin/cgminer-api
 chmod 555 /usr/bin/cgminer-monitor
 chmod 555 /usr/bin/miner-detect-common
+chmod 555 /usr/bin/miner-detect-by-legacy
 chmod 555 /usr/bin/detect-miner-info
 chmod 555 /usr/bin/lua-detect-version
 chmod 555 /usr/bin/keyd
@@ -910,6 +936,7 @@ chmod 555 /usr/bin/readpower
 chmod 555 /usr/bin/setpower
 chmod 555 /usr/bin/system-monitor
 chmod 555 /usr/bin/remote-daemon
+chmod 555 /usr/bin/detect-eeprom-data
 chmod 555 /etc/init.d/boot
 chmod 555 /etc/init.d/cgminer
 chmod 555 /etc/init.d/detect-cgminer-config

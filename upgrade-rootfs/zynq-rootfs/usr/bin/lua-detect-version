@@ -14,3 +14,7 @@ echo "MODEL_NAME='$miner_type'" > $OUTPUT_FILENAME
 echo "CONTROL_BOARD_TYPE='$control_board_type-$control_board_version'" >> $OUTPUT_FILENAME
 echo "HASH_BOARD_TYPE='$hash_board_version'" >> $OUTPUT_FILENAME
 echo "POWER_TYPE='$power_type'" >> $OUTPUT_FILENAME
+
+if [ "$pcb_data" != "" ]; then
+    echo "PCB_DATA='$pcb_data'" >> $OUTPUT_FILENAME
+fi

@@ -68,6 +68,11 @@ if pcall(dofile, "/tmp/lua-version") then
 	else
 		powertype = "PX"
 	end
+	if _G.PCB_DATA then
+		pcbdata = "-" .. _G.PCB_DATA
+	else
+		pcbdata = ""
+	end
 else
 	modelname = "unknown"
 	controlboardtype = "CB-unknown"
@@ -76,4 +81,4 @@ else
 end
 
 minermodel = minername .. " " .. modelname
-hardwareversion = modelname .. "." .. hashboardtype .. "." .. controlboardtype .. "." .. powertype
+hardwareversion = modelname .. "." .. hashboardtype .. "." .. controlboardtype .. "." .. powertype .. pcbdata

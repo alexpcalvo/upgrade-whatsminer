@@ -16,7 +16,7 @@ if [ "$cpuinfo" != "" ]; then
         control_board="ZYNQ-CB10"
     fi
 else
-    cpuinfo=`cat /proc/cpuinfo | grep -i sun8i`
+    cpuinfo=`cat /proc/cpuinfo | grep -iE sun-{0,1}8i`
     if [ "$cpuinfo" != "" ]; then
         isH3Platform=true
         control_board="H3"

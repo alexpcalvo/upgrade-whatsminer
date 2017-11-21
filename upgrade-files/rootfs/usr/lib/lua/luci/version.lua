@@ -47,6 +47,10 @@ end
 local version = util.exec("/usr/bin/cgminer-api -o version")
 cgminerversion = version:match(".*,CGMiner=(.+),.*")
 
+if cgminerversion == nil then
+	cgminerversion = "unknown(waiting cgminer to start)"
+end
+
 os.execute("/usr/bin/lua-detect-version")
 
 if pcall(dofile, "/tmp/lua-version") then

@@ -3,6 +3,7 @@ local os     = require "os"
 local string = require "string"
 local table  = require "table"
 local fs     = require "nixio.fs"
+local util = require "luci.util"
 
 local tonumber, pcall, dofile, _G = tonumber, pcall, dofile, _G
 
@@ -43,7 +44,8 @@ else
 	firmwareversion = "unknown"
 end
 
-cgminerversion = fs.readfile("/etc/cgminer_version") or "unknown"
+local version = util.exec("/usr/bin/cgminer-api -o version")
+cgminerversion = version:match("STATUS.*,CGMiner=(.+),.*")
 
 os.execute("/usr/bin/lua-detect-version")
 

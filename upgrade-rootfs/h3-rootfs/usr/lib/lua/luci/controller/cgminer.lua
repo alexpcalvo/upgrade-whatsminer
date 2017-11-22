@@ -31,7 +31,7 @@ function action_cgminerrestart()
 end
 
 function action_cgminerapi()
-	local pp   = io.popen("echo -n \"[Firmware Version] => \"; cat /etc/cgminer_version; /usr/bin/cgminer-api stats|sed 's/ =>/:/g'|sed 's/\\] /\\]\\n    /g'|sed 's/:/ =>/g'")
+	local pp   = io.popen("/usr/bin/cgminer-api stats|sed 's/ =>/:/g'|sed 's/\\] /\\]\\n    /g'|sed 's/:/ =>/g'")
 	local data = pp:read("*a")
 	pp:close()
 

@@ -1,21 +1,21 @@
 #!/bin/sh
 
 if [ $# -lt 2 ] ;then
-    echo "Usage: $0 <upgrade_dir> <target_dir>"
+    echo "Usage: $0 <upgrade_dir> <orig_dir> <target_dir>"
     echo "Example:$0 $UPGRADE_WHATSMINER_PATH $STAGING_DIR/../build_dir/target-arm_cortex-a8+vfpv3_musl-1.1.15_eabi/root-sunxi"
     exit 0;
 fi
 
 # Target dir to be upgraded is openwrt/build_dir/target-arm_cortex-a8+vfpv3_musl-1.1.15_eabi/root-sunxi
 upgrade_dir=$1
-target_dir=$2
+orig_dir=$2
+target_dir=$3
 tmp_src_dir=$upgrade_dir/upgrade-files/tmp-rootfs
 
 #
 # upgrade target_dir with patch_dir
 #
-echo ""
-echo "Upgrading $target_dir by $upgrade_dir"
+echo -e "\nGenerating $target_dir by $orig_dir + $upgrade_dir/upgrade-files/rootfs"
 
 if [ -d $tmp_src_dir ]; then
 	echo "rm -rf $tmp_src_dir"
@@ -25,6 +25,8 @@ fi
 cp -af $upgrade_dir/upgrade-files/rootfs $tmp_src_dir
 
 find $tmp_src_dir/ -name *.h3 | xargs rename -f 's/\.h3$//'
+
+cp -afr $orig_dir/. $target_dir
 
 # Remove unused files under $target_dir
 rm -f $target_dir/etc/config/firewall

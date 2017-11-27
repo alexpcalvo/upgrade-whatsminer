@@ -208,7 +208,6 @@ if [ -d /tmp/upgrade-rootfs ]; then
     chmod 555 /etc/init.d/sdcard-upgrade
     chmod 555 /bin/bitmicro-test
     chmod 444 /etc/microbt_release
-    chmod 444 /etc/cgminer_version
 
     echo "Done, reboot control board ..."
 
@@ -900,17 +899,6 @@ if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
     fi
 fi
 
-# /etc/cgminer_version
-if [ -f /tmp/upgrade-files/rootfs/etc/cgminer_version ]; then
-    DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/cgminer_version`
-    if [ "$DIFF" = "yes" ]; then
-        echo "Upgrading /etc/cgminer_version"
-        chmod 644 /etc/cgminer_version >/dev/null 2>&1
-        cp -f /tmp/upgrade-files/rootfs/etc/cgminer_version /etc/
-        chmod 444 /etc/cgminer_version # readonly
-    fi
-fi
-
 # /etc/microbt_release
 if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/microbt_release /etc/microbt_release`
@@ -945,7 +933,6 @@ chmod 555 /etc/init.d/system-monitor
 chmod 555 /etc/init.d/sdcard-upgrade
 chmod 555 /bin/bitmicro-test
 chmod 444 /etc/microbt_release
-chmod 444 /etc/cgminer_version
 
 echo "Done, reboot control board ..."
 

@@ -183,6 +183,9 @@ if [ -d /tmp/upgrade-rootfs ]; then
     rm -fr /usr/lib/lua
 
     if [ "$isH3Platform" = true ]; then
+        # /etc is a link
+        cp -afr /tmp/upgrade-rootfs/h3-rootfs/etc/* /etc/
+        rm -rf /tmp/upgrade-rootfs/h3-rootfs/etc/
         cp -afr /tmp/upgrade-rootfs/h3-rootfs/* /
     else
         cp -afr /tmp/upgrade-rootfs/zynq-rootfs/* /

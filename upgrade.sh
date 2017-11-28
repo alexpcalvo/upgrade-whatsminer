@@ -191,6 +191,9 @@ if [ -d /tmp/upgrade-rootfs ]; then
         cp -afr /tmp/upgrade-rootfs/zynq-rootfs/* /
     fi
 
+    # Change owner
+    chown root:root / -R >/dev/null 2>&1
+
     # Confirm file attributes again
     chmod 555 /usr/bin/cgminer
     chmod 555 /usr/bin/cgminer-api

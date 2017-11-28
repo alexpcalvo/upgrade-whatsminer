@@ -160,7 +160,6 @@ if [ $(miner_thread_count) = 0 ]; then
     sleep 5
     if [ $(miner_thread_count) = 0 ]; then
         logger "cgminer-monitor Miner thread isn't present, cgminer restarted at `date`"
-        echo "`date`|E010|Restart cgminer|cgminer-monitor|Miner thread isn't present" >> /root/.events/event-restart-cgminer
 
         kill_cgminer
         /etc/init.d/cgminer start

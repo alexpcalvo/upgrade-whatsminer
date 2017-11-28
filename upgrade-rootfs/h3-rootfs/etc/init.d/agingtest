@@ -3,5 +3,5 @@
 START=90
 
 start() {
-   /usr/bin/phonixtest  
+   /usr/bin/aging_test 4 131072 32 210 
 }

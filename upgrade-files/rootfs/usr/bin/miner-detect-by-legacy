@@ -1,4 +1,7 @@
 #!/bin/sh
+
+force_miner_type=$1
+
 #
 # Detect miner type and hash board version by legacy
 #
@@ -104,6 +107,13 @@ judge_gpio_en_high_more() {
         plug_in_cnt=`expr $plug_in_cnt + 1`
     fi
 
+    if [ "$high_cnt" -ne 0 ] && [ "$high_cnt" -lt "$plug_in_cnt" ]; then
+        logger "Need alternative miner type as high_cnt=$high_cnt plug_in_cnt=$plug_in_cnt"
+        need_alternative=1
+    else
+        need_alternative=0
+    fi
+
     if [ "$plug_in_cnt" -ge 2 ] && [ "$high_cnt" -ge 2 ]; then
         return 1
     fi
@@ -121,9 +131,11 @@ if [ "$hwmon0_name" = "tmp421" -o "$hwmon1_name" = "tmp421" -o "$hwmon2_name" = 
     if [ "$is_gpio_en_high_more" -eq 1 ]; then
         miner_type="M1"
         hash_board_version="HB12"
+        alternative_miner_type="M1s"
     else
         miner_type="M1s"
         hash_board_version="HB13"
+        alternative_miner_type="M1"
     fi
 elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "lm75" ]; then
     dd if=$eeprom0_path bs=8 count=1 >/dev/null 2>&1;RET0=$?
@@ -142,9 +154,11 @@ elif [ "$hwmon0_name" = "lm75" -o "$hwmon1_name" = "lm75" -o "$hwmon2_name" = "l
         if [ "$is_gpio_en_high_more" -eq 1 ]; then
             miner_type="M2"
             hash_board_version="ALB10"
+            alternative_miner_type="M3"
         else
             miner_type="M3"
             hash_board_version="HB10"
+            alternative_miner_type="M2"
         fi
     fi
 else
@@ -165,3 +179,13 @@ else
         hash_board_version="unknown"
     fi
 fi
+
+if [ "$need_alternative" -ne 1 ] || [ "$force_miner_type" != "" ]; then
+    alternative_miner_type=""
+fi
+
+# Force miner type to specified type
+if [ "$force_miner_type" != "" ]; then
+    miner_type=$force_miner_type
+fi
+

@@ -6,8 +6,14 @@
 
 OUTPUT_FILENAME="/tmp/lua-version"
 
+if [ -f $OUTPUT_FILENAME ]; then
+    exit
+fi
+
+force_miner_type=$1
+
 # Detect miner info
-source /usr/bin/miner-detect-common
+source /usr/bin/miner-detect-common $force_miner_type
 
 # Output info
 echo "MODEL_NAME='$miner_type'" > $OUTPUT_FILENAME

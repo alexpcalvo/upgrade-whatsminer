@@ -25,8 +25,10 @@ if [ -f $OUTPUT_FILENAME ]; then
     exit 1
 fi
 
+force_miner_type=$1
+
 # Detect miner info
-source /usr/bin/miner-detect-common
+source /usr/bin/miner-detect-common $force_miner_type
 
 # Output to $OUTPUT_FILENAME
 echo -n "WhatsMiner" > $OUTPUT_FILENAME

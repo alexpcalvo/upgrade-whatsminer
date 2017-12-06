@@ -60,6 +60,12 @@ get_miner_params() {
                     CGMINERDEFAULTFILE="cgminer.default.m3.v15"
                     POWERSFILE="powers.m3.v15"
                     ;;
+                HB20)
+                    chip_num=63
+                    CGMINERFILE="cgminer.m3.v20"
+                    CGMINERDEFAULTFILE="cgminer.default.m3.v20"
+                    POWERSFILE="powers.m3.v20"
+                    ;;
                 *)
                     chip_num=63
                     ;;
@@ -133,7 +139,9 @@ fi
 
 # Detect power supply version
 power_version=`readpower | grep 'Read power version'`
-if [ "$power_version" = "Read power version = d0 00 00 00 01 06" ]; then
+if [ "$power_version" = "Read power version = d0 00 00 00 01 07" ]; then
+    power_type="P5"
+elif [ "$power_version" = "Read power version = d0 00 00 00 01 06" ]; then
     power_type="P3"
 elif [ "$power_version" = "Read power version = d0 00 00 00 01 05" ]; then
     power_type="P2"

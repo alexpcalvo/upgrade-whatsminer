@@ -71,6 +71,29 @@ diff_files() {
     fi
 }
 
+set_lowest_freq_for_slot() {
+    local bitmicro_options=`uci get cgminer.default.bitmicro_options`
+    local chip_num=`echo $bitmicro_options|cut -d ":" -f3`
+    local i
+    for i in `seq $chip_num`
+    do
+        i=`expr $i - 1`
+        cgminer-api "setfreq|$1,$i,192"
+    done
+}
+
+set_lowest_freq_for_all_slots() {
+    local i
+    for i in `seq 3`
+    do
+        i=`expr $i - 1`
+        set_lowest_freq_for_slot $i
+    done
+}
+
+# Make power consumption lower, so reboot operation may be more stable
+set_lowest_freq_for_all_slots
+
 #
 # Kill services
 #

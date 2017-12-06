@@ -71,28 +71,35 @@ diff_files() {
     fi
 }
 
-set_lowest_freq_for_slot() {
-    local bitmicro_options=`uci get cgminer.default.bitmicro_options`
-    local chip_num=`echo $bitmicro_options|cut -d ":" -f3`
-    local i
-    for i in `seq $chip_num`
-    do
-        i=`expr $i - 1`
-        cgminer-api "setfreq|$1,$i,192"
-    done
+reset_board0() {
+    if [ "$isH3Platform" = true ]; then
+        echo out > /sys/class/gpio/gpio99/direction
+        echo 0 > /sys/class/gpio/gpio99/value
+    else
+        echo out > /sys/class/gpio/gpio960/direction
+        echo 0 > /sys/class/gpio/gpio960/value
+    fi
 }
 
-set_lowest_freq_for_all_slots() {
-    local i
-    for i in `seq 3`
-    do
-        i=`expr $i - 1`
-        set_lowest_freq_for_slot $i
-    done
+reset_board1() {
+    if [ "$isH3Platform" = true ]; then
+        echo out > /sys/class/gpio/gpio100/direction
+        echo 0 > /sys/class/gpio/gpio100/value
+    else
+        echo out > /sys/class/gpio/gpio962/direction
+        echo 0 > /sys/class/gpio/gpio962/value
+    fi
 }
 
-# Make power consumption lower, so reboot operation may be more stable
-set_lowest_freq_for_all_slots
+reset_board2() {
+    if [ "$isH3Platform" = true ]; then
+        echo out > /sys/class/gpio/gpio101/direction
+        echo 0 > /sys/class/gpio/gpio101/value
+    else
+        echo out > /sys/class/gpio/gpio964/direction
+        echo 0 > /sys/class/gpio/gpio964/value
+    fi
+}
 
 #
 # Kill services
@@ -105,6 +112,14 @@ killall -9 cgminer >/dev/null 2>&1
 killall -9 uhttpd >/dev/null 2>&1
 killall -9 ntpd >/dev/null 2>&1
 killall -9 udevd >/dev/null 2>&1
+
+# Make power consumption lower, so reboot operation may be more stable
+reset_board0
+sleep 1
+reset_board1
+sleep 1
+reset_board2
+sleep 1
 
 #
 # Prepare rootfs

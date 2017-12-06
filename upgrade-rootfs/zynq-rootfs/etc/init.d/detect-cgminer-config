@@ -4,8 +4,10 @@ START=80
 STOP=20
 
 start() {
+    force_miner_type=$1
+
     /usr/bin/detect-eeprom-data # detect-eeprom-data will output data to /tmp/eeprom_data_out if eeprom data are valid.
-    source /usr/bin/miner-detect-common
+    source /usr/bin/miner-detect-common $force_miner_type
 
     logger "detect-cgminer-config: miner_type=$miner_type hash_board_version=$hash_board_version"
 

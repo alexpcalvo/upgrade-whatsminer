@@ -109,6 +109,18 @@ uci_apply_defaults() {
 	uci commit
 }
 
+prepare_logs_partition() {
+    mkdir -p /root/logs/
+
+	if [ "$isH3Platform" = true ]; then
+        mount -t ext4 /dev/nandh /root/logs
+        if [ "$?" != "0" ]; then
+            mke2fs /dev/nandh
+            mount -t ext4 /dev/nandh /root/logs
+        fi
+    fi
+}
+
 boot() {
 	[ -f /proc/mounts ] || /sbin/mount_root
 	[ -f /proc/jffs2_bbc ] && echo "S" > /proc/jffs2_bbc
@@ -136,6 +148,8 @@ boot() {
 	set_plug_directions
 	set_en_directions
 	init_led
+
+    prepare_logs_partition
 
 	# temporary hack until configd exists
 	/sbin/reload_config

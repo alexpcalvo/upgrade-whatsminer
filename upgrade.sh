@@ -807,7 +807,7 @@ fi
 
 # mke2fs & relative libs
 if [ -f /tmp/upgrade-files/rootfs/usr/sbin/mke2fs ]; then
-	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/usr/sbin/mke2fs /usr/sbin/mke2fs`
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/sbin/mke2fs /usr/sbin/mke2fs`
 	if [ "$DIFF" = "yes" ]; then
 		echo "Upgrading /usr/sbin/mke2fs"
 		cp -f /tmp/upgrade-files/rootfs/usr/sbin/mke2fs /usr/sbin/mke2fs
@@ -816,59 +816,59 @@ if [ -f /tmp/upgrade-files/rootfs/usr/sbin/mke2fs ]; then
 fi
 
 if [ -f /tmp/upgrade-files/rootfs/usr/lib/libext2fs.so.2.4 ]; then
-	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/usr/lib/libext2fs.so.2.4 /usr/lib/libext2fs.so.2.4`
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/lib/libext2fs.so.2.4 /usr/lib/libext2fs.so.2.4`
 	if [ "$DIFF" = "yes" ]; then
 		echo "Upgrading /usr/lib/libext2fs.so.2.4"
 		cp -f /tmp/upgrade-files/rootfs/usr/lib/libext2fs.so.2.4 /usr/lib/libext2fs.so.2.4
 		chmod 755 /usr/lib/libext2fs.so.2.4
-        cd /usr/lib
-        ln -s libext2fs.so.2.4 libext2fs.so.2 >/dev/null 2>&1
-        cd - >/dev/null
+		cd /usr/lib
+		ln -s libext2fs.so.2.4 libext2fs.so.2 >/dev/null 2>&1
+		cd - >/dev/null
 	fi
 fi
 
 if [ -f /tmp/upgrade-files/rootfs/usr/lib/libcom_err.so.0.0 ]; then
-	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/usr/lib/libcom_err.so.0.0 /usr/lib/libcom_err.so.0.0`
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/lib/libcom_err.so.0.0 /usr/lib/libcom_err.so.0.0`
 	if [ "$DIFF" = "yes" ]; then
 		echo "Upgrading /usr/lib/libcom_err.so.0.0"
 		cp -f /tmp/upgrade-files/rootfs/usr/lib/libcom_err.so.0.0 /usr/lib/libcom_err.so.0.0
 		chmod 755 /usr/lib/libcom_err.so.0.0
-        cd /usr/lib
-        ln -s libcom_err.so.0.0 libcom_err.so.0 >/dev/null 2>&1
-        cd - >/dev/null
+		cd /usr/lib
+		ln -s libcom_err.so.0.0 libcom_err.so.0 >/dev/null 2>&1
+		cd - >/dev/null
 	fi
 fi
 
 if [ -f /tmp/upgrade-files/rootfs/usr/lib/libe2p.so.2.3 ]; then
-	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/usr/lib/libe2p.so.2.3 /usr/lib/libe2p.so.2.3`
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/lib/libe2p.so.2.3 /usr/lib/libe2p.so.2.3`
 	if [ "$DIFF" = "yes" ]; then
 		echo "Upgrading /usr/lib/libe2p.so.2.3"
 		cp -f /tmp/upgrade-files/rootfs/usr/lib/libe2p.so.2.3 /usr/lib/libe2p.so.2.3
 		chmod 755 /usr/lib/libe2p.so.2.3
-        cd /usr/lib
-        ln -s libe2p.so.2.3 libe2p.so.2 >/dev/null 2>&1
-        cd - >/dev/null
+		cd /usr/lib
+		ln -s libe2p.so.2.3 libe2p.so.2 >/dev/null 2>&1
+		cd - >/dev/null
 	fi
 fi
 
 # sensors and relative libs
 if [ ! -f /usr/sbin/sensors ]; then
-    if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then
-        echo "Installing libsysfs"
-        opkg install /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk
-    fi
-    if [ -f /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk ]; then
-        echo "Installing sysfsutils"
-        opkg install /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk
-    fi
-    if [ -f /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk ]; then
-        echo "Installing libsensors"
-        opkg install /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk
-    fi
-    if [ -f /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk ]; then
-        echo "Installing lm-sensors"
-        opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
-    fi
+	if [ -f /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk ]; then
+		echo "Installing libsysfs"
+		opkg install /tmp/upgrade-files/packages/libsysfs_2.1.0-2_zynq.ipk
+	fi
+	if [ -f /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk ]; then
+		echo "Installing sysfsutils"
+		opkg install /tmp/upgrade-files/packages/sysfsutils_2.1.0-2_zynq.ipk
+	fi
+	if [ -f /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk ]; then
+		echo "Installing libsensors"
+		opkg install /tmp/upgrade-files/packages/libsensors_3.3.5-3_zynq.ipk
+	fi
+	if [ -f /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk ]; then
+		echo "Installing lm-sensors"
+		opkg install /tmp/upgrade-files/packages/lm-sensors_3.3.5-3_zynq.ipk
+	fi
 fi
 
 # Remove unused files

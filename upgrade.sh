@@ -796,6 +796,15 @@ if [ -f /tmp/upgrade-files/rootfs/etc/cpuinfo_sun8i ]; then
 	fi
 fi
 
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/log-cpu-overheat ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/log-cpu-overheat /usr/bin/log-cpu-overheat`
+	if [ "$DIFF" = "yes" ]; then
+		echo "Upgrading /usr/bin/log-cpu-overheat"
+		cp -f /tmp/upgrade-files/rootfs/usr/bin/log-cpu-overheat /usr/bin/log-cpu-overheat
+		chmod 755 /usr/bin/log-cpu-overheat
+	fi
+fi
+
 # mke2fs & relative libs
 if [ -f /tmp/upgrade-files/rootfs/usr/sbin/mke2fs ]; then
 	DIFF=`diff_files /tmp/upgrade-files/rootfs/etc/usr/sbin/mke2fs /usr/sbin/mke2fs`

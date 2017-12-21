@@ -110,13 +110,13 @@ uci_apply_defaults() {
 }
 
 prepare_logs_partition() {
-    mkdir -p /root/logs/
+    mkdir -p /data/logs/
 
 	if [ "$isH3Platform" = true ]; then
-        mount -t ext4 /dev/nandh /root/logs
+        mount -t ext4 /dev/nandh /data/logs
         if [ "$?" != "0" ]; then
-            mke2fs -t ext4 -j /dev/nandh
-            mount -t ext4 /dev/nandh /root/logs
+            mke2fs -t ext4 -j -F /dev/nandh
+            mount -t ext4 /dev/nandh /data/logs
         fi
     fi
 }

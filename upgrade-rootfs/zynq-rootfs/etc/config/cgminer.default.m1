@@ -16,5 +16,5 @@ config cgminer 'default'
 	option upfreq_pass_chips_percent '95'
 	option pre_heat_temp '25'
 	option pre_heat_end_freq '528'
-	option pre_heat_timeout '120'
+	option pre_heat_timeout '300'
 

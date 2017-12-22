@@ -1009,6 +1009,10 @@ if [ -f /tmp/upgrade-files/rootfs/etc/microbt_release ]; then
     fi
 fi
 
+# Update miner state log from /tmp to /data/logs/
+if [ -f /tmp/miner-state.log ]; then
+    cp -f /tmp/miner-state.log /data/logs/miner-state.log
+fi
 
 # Confirm file attributes again
 chmod 555 /usr/bin/cgminer

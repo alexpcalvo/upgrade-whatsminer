@@ -427,11 +427,17 @@ if [ $asc0_mhs_av_v -lt $MHS_T_H -o $asc1_mhs_av_v -lt $MHS_T_H -o $asc2_mhs_av_
             exit 0;
         fi
     done
-else
+
+    exit 0
+fi
+
+MHS_NORMAL=`expr $MHS_T_H \* 125 / 100`
+if [ $asc0_mhs_av_v -gt $MHS_NORMAL -o "$ASC0" = "" ] && [ $asc1_mhs_av_v -gt $MHS_NORMAL -o "$ASC1" = "" ] && [ $asc2_mhs_av_v -gt $MHS_NORMAL -o "$ASC2" = "" ]; then
     # Cgminer running normally, reset stats
     for i in 0 1 2 
     do
         if [ -f /tmp/cgminer-restart-time$i ]; then
+            logger "Remove /tmp/cgminer-restart-time$i as cgminer running normally"
             rm -f /tmp/cgminer-restart-time$i
         fi
         if [ -f /tmp/cgminer-reset-board$i ]; then
@@ -439,6 +445,7 @@ else
         fi
     done
     if [ -f /root/.cgminer-monitor-reboot-system ]; then
-	    rm -f /root/.cgminer-monitor-reboot-system
+        rm -f /root/.cgminer-monitor-reboot-system
     fi
 fi
+

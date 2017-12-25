@@ -871,6 +871,17 @@ if [ ! -f /usr/sbin/sensors ]; then
 	fi
 fi
 
+# /usr/bin/write-eeprom-data
+if [ -f /tmp/upgrade-files/rootfs/usr/bin/write-eeprom-data ]; then
+    DIFF=`diff_files /tmp/upgrade-files/rootfs/usr/bin/write-eeprom-data /usr/bin/write-eeprom-data`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /usr/bin/write-eeprom-data"
+        chmod 755 /usr/bin/write-eeprom-data
+        cp -f /tmp/upgrade-files/rootfs/usr/bin/write-eeprom-data /usr/bin/write-eeprom-data
+        chmod 555 /usr/bin/write-eeprom-data
+    fi
+fi
+
 # Remove unused files
 if [ -f /etc/config/firewall ]; then
     rm -f /etc/config/firewall

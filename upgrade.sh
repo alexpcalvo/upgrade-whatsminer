@@ -71,6 +71,21 @@ diff_files() {
     fi
 }
 
+is_any_file_to_be_modified_or_added() {
+    local files=$(find /tmp/upgrade-files/rootfs -type f)
+    for srcfile in $files; do
+        filename=`echo $srcfile | sed 's/\/tmp\/upgrade-files\/rootfs\///g'`
+        dstfile="/$filename"
+
+        DIFF=`diff_files $srcfile $dstfile`
+        if [ "$DIFF" = "yes" ]; then
+            return 1
+        fi
+    done
+
+    return 0
+}
+
 reset_board0() {
     if [ "$isH3Platform" = true ]; then
         echo out > /sys/class/gpio/gpio99/direction
@@ -102,26 +117,6 @@ reset_board2() {
 }
 
 #
-# Kill services
-#
-killall -9 crond >/dev/null 2>&1
-killall -9 system-monitor >/dev/null 2>&1
-killall -9 temp-monitor >/dev/null 2>&1
-killall -9 keyd >/dev/null 2>&1
-killall -9 cgminer >/dev/null 2>&1
-killall -9 uhttpd >/dev/null 2>&1
-killall -9 ntpd >/dev/null 2>&1
-killall -9 udevd >/dev/null 2>&1
-
-# Make power consumption lower, so reboot operation may be more stable
-reset_board0
-sleep 1
-reset_board1
-sleep 1
-reset_board2
-sleep 1
-
-#
 # Prepare rootfs
 #
 if [ "$isH3Platform" = true ]; then
@@ -130,6 +125,10 @@ if [ "$isH3Platform" = true ]; then
 
     if [ -d /tmp/upgrade-files ]; then
         rm -f /tmp/upgrade-files/packages/*
+        rm -f /tmp/upgrade-files/rootfs/usr/bin/aging_test.h3
+        rm -f /tmp/upgrade-files/rootfs/etc/init.d/agingtest.h3
+        rm -f /tmp/upgrade-files/rootfs/usr/bin/phonixtest.h3
+        rm -f /tmp/upgrade-files/rootfs/etc/init.d/phonixtest.h3
 
         for file in $(find /tmp/upgrade-files/rootfs -name "*.h3")
         do
@@ -143,6 +142,7 @@ if [ "$isH3Platform" = true ]; then
         rm /tmp/upgrade-bin/boot.fex
         mv /tmp/upgrade-bin/old-boot.fex /tmp/upgrade-bin/boot.fex
     fi
+
 else
     # ZYNQ: 1) remove useless files for h3
     rm -f /tmp/upgrade-bin/boot.fex
@@ -163,6 +163,8 @@ else
     BOOTFILE="BOOT-ZYNQ10"
 fi
 
+bin_upgraded=0
+
 # boot (mtd1)
 if [ -f /tmp/upgrade-bin/$BOOTFILE.bin ]; then
     # verify with mtd data
@@ -173,6 +175,7 @@ if [ -f /tmp/upgrade-bin/$BOOTFILE.bin ]; then
         echo "Upgrading $BOOTFILE.bin to /dev/mtd1"
         mtd erase /dev/mtd1
         mtd write /tmp/upgrade-bin/$BOOTFILE.bin /dev/mtd1
+        bin_upgraded=1
     fi
 fi
 
@@ -186,6 +189,7 @@ if [ -f /tmp/upgrade-bin/uImage ]; then
         echo "Upgrading kernel.bin to /dev/mtd4"
         mtd erase /dev/mtd4
         mtd write /tmp/upgrade-bin/uImage /dev/mtd4
+        bin_upgraded=1
     fi
 fi
 
@@ -196,6 +200,7 @@ if [ -f /tmp/upgrade-bin/boot.fex ]; then
         echo "Upgrading boot.fex to /dev/nandc"
         cat /tmp/upgrade-bin/boot.fex > /dev/nandc
         echo $new_md5 > /etc/boot.md5
+        bin_upgraded=1
     fi
 fi
 
@@ -209,6 +214,7 @@ if [ -f /tmp/upgrade-bin/devicetree.dtb ]; then
         echo "Upgrading devicetree.bin to /dev/mtd5"
         mtd erase /dev/mtd5
         mtd write /tmp/upgrade-bin/devicetree.dtb /dev/mtd5
+        bin_upgraded=1
     fi
 fi
 
@@ -264,6 +270,14 @@ if [ -d /tmp/upgrade-rootfs ]; then
     mount /dev/root -o remount,ro >/dev/null 2>&1
     reboot
     exit 1
+fi
+
+
+is_any_file_to_be_modified_or_added
+if [ $? -eq 0 ] && [ "$bin_upgraded" -ne 1 ]; then
+    echo "No file has been updated, do nothing."
+    mount /dev/root -o remount,ro >/dev/null 2>&1
+    exit 0
 fi
 
 #
@@ -1047,6 +1061,26 @@ chmod 555 /etc/init.d/system-monitor
 chmod 555 /etc/init.d/sdcard-upgrade
 chmod 555 /bin/bitmicro-test
 chmod 444 /etc/microbt_release
+
+#
+# Kill services
+#
+killall -9 crond >/dev/null 2>&1
+killall -9 system-monitor >/dev/null 2>&1
+killall -9 temp-monitor >/dev/null 2>&1
+killall -9 keyd >/dev/null 2>&1
+killall -9 cgminer >/dev/null 2>&1
+killall -9 uhttpd >/dev/null 2>&1
+killall -9 ntpd >/dev/null 2>&1
+killall -9 udevd >/dev/null 2>&1
+
+# Make power consumption lower, so reboot operation may be more stable
+reset_board0
+sleep 1
+reset_board1
+sleep 1
+reset_board2
+sleep 1
 
 echo "Done, reboot control board ..."
 

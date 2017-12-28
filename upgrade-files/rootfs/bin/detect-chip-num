@@ -11,7 +11,7 @@ isDigital() {
     fi
 }
 
-source /usr/bin/miner-detect-common
+source /usr/bin/miner-detect-common ""
 
 if [ -f /etc/config/chipnum ]; then
     val=`cat /etc/config/chipnum`

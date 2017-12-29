@@ -1017,9 +1017,30 @@ if [ -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root ]; then
     DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/80_mount_root`
     if [ "$DIFF" = "yes" ]; then
         echo "Upgrading /lib/preinit/80_mount_root"
-        chmod 644 /lib/preinit/80_mount_root >/dev/null 2>&1
+        chmod 755 /lib/preinit/80_mount_root >/dev/null 2>&1
         cp -f /tmp/upgrade-files/rootfs/lib/preinit/80_mount_root /lib/preinit/
-        chmod 444 /lib/preinit/80_mount_root # readonly
+        chmod 555 /lib/preinit/80_mount_root # readonly
+    fi
+fi
+
+# Make H3 start up faster
+if [ -f /tmp/upgrade-files/rootfs/lib/preinit/01_preinit_sunxi.sh ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/01_preinit_sunxi.sh /lib/preinit/01_preinit_sunxi.sh`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /lib/preinit/01_preinit_sunxi.sh"
+        chmod 755 /lib/preinit/01_preinit_sunxi.sh >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/lib/preinit/01_preinit_sunxi.sh /lib/preinit/
+        chmod 555 /lib/preinit/01_preinit_sunxi.sh # readonly
+    fi
+fi
+
+if [ -f /tmp/upgrade-files/rootfs/lib/preinit/30_failsafe_wait ]; then
+	DIFF=`diff_files /tmp/upgrade-files/rootfs/lib/preinit/30_failsafe_wait /lib/preinit/30_failsafe_wait`
+    if [ "$DIFF" = "yes" ]; then
+        echo "Upgrading /lib/preinit/30_failsafe_wait"
+        chmod 755 /lib/preinit/30_failsafe_wait >/dev/null 2>&1
+        cp -f /tmp/upgrade-files/rootfs/lib/preinit/30_failsafe_wait /lib/preinit/
+        chmod 555 /lib/preinit/30_failsafe_wait # readonly
     fi
 fi
 

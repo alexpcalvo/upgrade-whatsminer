@@ -3,8 +3,6 @@
 # Update upgrade-rootfs/* from upgrade-files/*
 #
 
-echo -n "Updating upgrade-rootfs/zynq-rootfs/ and upgrade-rootfs/h3-rootfs/ ... "
-
 upgrade_files_tmp_dir=/tmp/upgrade-files-tmp
 
 #
@@ -58,5 +56,3 @@ rm -f upgrade-rootfs/h3-rootfs/etc/boot.md5
 
 # Delete tmp dir
 rm -fr $upgrade_files_tmp_dir
-
-echo "Done"
